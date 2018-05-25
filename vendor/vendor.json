@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "gAXWzCBVsk4H5FTYCIhCwOSvioU=",
+			"path": "github.com/go-sql-driver/mysql",
+			"revision": "ceae19ce1c5ac766abad8db04d649a7a83e91ced",
+			"revisionTime": "2018-05-23T13:44:17Z"
+		}
+	],
+	"rootPath": "github.com/keller0/yxi-back"
+}
