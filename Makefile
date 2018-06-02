@@ -34,7 +34,7 @@ misspell-check:
 
 
 tDB:
-	docker run --rm -d -p 3306:3306 -v `pwd`/datas:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=111 mariadb:10.3
+	docker run --rm -d -p 3306:3306 -v `pwd`/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=111 mariadb:10.3
 clean:
 	rm ./main
 
