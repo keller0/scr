@@ -1,42 +1,40 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
+	"io"
+	"os"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/gin-gonic/contrib/jwt"
+	"github.com/gin-gonic/gin"
+	"github.com/keller0/yxi-back/handle"
 )
 
-var db *sql.DB
+var (
+	yxiPort    = os.Getenv("YXI_BACK_PORT")
+	ginMode    = os.Getenv(gin.ENV_GIN_MODE)
+	ginLogPath = os.Getenv("GIN_LOG_PATH")
+)
 
 func main() {
-	var err error
-	db, err = sql.Open("mysql", "root:111@tcp(127.0.0.1:3306)/yxi")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
 
-	if err := db.Ping(); err != nil {
-		log.Fatalln(err)
-	}
-
-	rows, err := db.Query("select * from test1")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var tt te
-		rows.Scan(&tt.id, &tt.name)
-		fmt.Println(tt.id, tt.name)
+	if ginMode == gin.ReleaseMode {
+		gin.DisableConsoleColor()
+		f, error := os.Create(ginLogPath)
+		if error != nil {
+			panic("create log file failed")
+		}
+		gin.DefaultWriter = io.MultiWriter(f)
 	}
 
-}
+	r := gin.Default()
 
-type te struct {
-	id   int
-	name string
+	api := r.Group("/v1")
+	{
+		api.POST("/login", handle.Login)
+		p := api.Group("private").Use(jwt.Auth("secret"))
+		p.GET("/", handle.PrivateCode)
+	}
+
+	r.Run(yxiPort)
+
 }
