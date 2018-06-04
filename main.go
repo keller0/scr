@@ -4,9 +4,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/gin-gonic/contrib/jwt"
 	"github.com/gin-gonic/gin"
-	"github.com/keller0/yxi-back/handle"
+	"github.com/keller0/yxi-back/handler"
+	"github.com/keller0/yxi-back/middleware"
 )
 
 var (
@@ -31,8 +31,11 @@ func main() {
 	api := r.Group("/v1")
 	{
 		api.POST("/login", handle.Login)
-		p := api.Group("private").Use(jwt.Auth("secret"))
-		p.GET("/", handle.PrivateCode)
+
+		p := api.Group("private").Use(mid.JwtAuth())
+		{
+			p.GET("/", handle.PrivateCode)
+		}
 	}
 
 	r.Run(yxiPort)
