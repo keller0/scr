@@ -1,14 +1,13 @@
 package handle
 
 import (
-	"database/sql"
-	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/keller0/yxi-back/db"
 	"github.com/keller0/yxi-back/middleware"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -25,11 +24,11 @@ type register struct {
 	Email    string `form:"email" json:"email" binding:"required"`
 }
 
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()")
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()")
 
 // Login return a jwt if user info is valid.
 func Login(c *gin.Context) {
@@ -42,15 +41,10 @@ func Login(c *gin.Context) {
 			c.Abort()
 			return
 		}
-		Con, err := sql.Open("mysql", "root:111@tcp(127.0.0.1:3306)/yxi")
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		defer Con.Close()
 
 		var password string
 		var id int64
-		err = Con.QueryRow("SELECT id, password FROM user WHERE username=?", loginJSON.User).Scan(
+		err = mysql.Db.QueryRow("SELECT id, password FROM user WHERE username=?", loginJSON.User).Scan(
 			&id, &password)
 		if err != nil {
 			log.Fatal(err.Error())
@@ -98,6 +92,12 @@ func Register(c *gin.Context) {
 			c.Abort()
 			return
 		}
+		if checkEmailExist(registJSON.Email) {
+			// return if username allready exists
+			c.JSON(http.StatusBadRequest, gin.H{"error": "email already exists"})
+			c.Abort()
+			return
+		}
 		if registJSON.Password != registJSON.Repass {
 			// return if password not match
 			c.JSON(http.StatusBadRequest, gin.H{"error": "password not match"})
@@ -105,25 +105,22 @@ func Register(c *gin.Context) {
 			return
 		}
 
-		Con, err := sql.Open("mysql", "root:111@tcp(127.0.0.1:3306)/yxi")
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		defer Con.Close()
-
 		var runToken = randStringRunes(40)
 		password, err := hashPassword(registJSON.Password)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		insUser, err := Con.Prepare("INSERT INTO user(username, password, email, run_token) values(?,?,?,?)")
+		insUser, err := mysql.Db.Prepare("INSERT INTO user(username, password, email, run_token) values(?,?,?,?)")
 		if err != nil {
 			log.Fatal(err.Error())
 		}
 
-		fmt.Println(registJSON.User, password, registJSON.Email, runToken)
-		r, e := insUser.Exec(registJSON.User, password, registJSON.Email, runToken)
-		c.JSON(http.StatusOK, gin.H{"r": r, "e": e})
+		_, e := insUser.Exec(registJSON.User, password, registJSON.Email, runToken)
+		if e != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": e.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"error": ""})
+		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
@@ -131,14 +128,19 @@ func Register(c *gin.Context) {
 }
 
 func checkUserExist(username string) bool {
-	Con, err := sql.Open("mysql", "root:111@tcp(127.0.0.1:3306)/yxi")
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	defer Con.Close()
 
 	var id int64
-	err = Con.QueryRow("SELECT id FROM user WHERE username=?", username).Scan(&id)
+	err := mysql.Db.QueryRow("SELECT id FROM user WHERE username=?", username).Scan(&id)
+	if err != nil {
+		return false
+	}
+	return id != 0
+}
+
+func checkEmailExist(email string) bool {
+
+	var id int64
+	err := mysql.Db.QueryRow("SELECT id FROM user WHERE email=?", email).Scan(&id)
 	if err != nil {
 		return false
 	}
