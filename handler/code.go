@@ -5,36 +5,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keller0/yxi-back/middleware"
 	"github.com/keller0/yxi-back/model"
+	"github.com/keller0/yxi-back/util"
 )
-
-type Code struct {
-	ID int64 `json:"id"`
-
-	UserID int64 `json:"userid"`
-
-	Title string `json:"title"`
-
-	Description string `json:"description"`
-
-	Lang string `json:"lang"`
-
-	CreateTime string `json:"createtime"`
-
-	ModifyTime string `json:"modifytime"`
-
-	FileName string `json:"filename"`
-
-	Content string `json:"content"`
-
-	Public int `json:"public"`
-}
 
 func PrivateCode(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 
-	id, err := mid.JwtGetUserID(token)
+	id, err := util.JwtGetUserID(token)
 	if err != nil {
 		c.AbortWithError(http.StatusForbidden, err)
 	}

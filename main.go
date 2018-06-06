@@ -30,6 +30,12 @@ func main() {
 
 	api := r.Group("/v1")
 	{
+
+		api.GET("public", handle.PublicCode)
+		api.GET("public/:userid", handle.OnesPublicCode)
+		api.GET("populer", handle.PopulerCode)
+
+		api.POST("/register", handle.Register)
 		api.POST("/login", handle.Login)
 
 		p := api.Group("private").Use(mid.JwtAuth())

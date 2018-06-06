@@ -2,6 +2,7 @@ package util
 
 import (
 	"errors"
+	"math/rand"
 	"os"
 
 	jwt_lib "github.com/dgrijalva/jwt-go"
@@ -10,6 +11,8 @@ import (
 
 var (
 	authSecret = os.Getenv("YXI_BACK_KEY")
+
+	letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()")
 )
 
 func CheckPasswordHash(password, hash string) bool {
@@ -42,4 +45,17 @@ func JwtGetUserID(tokenString string) (int64, error) {
 		return int64(id), nil
 	}
 	return -1, errors.New("get id failed")
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 11)
+	return string(bytes), err
+}
+
+func RandStringRunes(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
 }
