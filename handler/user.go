@@ -102,7 +102,7 @@ func Register(c *gin.Context) {
 		user.Password = registJSON.Password
 		e := user.New()
 		if e != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "create user failed"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "registration failed"})
 		} else {
 			c.String(http.StatusOK, "registration succeeded")
 		}

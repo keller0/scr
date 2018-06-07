@@ -26,6 +26,12 @@ type User struct {
 	RunToke string `json:"run_token"`
 
 	Email string `json:"email"`
+
+	CreateAt string `json:"createat"`
+
+	UpdateAt string `json:"updateat"`
+
+	Admin bool `json:"admin"`
 }
 
 // Validate validates the required fields and formats.
