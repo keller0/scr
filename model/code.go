@@ -75,7 +75,7 @@ func GetAllPublicCode() ([]CodeRes, error) {
 
 // GetPouplerCode get all populer code from code table
 func GetPouplerCode() ([]CodeRes, error) {
-	return getCodes("code.public=true", "create_at", "desc", "15")
+	return getCodes("code.public=true", "likes", "desc", "15")
 }
 
 func getCodes(where, orderby, order, limit string) ([]CodeRes, error) {
