@@ -35,6 +35,8 @@ type CodeRes struct {
 
 	UserName string `json:"username"`
 
+	Likes int64 `json:"likes"`
+
 	Title string `json:"title"`
 
 	Description string `json:"description"`
@@ -56,33 +58,34 @@ var anonymousUser = "anonymous"
 
 // GetOnesPublicCode get one user's public code
 func GetOnesPublicCode(userid string) ([]CodeRes, error) {
-	return getCodes("public=true and user_id="+userid, "id", "desc", "15")
+	return getCodes("code.public=true and code.user_id="+userid, "code.create_at", "desc", "15")
 }
 
 // GetOnesPrivateCode get one user's private code
 func (c *Code) GetOnesPrivateCode() ([]CodeRes, error) {
 
 	userid := strconv.Itoa(int(c.UserID))
-	return getCodes("public=false and user_id="+userid, "id", "desc", "15")
+	return getCodes("code.public=false and code.user_id="+userid, "code.create_at", "desc", "15")
 }
 
 // GetAllPublicCode get all public code from code table
 func GetAllPublicCode() ([]CodeRes, error) {
-	return getCodes("public=true", "id", "desc", "15")
+	return getCodes("code.public=true", "code.create_at", "desc", "15")
 }
 
 // GetPouplerCode get all populer code from code table
 func GetPouplerCode() ([]CodeRes, error) {
-	return getCodes("public=true", "create_at", "desc", "15")
+	return getCodes("code.public=true", "create_at", "desc", "15")
 }
 
 func getCodes(where, orderby, order, limit string) ([]CodeRes, error) {
 	selOut, err := mysql.Db.Query(
-		"SELECT code.id, IFNULL(user.username,\"" + anonymousUser + "\"), code.title, " +
-			"code.description, code.lang, code.filename, code.content, " +
-			"code.create_at, code.update_at, code.public " +
-			"FROM code left join user on code.user_id=user.id where " +
-			where + " ORDER BY " + orderby + " " + order + " LIMIT " + limit)
+		"SELECT code.id, IFNULL(user.username,\"" + anonymousUser + "\") username, " +
+			"code.title, code.description, code.lang, code.filename, code.content, " +
+			"code.create_at, code.update_at, code.public, count(likes.code_id) likes " +
+			"FROM code left join user on code.user_id=user.id " +
+			"left join likes on likes.code_id = code.id " +
+			"where " + where + " group by code.id ORDER BY " + orderby + " " + order + " LIMIT " + limit)
 	if err != nil {
 		return nil, err
 	}
@@ -90,15 +93,17 @@ func getCodes(where, orderby, order, limit string) ([]CodeRes, error) {
 	codes := []CodeRes{}
 	for selOut.Next() {
 		code := CodeRes{}
-		var id int64
+		var id, likes int64
 		var username, title, lang, description, filename, content, createtat, updateat string
 		var pub bool
-		err := selOut.Scan(&id, &username, &title, &description, &lang, &filename, &content, &createtat, &updateat, &pub)
+		err := selOut.Scan(&id, &username, &title, &description, &lang,
+			&filename, &content, &createtat, &updateat, &pub, &likes)
 		if err != nil {
 			return nil, err
 		}
 		code.ID = id
 		code.UserName = username
+		code.Likes = likes
 		code.Title = title
 		code.Lang = lang
 		code.Description = description
