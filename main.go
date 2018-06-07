@@ -28,20 +28,23 @@ func main() {
 
 	r := gin.Default()
 
-	api := r.Group("/v1")
+	public := r.Group("/v1")
 	{
 
-		api.GET("public", handle.PublicCode)
-		api.GET("public/:userid", handle.OnesPublicCode)
-		api.GET("populer", handle.PopulerCode)
+		public.GET("/code/pub", handle.PublicCode)
+		public.GET("/code/top", handle.PopulerCode)
+		public.GET("/code/pub/:userid", handle.OnesPublicCode)
+		public.POST("/code/new", handle.NewCode)
 
-		api.POST("/register", handle.Register)
-		api.POST("/login", handle.Login)
+		public.POST("/register", handle.Register)
+		public.POST("/login", handle.Login)
 
-		p := api.Group("private").Use(mid.JwtAuth())
-		{
-			p.GET("/", handle.PrivateCode)
-		}
+	}
+
+	private := r.Group("/v1").Use(mid.JwtAuth())
+	{
+		// get one's private  code
+		private.GET("/code/private", handle.PrivateCode)
 	}
 
 	r.Run(yxiPort)
