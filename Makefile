@@ -32,6 +32,11 @@ misspell-check:
 	fi
 	misspell -error $(GOFILES)
 
+buildapi:
+	docker build -t keller0/yxi-api .
+
+dbuild:
+	docker run -it --rm -v `pwd`:/go/src/github.com/keller0/yxi-back -w /go/src/github.com/keller0/yxi-back golang:1.8  go build -ldflags '-w -s' -o main
 
 tDB:
 	docker run --rm -d -p 3306:3306 -v `pwd`/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=111 mariadb:10.3

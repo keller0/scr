@@ -1,0 +1,31 @@
+version: "3"
+services:
+  yxi-api:
+    image: keller0/yxi-api
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "8090:8090"
+    volumes:
+      - "/var/log/yxi:/var/log/yxi"
+    networks:
+      - webnet
+  mariadb:
+    image: mariadb:10.3
+    ports:
+      - "3306:3306"
+    volumes:
+      - "/home/c/go/src/github.com/keller0/yxi-back/data:/var/lib/mysql"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - webnet
+networks:
+    webnet:
