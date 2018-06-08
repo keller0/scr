@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -20,15 +21,25 @@ func init() {
 	var err error
 	Db, err = sql.Open("mysql", user+":"+pass+"@tcp("+addr+")/"+name)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 
 	Db.SetMaxOpenConns(1000)
 	Db.SetMaxIdleConns(500)
 
-	err = Db.Ping()
-	if err != nil {
-		log.Fatal(err.Error())
+	retry := 0
+	for {
+		err = Db.Ping()
+		if err != nil {
+			log.Println(err.Error(), "retry: ", retry)
+			if retry > 100 {
+				log.Fatal(err)
+			}
+			retry++
+			time.Sleep(time.Second * 1)
+			continue
+		}
+		break
 	}
 }
 
