@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/yxi-back/handler"
 	"github.com/keller0/yxi-back/middleware"
@@ -27,12 +28,14 @@ func main() {
 	}
 
 	r := gin.Default()
+	corsConfig := cors.DefaultConfig()
+	r.Use(cors.New(corsConfig))
 
 	public := r.Group("/v1")
 	{
 
-		public.GET("/code/pub", handle.PublicCode)
 		public.GET("/code/top", handle.PopulerCode)
+		public.GET("/code/pub", handle.PublicCode)
 		public.GET("/code/pub/:userid", handle.OnesPublicCode)
 		public.POST("/code/new", handle.NewCode)
 
