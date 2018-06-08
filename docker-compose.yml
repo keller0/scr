@@ -18,6 +18,8 @@ services:
       - webnet
   mariadb:
     image: mariadb:10.3
+    depends_on:
+      - yxi-api
     ports:
       - "3306:3306"
     volumes:
