@@ -1,0 +1,14 @@
+language: go
+sudo: false
+go:
+  - "1.8"
+  - "1.10"
+
+install:
+  - make build
+
+script:
+  - make vet
+
+clean:
+  - make clean
