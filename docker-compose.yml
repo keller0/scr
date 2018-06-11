@@ -21,11 +21,15 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - "/home/c/go/src/github.com/keller0/yxi-back/data:/var/lib/mysql"
+      - "aoi-db:/var/lib/mysql"
     deploy:
       placement:
         constraints: [node.role == manager]
     networks:
       - webnet
+
 networks:
-    webnet:
+  webnet:
+
+volumes:
+  api-db:
