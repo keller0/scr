@@ -115,8 +115,8 @@ func GetCode(c *gin.Context) {
 	switch codetype {
 	case "public":
 		codes, err = model.GetAllPublicCode()
-	case "populer":
-		codes, err = model.GetPouplerCode()
+	case "popular":
+		codes, err = model.GetPouplarCode()
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{"error": "type not supported"})
 		c.Abort()
