@@ -30,6 +30,7 @@ type Code struct {
 	UpdateAt string `json:"updateat"`
 }
 
+// CodeRes include code info, code's user, and likes
 type CodeRes struct {
 	ID int64 `json:"id"`
 
@@ -56,6 +57,13 @@ type CodeRes struct {
 
 var anonymousUser = "anonymous"
 
+// GetOnesCode get one user's code
+func (c *Code) GetOnesCode() ([]CodeRes, error) {
+
+	userid := strconv.Itoa(int(c.UserID))
+	return getCodes("code.user_id="+userid, "code.create_at", "desc", "15")
+}
+
 // GetOnesPublicCode get one user's public code
 func GetOnesPublicCode(userid string) ([]CodeRes, error) {
 	return getCodes("code.public=true and code.user_id="+userid, "code.create_at", "desc", "15")
@@ -78,10 +86,11 @@ func GetPouplerCode() ([]CodeRes, error) {
 	return getCodes("code.public=true", "likes", "desc", "15")
 }
 
+// this does not contain code's content
 func getCodes(where, orderby, order, limit string) ([]CodeRes, error) {
 	selOut, err := mysql.Db.Query(
 		"SELECT code.id, IFNULL(user.username,\"" + anonymousUser + "\") username, " +
-			"code.title, code.description, code.lang, code.filename, code.content, " +
+			"code.title, code.description, code.lang, code.filename," +
 			"code.create_at, code.update_at, code.public, count(likes.code_id) likes " +
 			"FROM code left join user on code.user_id=user.id " +
 			"left join likes on likes.code_id = code.id " +
@@ -94,10 +103,10 @@ func getCodes(where, orderby, order, limit string) ([]CodeRes, error) {
 	for selOut.Next() {
 		code := CodeRes{}
 		var id, likes int64
-		var username, title, lang, description, filename, content, createtat, updateat string
+		var username, title, lang, description, filename, createtat, updateat string
 		var pub bool
 		err := selOut.Scan(&id, &username, &title, &description, &lang,
-			&filename, &content, &createtat, &updateat, &pub, &likes)
+			&filename, &createtat, &updateat, &pub, &likes)
 		if err != nil {
 			return nil, err
 		}
@@ -108,13 +117,32 @@ func getCodes(where, orderby, order, limit string) ([]CodeRes, error) {
 		code.Lang = lang
 		code.Description = description
 		code.FileName = filename
-		code.Content = content
 		code.CreateAt = createtat
 		code.UpdateAt = updateat
 		code.Public = pub
 		codes = append(codes, code)
 	}
 	return codes, nil
+}
+
+// GetCodeContent use code's id get  content
+func (c *Code) GetCodeContent() (string, error) {
+	var content string
+	var isPublic bool
+	var userid int64
+	err := mysql.Db.QueryRow(
+		"SELECT content, IFNULL(user_id, 0), public FROM code WHERE id=?",
+		c.ID).Scan(&content, &userid, &isPublic)
+	// code does not exist
+	if err != nil {
+		return "", err
+	}
+	// if code is not public, the userid need matche
+	if !isPublic && userid != c.UserID {
+		return "", ErrNotAllowed
+	}
+
+	return content, nil
 }
 
 // New create a new code snippet recoard
@@ -143,6 +171,6 @@ func (c *Code) NewAnonymous() error {
 		return err
 	}
 	// anonymous code could only be public
-	_, err = insCode.Exec(c.Title, c.Description, c.Lang, c.FileName, c.Content, "true")
+	_, err = insCode.Exec(c.Title, c.Description, c.Lang, c.FileName, c.Content, true)
 	return err
 }

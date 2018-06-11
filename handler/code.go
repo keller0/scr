@@ -3,31 +3,12 @@ package handle
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/yxi-back/model"
 	"github.com/keller0/yxi-back/util"
 )
-
-// PrivateCode return one's private code
-func PrivateCode(c *gin.Context) {
-
-	// get user id from jwt
-	userid, err := util.JwtGetUserID(c.Request)
-	if err != nil {
-		c.AbortWithError(http.StatusForbidden, err)
-	}
-	var code model.Code
-	code.UserID = userid
-	codes, err := code.GetOnesPrivateCode()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		c.Abort()
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"codes": codes})
-
-}
 
 // NewCode create a new code snippet
 func NewCode(c *gin.Context) {
@@ -54,24 +35,68 @@ func NewCode(c *gin.Context) {
 	}
 }
 
-// PublicCode return all public code
-func PublicCode(c *gin.Context) {
-	codes, err := model.GetAllPublicCode()
+// GetCodeContent return code with content
+func GetCodeContent(c *gin.Context) {
+	var err error
+	var content string
+	codeid := c.Params.ByName("codeid")
+	var code model.Code
+	code.ID, err = strconv.ParseInt(codeid, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNoContent, gin.H{"error": codeid + " dose not exist"})
+		c.Abort()
+		return
+	}
+
+	// get user id encase the codeid's code is private
+	code.UserID, _ = util.JwtGetUserID(c.Request)
+
+	content, err = code.GetCodeContent()
+	if err != nil {
+		if err == model.ErrNotAllowed {
+			c.JSON(http.StatusForbidden, gin.H{"error": model.ErrNotAllowed.Error()})
+		} else {
+			c.JSON(http.StatusNoContent, gin.H{"error": codeid + " dose not exist"})
+		}
 		c.Abort()
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"codes": codes,
+		"content": content,
 	})
-
 }
 
-// OnesPublicCode return one's public code
-func OnesPublicCode(c *gin.Context) {
+// GetOnesCode return ones code
+func GetOnesCode(c *gin.Context) {
+	var err error
+	var codes []model.CodeRes
 	userid := c.Params.ByName("userid")
-	codes, err := model.GetOnesPublicCode(userid)
+	codetype := c.DefaultQuery("type", "public")
+	switch codetype {
+	case "public":
+		codes, err = model.GetOnesPublicCode(userid)
+	case "private":
+		userid, err := util.JwtGetUserID(c.Request)
+		if err != nil {
+			c.AbortWithError(http.StatusForbidden, err)
+			return
+		}
+		var code model.Code
+		code.UserID = userid
+		codes, err = code.GetOnesPrivateCode()
+	case "all":
+		userid, err := util.JwtGetUserID(c.Request)
+		if err != nil {
+			c.AbortWithError(http.StatusForbidden, err)
+			return
+		}
+		var code model.Code
+		code.UserID = userid
+		codes, err = code.GetOnesCode()
+	default:
+		codes, err = model.GetAllPublicCode()
+	}
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		c.Abort()
@@ -82,10 +107,22 @@ func OnesPublicCode(c *gin.Context) {
 	})
 }
 
-// PopulerCode return most liked code
-func PopulerCode(c *gin.Context) {
+// GetCode return code list depend on param.type
+func GetCode(c *gin.Context) {
+	var err error
+	var codes []model.CodeRes
+	codetype := c.DefaultQuery("type", "public")
+	switch codetype {
+	case "public":
+		codes, err = model.GetAllPublicCode()
+	case "populer":
+		codes, err = model.GetPouplerCode()
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{"error": "type not supported"})
+		c.Abort()
+		return
+	}
 
-	codes, err := model.GetPouplerCode()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		c.Abort()
@@ -94,4 +131,5 @@ func PopulerCode(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"codes": codes,
 	})
+
 }
