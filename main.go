@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/yxi-back/handler"
-	"github.com/keller0/yxi-back/middleware"
 )
 
 var (
@@ -33,21 +32,17 @@ func main() {
 
 	public := r.Group("/v1")
 	{
+		// get code list
+		public.GET("/code", handle.GetCode)
 
-		public.GET("/code/top", handle.PopulerCode)
-		public.GET("/code/pub", handle.PublicCode)
-		public.GET("/code/pub/:userid", handle.OnesPublicCode)
-		public.POST("/code/new", handle.NewCode)
+		public.GET("/code/content/:codeid", handle.GetCodeContent)
+		public.POST("/code", handle.NewCode)
+
+		public.GET("/user/:userid/code", handle.GetOnesCode)
 
 		public.POST("/register", handle.Register)
 		public.POST("/login", handle.Login)
 
-	}
-
-	private := r.Group("/v1").Use(mid.JwtAuth())
-	{
-		// get one's private  code
-		private.GET("/code/private", handle.PrivateCode)
 	}
 
 	r.Run(yxiPort)
