@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/gin-gonic/contrib/cors"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/yxi-back/handler"
 )
@@ -27,8 +27,10 @@ func main() {
 	}
 
 	r := gin.Default()
-	corsConfig := cors.DefaultConfig()
-	r.Use(cors.New(corsConfig))
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AddAllowHeaders("Authorization")
+	r.Use(cors.New(config))
 
 	public := r.Group("/v1")
 	{
