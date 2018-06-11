@@ -43,7 +43,7 @@ func GetCodeContent(c *gin.Context) {
 	var code model.Code
 	code.ID, err = strconv.ParseInt(codeid, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusNoContent, gin.H{"error": codeid + " dose not exist"})
+		c.JSON(http.StatusNotFound, gin.H{"error": codeid + " dose not exist"})
 		c.Abort()
 		return
 	}
@@ -56,7 +56,7 @@ func GetCodeContent(c *gin.Context) {
 		if err == model.ErrNotAllowed {
 			c.JSON(http.StatusForbidden, gin.H{"error": model.ErrNotAllowed.Error()})
 		} else {
-			c.JSON(http.StatusNoContent, gin.H{"error": codeid + " dose not exist"})
+			c.JSON(http.StatusNotFound, gin.H{"error": codeid + " dose not exist"})
 		}
 		c.Abort()
 		return
