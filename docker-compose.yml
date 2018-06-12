@@ -21,7 +21,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - "aoi-db:/var/lib/mysql"
+      - "api-db:/var/lib/mysql"
     deploy:
       placement:
         constraints: [node.role == manager]
