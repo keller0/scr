@@ -18,7 +18,6 @@ type login struct {
 type register struct {
 	User     string `form:"user" json:"user" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
-	Repass   string `form:"repass" json:"repass" binding:"required"`
 	Email    string `form:"email" json:"email" binding:"required"`
 }
 
@@ -80,12 +79,7 @@ func Register(c *gin.Context) {
 		var user model.User
 		user.Username = registJSON.User
 		user.Email = registJSON.Email
-		if registJSON.Password != registJSON.Repass {
-			// return if password not match
-			c.JSON(http.StatusBadRequest, gin.H{"error": "password not match"})
-			c.Abort()
-			return
-		}
+
 		if user.UsernameExist() {
 			// return if username allready exists
 			c.JSON(http.StatusBadRequest, gin.H{"error": "user already exists"})
