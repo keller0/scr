@@ -130,15 +130,15 @@ func (c *Code) GetCodeByID() (CodeRes, error) {
 	var code CodeRes
 	var userid int64
 	err := mysql.Db.QueryRow(
-		"SELECT IFNULL(user.username,\""+anonymousUser+"\") username,"+
+		"SELECT code.id, IFNULL(user.username,\""+anonymousUser+"\") username,"+
 			"IFNULL(code.user_id, 0), code.content,"+
 			"code.create_at, code.update_at,"+
 			"code.title, code.description, code.lang, code.filename,"+
 			"code.public, count(likes.code_id) likes "+
 			"FROM code left join user on code.user_id=user.id "+
 			"left join likes on likes.code_id = code.id "+
-			"where code.id=?", c.ID).Scan(&code.UserName,
-		&userid, &code.CreateAt, &code.UpdateAt, &code.Content, &code.Title,
+			"where code.id=?", c.ID).Scan(&code.ID, &code.UserName,
+		&userid, &code.Content, &code.CreateAt, &code.UpdateAt, &code.Title,
 		&code.Description, &code.Lang, &code.FileName, &code.Public, &code.Likes)
 
 	if err != nil {
