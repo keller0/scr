@@ -125,8 +125,34 @@ func getCodes(where, orderby, order, limit string) ([]CodeRes, error) {
 	return codes, nil
 }
 
-// GetCodeContent use code's id get  content
-func (c *Code) GetCodeContent() (string, error) {
+// GetCodeByID use code's id get info
+func (c *Code) GetCodeByID() (CodeRes, error) {
+	var code CodeRes
+	var userid int64
+	err := mysql.Db.QueryRow(
+		"SELECT IFNULL(user.username,\""+anonymousUser+"\") username,"+
+			"IFNULL(code.user_id, 0), code.content,"+
+			"code.title, code.description, code.lang, code.filename,"+
+			"code.public, count(likes.code_id) likes "+
+			"FROM code left join user on code.user_id=user.id "+
+			"left join likes on likes.code_id = code.id "+
+			"where code.id=?", c.ID).Scan(&code.UserName,
+		&userid, &code.Content, &code.Title, &code.Description,
+		&code.Lang, &code.FileName, &code.Public, &code.Likes)
+
+	if err != nil {
+		return CodeRes{}, err
+	}
+
+	// if code is not public, the userid need matche
+	if !code.Public && userid != c.UserID {
+		return CodeRes{}, ErrNotAllowed
+	}
+	return code, nil
+}
+
+// GetCodeContentByID use code's id get  content
+func (c *Code) GetCodeContentByID() (string, error) {
 	var content string
 	var isPublic bool
 	var userid int64

@@ -35,35 +35,47 @@ func NewCode(c *gin.Context) {
 	}
 }
 
-// GetCodeContent return code with content
-func GetCodeContent(c *gin.Context) {
-	var err error
-	var content string
-	codeid := c.Params.ByName("codeid")
-	var code model.Code
-	code.ID, err = strconv.ParseInt(codeid, 10, 64)
+// GetCodePart return part of code
+func GetCodePart(c *gin.Context) {
+	id := c.Param("codeid")
+	part := c.Param("part")
+	codeid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": codeid + " dose not exist"})
+		fmt.Println(codeid, err.Error())
+		c.JSON(http.StatusNotFound, gin.H{"error": id + " dose not exist"})
 		c.Abort()
 		return
 	}
+	var code model.Code
+	code.ID = codeid
 
 	// get user id encase the codeid's code is private
+	// the error now can be ignored, because publlic code did not need auth
 	code.UserID, _ = util.JwtGetUserID(c.Request)
 
-	content, err = code.GetCodeContent()
-	if err != nil {
-		if err == model.ErrNotAllowed {
-			c.JSON(http.StatusForbidden, gin.H{"error": model.ErrNotAllowed.Error()})
-		} else {
-			c.JSON(http.StatusNotFound, gin.H{"error": codeid + " dose not exist"})
+	switch part {
+	case "/content":
+		content, err := code.GetCodeContentByID()
+		if err != nil {
+			fmt.Println(part, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"error": err})
+			c.Abort()
+			return
 		}
-		c.Abort()
-		return
+		c.JSON(http.StatusOK, gin.H{"content": content})
+	case "/":
+		codeRes, err := code.GetCodeByID()
+		if err != nil {
+			fmt.Println(part, err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			c.Abort()
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"code": codeRes})
+	default:
+		c.JSON(http.StatusNotFound, gin.H{"error": id + " dose not exist"})
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"content": content,
-	})
+
 }
 
 // GetOnesCode return ones code

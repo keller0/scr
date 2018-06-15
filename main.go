@@ -37,9 +37,10 @@ func main() {
 		// get code list
 		public.GET("/code", handle.GetCode)
 
-		public.GET("/code/content/:codeid", handle.GetCodeContent)
+		public.GET("/code/:codeid/*part", handle.GetCodePart)
 		public.POST("/code", handle.NewCode)
 
+		// get user's code list
 		public.GET("/user/:userid/code", handle.GetOnesCode)
 
 		public.POST("/register", handle.Register)
