@@ -13,9 +13,11 @@ import (
 var (
 	reUsername          = regexp.MustCompile("^[a-zA-Z0-9-_.]+$")
 	errUserLoginInvalid = errors.New("Invalid User Login")
-	errLoginWrongPass   = errors.New("Wrong Password")
+	// ErrLoginWrongPass wrong password
+	ErrLoginWrongPass = errors.New("Wrong Password")
 )
 
+// User user struct in database
 type User struct {
 	ID int64 `json:"id"`
 
@@ -78,7 +80,6 @@ func (u *User) Login() (string, error) {
 	var err error
 	err = mysql.Db.QueryRow("SELECT id, password FROM user WHERE username=?", u.Username).Scan(&id, &password)
 	if err != nil {
-		log.Fatal(err.Error())
 		return "", err
 	}
 
@@ -90,7 +91,7 @@ func (u *User) Login() (string, error) {
 		}
 		return tokenString, nil
 	} else {
-		return "", errLoginWrongPass
+		return "", ErrLoginWrongPass
 	}
 }
 
@@ -100,12 +101,12 @@ func (u *User) New() error {
 	var runToken = util.RandStringRunes(40)
 	passwordhashed, err := util.HashPassword(u.Password)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 	insUser, err := mysql.Db.Prepare("INSERT INTO user(username, password, email, run_token) values(?,?,?,?)")
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 

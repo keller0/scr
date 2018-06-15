@@ -58,6 +58,7 @@ func JwtGetUserID(r *http.Request) (int64, error) {
 		return b, nil
 	})
 	if err != nil {
+		// get token failed
 		return -1, err
 	}
 

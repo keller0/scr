@@ -26,6 +26,7 @@ func init() {
 }
 
 // Login return a jwt if user info is valid.
+// 200 400 401 404
 func Login(c *gin.Context) {
 	var err error
 	var loginJSON login
@@ -36,16 +37,14 @@ func Login(c *gin.Context) {
 
 		if !user.UsernameExist() {
 			// return if username allready exists
-			c.JSON(http.StatusBadRequest, gin.H{"error": "user dose not exists"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "user dose not exists"})
 			c.Abort()
 			return
 		}
 		tokenString, err := user.Login()
 		if err != nil {
-			// log error
-			log.Fatalln(err)
+			log.Println(err.Error())
 			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
-
 		} else {
 			c.JSON(http.StatusOK, gin.H{"token": tokenString})
 		}
@@ -72,6 +71,7 @@ func CheckUserExist(c *gin.Context) {
 }
 
 // Register use post data to create a user account
+// 200 400 409 500
 func Register(c *gin.Context) {
 	var err error
 	var registJSON register
@@ -82,13 +82,13 @@ func Register(c *gin.Context) {
 
 		if user.UsernameExist() {
 			// return if username allready exists
-			c.JSON(http.StatusBadRequest, gin.H{"error": "user already exists"})
+			c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
 			c.Abort()
 			return
 		}
 		if user.EmailExist() {
 			// return if username allready exists
-			c.JSON(http.StatusBadRequest, gin.H{"error": "email already exists"})
+			c.JSON(http.StatusConflict, gin.H{"error": "email already exists"})
 			c.Abort()
 			return
 		}
