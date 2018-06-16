@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 
@@ -200,4 +201,17 @@ func (c *Code) NewAnonymous() error {
 	// anonymous code could only be public
 	_, err = insCode.Exec(c.Title, c.Description, c.Lang, c.FileName, c.Content, true)
 	return err
+}
+
+// CodeExist check if code exist use code id
+func CodeExist(id int64) bool {
+	var count int64
+	err := mysql.Db.QueryRow("SELECT count(id) FROM code WHERE id=? ",
+		id).Scan(&count)
+	if err != nil {
+		fmt.Println(err.Error())
+		return true
+	}
+
+	return count != 0
 }

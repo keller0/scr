@@ -7,6 +7,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/yxi-back/handler"
+	mid "github.com/keller0/yxi-back/middleware"
 )
 
 var (
@@ -46,6 +47,12 @@ func main() {
 		public.POST("/user", handle.Register)
 		public.POST("/login", handle.Login)
 
+	}
+
+	authorized := r.Group("/v1")
+	authorized.Use(mid.JwtAuth())
+	{
+		authorized.PUT("/likes/:codeid", handle.LikeCode)
 	}
 
 	r.Run(yxiPort)

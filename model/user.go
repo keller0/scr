@@ -54,7 +54,7 @@ func (u *User) UsernameExist() bool {
 	var id int64
 	err := mysql.Db.QueryRow("SELECT id FROM user WHERE username=?", u.Username).Scan(&id)
 	if err != nil {
-		return false
+		return true
 	}
 	return id != 0
 }
@@ -65,7 +65,7 @@ func (u *User) EmailExist() bool {
 	var id int64
 	err := mysql.Db.QueryRow("SELECT id FROM user WHERE email=?", u.Email).Scan(&id)
 	if err != nil {
-		return false
+		return true
 	}
 	return id != 0
 }

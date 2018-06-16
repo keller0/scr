@@ -11,6 +11,7 @@ import (
 )
 
 // NewCode create a new code snippet
+// 200 400 500
 func NewCode(c *gin.Context) {
 	// get user id from jwt
 	var err error
