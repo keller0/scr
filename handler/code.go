@@ -36,6 +36,7 @@ func NewCode(c *gin.Context) {
 }
 
 // GetCodePart return part of code
+// 200 403 404
 func GetCodePart(c *gin.Context) {
 	id := c.Param("codeid")
 	part := c.Param("part")
@@ -57,8 +58,13 @@ func GetCodePart(c *gin.Context) {
 	case "/content":
 		content, err := code.GetCodeContentByID()
 		if err != nil {
+			// maybe the code need auth
 			fmt.Println(part, err.Error())
-			c.JSON(http.StatusNotFound, gin.H{"error": err})
+			if err == model.ErrNotAllowed {
+				c.JSON(http.StatusForbidden, gin.H{"error": err})
+			} else {
+				c.JSON(http.StatusNotFound, gin.H{"error": err})
+			}
 			c.Abort()
 			return
 		}
@@ -67,7 +73,11 @@ func GetCodePart(c *gin.Context) {
 		codeRes, err := code.GetCodeByID()
 		if err != nil {
 			fmt.Println(part, err.Error())
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			if err == model.ErrNotAllowed {
+				c.JSON(http.StatusForbidden, gin.H{"error": err})
+			} else {
+				c.JSON(http.StatusNotFound, gin.H{"error": err})
+			}
 			c.Abort()
 			return
 		}
