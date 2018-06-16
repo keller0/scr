@@ -26,12 +26,13 @@ func CheckPasswordHash(password, hash string) bool {
 
 // JwtGenToken gnerate new token add claims
 // return signed string and nil if succeed.
-func JwtGenToken(userID int64, userName string, exp int64) (string, error) {
+func JwtGenToken(userID int64, userName, runToken string, exp int64) (string, error) {
 	token := jwt_lib.New(jwt_lib.GetSigningMethod("HS256"))
 	// Set some claims
 	token.Claims = jwt_lib.MapClaims{
 		"id":       userID,
 		"username": userName,
+		"runtoken": runToken,
 		"exp":      exp,
 	}
 	// Sign and get the complete encoded token as a string
