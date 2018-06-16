@@ -13,8 +13,6 @@ import (
 var (
 	reUsername          = regexp.MustCompile("^[a-zA-Z0-9-_.]+$")
 	errUserLoginInvalid = errors.New("Invalid User Login")
-	// ErrLoginWrongPass wrong password
-	ErrLoginWrongPass = errors.New("Wrong Password")
 )
 
 // User user struct in database
@@ -90,9 +88,9 @@ func (u *User) Login() (string, error) {
 			return "", err
 		}
 		return tokenString, nil
-	} else {
-		return "", ErrLoginWrongPass
 	}
+
+	return "", ErrLoginWrongPass
 }
 
 // New create a new user account
