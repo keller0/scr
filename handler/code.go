@@ -165,9 +165,7 @@ func UpdateCode(c *gin.Context) {
 	var code model.Code
 	var tokenUserID int64
 	if err = c.ShouldBindJSON(&code); err == nil {
-		fmt.Println(code)
 		tokenUserID, err = util.JwtGetUserID(c.Request)
-		fmt.Println(tokenUserID)
 		if err != nil {
 			// anonymous user can not update code
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
