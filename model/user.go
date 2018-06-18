@@ -83,7 +83,7 @@ func (u *User) Login() (string, error) {
 	}
 
 	if util.CheckPasswordHash(u.Password, password) {
-		exp := time.Now().Add(time.Hour * 1).Unix()
+		exp := time.Now().Add(time.Hour * 24 * 15).Unix()
 		tokenString, err := util.JwtGenToken(id, u.Username, runToken, exp)
 		if err != nil {
 			return "", err
