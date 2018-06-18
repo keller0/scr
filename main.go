@@ -40,6 +40,7 @@ func main() {
 
 		public.GET("/code/:codeid/*part", handle.GetCodePart)
 		public.POST("/code", handle.NewCode)
+		public.PUT("/code", handle.UpdateCode)
 
 		// get user's code list
 		public.GET("/user/:userid/code", handle.GetOnesCode)

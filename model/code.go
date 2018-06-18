@@ -215,3 +215,36 @@ func CodeExist(id int64) bool {
 
 	return count != 0
 }
+
+// UpdateCode if anonymous the userid is 0, save as null
+func (c *Code) UpdateCode(tokenUserID int64) error {
+
+	var theuser int64
+	var err error
+	err = mysql.Db.QueryRow("SELECT IFNULL(user_id, -1) FROM code WHERE id=? ",
+		c.ID).Scan(&theuser)
+	if err != nil {
+		return err
+	}
+	if theuser != tokenUserID {
+		return ErrNotAllowed
+	}
+
+	updateCode, err := mysql.Db.Prepare("UPDATE code " +
+		"SET title=?, description=?, filename=?, content=?, public=?, user_id=?, update_at=now() WHERE id=?")
+
+	if err != nil {
+		log.Fatal(err.Error())
+		return err
+	}
+
+	if c.UserID == 0 {
+		_, err = updateCode.Exec(c.Title, c.Description, c.FileName, c.Content, c.Public, nil, c.ID)
+	} else if c.UserID == tokenUserID {
+		_, err = updateCode.Exec(c.Title, c.Description, c.FileName, c.Content, c.Public, c.UserID, c.ID)
+	} else {
+		return ErrNotAllowed
+	}
+
+	return err
+}
