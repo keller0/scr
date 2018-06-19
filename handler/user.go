@@ -4,6 +4,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"regexp"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -75,33 +76,46 @@ func CheckUserExist(c *gin.Context) {
 func Register(c *gin.Context) {
 	var err error
 	var registJSON register
-	if err = c.ShouldBindJSON(&registJSON); err == nil {
-		var user model.User
-		user.Username = registJSON.User
-		user.Email = registJSON.Email
-
-		if user.UsernameExist() {
-			// return if username allready exists
-			c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
-			c.Abort()
-			return
-		}
-		if user.EmailExist() {
-			// return if username allready exists
-			c.JSON(http.StatusConflict, gin.H{"error": "email already exists"})
-			c.Abort()
-			return
-		}
-
-		user.Password = registJSON.Password
-		e := user.New()
-		if e != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "registration failed"})
-		} else {
-			c.String(http.StatusOK, "registration succeeded")
-		}
-	} else {
+	re := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	reName := regexp.MustCompile("^[a-zA-Z0-9]+$")
+	err = c.ShouldBindJSON(&registJSON)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Abort()
+		return
 	}
 
+	if !re.MatchString(registJSON.Email) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "email is not valid."})
+		c.Abort()
+		return
+	}
+	if !reName.MatchString(registJSON.User) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "username is not valid."})
+		c.Abort()
+		return
+	}
+	var user model.User
+	user.Username = registJSON.User
+	user.Email = registJSON.Email
+
+	if user.UsernameExist() {
+		// return if username allready exists
+		c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
+		c.Abort()
+		return
+	}
+	if user.EmailExist() {
+		// return if username allready exists
+		c.JSON(http.StatusConflict, gin.H{"error": "email already exists"})
+		c.Abort()
+		return
+	}
+
+	user.Password = registJSON.Password
+	e := user.New()
+	if e != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "registration failed"})
+	}
+	c.String(http.StatusOK, "registration succeeded")
 }

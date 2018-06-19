@@ -51,23 +51,23 @@ func (u *User) Validate() error {
 // UsernameExist check if username already existed
 func (u *User) UsernameExist() bool {
 
-	var id int64
-	err := mysql.Db.QueryRow("SELECT id FROM user WHERE username=?", u.Username).Scan(&id)
+	var count int64
+	err := mysql.Db.QueryRow("SELECT count(id) FROM user WHERE username=?", u.Username).Scan(&count)
 	if err != nil {
 		return true
 	}
-	return id != 0
+	return count != 0
 }
 
 // EmailExist check if email already existed
 func (u *User) EmailExist() bool {
 
-	var id int64
-	err := mysql.Db.QueryRow("SELECT id FROM user WHERE email=?", u.Email).Scan(&id)
+	var count int64
+	err := mysql.Db.QueryRow("SELECT count(id) FROM user WHERE email=?", u.Email).Scan(&count)
 	if err != nil {
 		return true
 	}
-	return id != 0
+	return count != 0
 }
 
 // Login check user password and return jwt
