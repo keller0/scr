@@ -1,18 +1,11 @@
 package model
 
 import (
-	"errors"
 	"log"
-	"regexp"
 	"time"
 
 	"github.com/keller0/yxi-back/db"
 	"github.com/keller0/yxi-back/util"
-)
-
-var (
-	reUsername          = regexp.MustCompile("^[a-zA-Z0-9-_.]+$")
-	errUserLoginInvalid = errors.New("Invalid User Login")
 )
 
 // User user struct in database
@@ -32,20 +25,6 @@ type User struct {
 	UpdateAt string `json:"updateat"`
 
 	Admin bool `json:"admin"`
-}
-
-// Validate validates the required fields and formats.
-func (u *User) Validate() error {
-	switch {
-	case len(u.Username) == 0:
-		return errUserLoginInvalid
-	case len(u.Username) > 250:
-		return errUserLoginInvalid
-	case !reUsername.MatchString(u.Username):
-		return errUserLoginInvalid
-	default:
-		return nil
-	}
 }
 
 // UsernameExist check if username already existed

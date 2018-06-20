@@ -38,19 +38,19 @@ func Login(c *gin.Context) {
 
 		if !user.UsernameExist() {
 			// return if username allready exists
-			c.JSON(http.StatusNotFound, gin.H{"error": "user dose not exists"})
+			c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["UserNotExist"]})
 			c.Abort()
 			return
 		}
 		tokenString, err := user.Login()
 		if err != nil {
 			log.Println(err.Error())
-			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
+			c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Wrong Password"]})
 		} else {
 			c.JSON(http.StatusOK, gin.H{"token": tokenString})
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
 	}
 
 }
@@ -62,12 +62,12 @@ func CheckUserExist(c *gin.Context) {
 		var user model.User
 		user.Username = username
 		if user.UsernameExist() {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
+			c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["User Alread Exist"]})
 		} else {
 			c.JSON(http.StatusOK, gin.H{"error": ""})
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
 	}
 }
 
@@ -76,22 +76,16 @@ func CheckUserExist(c *gin.Context) {
 func Register(c *gin.Context) {
 	var err error
 	var registJSON register
-	re := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-	reName := regexp.MustCompile("^[a-zA-Z0-9]+$")
+
 	err = c.ShouldBindJSON(&registJSON)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
 		c.Abort()
 		return
 	}
 
-	if !re.MatchString(registJSON.Email) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "email is not valid."})
-		c.Abort()
-		return
-	}
-	if !reName.MatchString(registJSON.User) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "username is not valid."})
+	if es := registJSON.Validate(); es != "" {
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": es})
 		c.Abort()
 		return
 	}
@@ -101,13 +95,13 @@ func Register(c *gin.Context) {
 
 	if user.UsernameExist() {
 		// return if username allready exists
-		c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
+		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["User Alread Exist"]})
 		c.Abort()
 		return
 	}
 	if user.EmailExist() {
 		// return if username allready exists
-		c.JSON(http.StatusConflict, gin.H{"error": "email already exists"})
+		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["Email Alread Exist"]})
 		c.Abort()
 		return
 	}
@@ -115,7 +109,23 @@ func Register(c *gin.Context) {
 	user.Password = registJSON.Password
 	e := user.New()
 	if e != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "registration failed"})
+		c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["ServerErr Register Failed"]})
 	}
 	c.String(http.StatusOK, "registration succeeded")
+}
+
+func (r *register) Validate() string {
+	re := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	reName := regexp.MustCompile("^[a-zA-Z0-9]+$")
+	switch {
+	case !re.MatchString(r.Email):
+		return responseErr["Email is not valid"]
+	case !reName.MatchString(r.User):
+		return responseErr["Username is not valid"]
+	case len(r.User) > 15:
+		return responseErr["Username is too long"]
+	case len(r.Password) < 9:
+		return responseErr["Password is too short"]
+	}
+	return ""
 }

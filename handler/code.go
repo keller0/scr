@@ -27,12 +27,12 @@ func NewCode(c *gin.Context) {
 		}
 		if err != nil {
 			fmt.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "create code failed"})
+			c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["ServerErr Create Code Failed"]})
 		} else {
 			c.String(http.StatusOK, "create code succeeded")
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
 	}
 }
 
@@ -44,7 +44,7 @@ func GetCodePart(c *gin.Context) {
 	codeid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		fmt.Println(codeid, err.Error())
-		c.JSON(http.StatusNotFound, gin.H{"error": id + " dose not exist"})
+		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
 		c.Abort()
 		return
 	}
@@ -62,9 +62,9 @@ func GetCodePart(c *gin.Context) {
 			// maybe the code need auth
 			fmt.Println(part, err.Error())
 			if err == model.ErrNotAllowed {
-				c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+				c.JSON(http.StatusForbidden, gin.H{"errNumber": responseErr["Get Code Not Allowed"]})
 			} else {
-				c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+				c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
 			}
 			c.Abort()
 			return
@@ -75,16 +75,16 @@ func GetCodePart(c *gin.Context) {
 		if err != nil {
 			fmt.Println(part, err.Error())
 			if err == model.ErrNotAllowed {
-				c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+				c.JSON(http.StatusForbidden, gin.H{"errNumber": responseErr["Get Code Not Allowed"]})
 			} else {
-				c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+				c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
 			}
 			c.Abort()
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"code": codeRes})
 	default:
-		c.JSON(http.StatusNotFound, gin.H{"error": id + " dose not exist"})
+		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
 	}
 
 }
@@ -101,7 +101,8 @@ func GetOnesCode(c *gin.Context) {
 	case "private":
 		userid, err := util.JwtGetUserID(c.Request)
 		if err != nil {
-			c.AbortWithError(http.StatusForbidden, err)
+			c.JSON(http.StatusForbidden, gin.H{"errNumber": responseErr["Get Code Not Allowed"]})
+			c.Abort()
 			return
 		}
 		var code model.Code
@@ -110,7 +111,8 @@ func GetOnesCode(c *gin.Context) {
 	case "all":
 		userid, err := util.JwtGetUserID(c.Request)
 		if err != nil {
-			c.AbortWithError(http.StatusForbidden, err)
+			c.JSON(http.StatusForbidden, gin.H{"errNumber": responseErr["Get Code Not Allowed"]})
+			c.Abort()
 			return
 		}
 		var code model.Code
@@ -121,7 +123,7 @@ func GetOnesCode(c *gin.Context) {
 	}
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["ServerErr Get Code Failed"]})
 		c.Abort()
 		return
 	}
@@ -141,13 +143,13 @@ func GetCode(c *gin.Context) {
 	case "popular":
 		codes, err = model.GetPouplarCode()
 	default:
-		c.JSON(http.StatusBadRequest, gin.H{"error": "type not supported"})
+		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
 		c.Abort()
 		return
 	}
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["ServerErr Get Code Failed"]})
 		c.Abort()
 		return
 	}
@@ -168,7 +170,7 @@ func UpdateCode(c *gin.Context) {
 		tokenUserID, err = util.JwtGetUserID(c.Request)
 		if err != nil {
 			// anonymous user can not update code
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Update Code Not Allowed"]})
 			c.Abort()
 			return
 		}
@@ -176,15 +178,15 @@ func UpdateCode(c *gin.Context) {
 		if err != nil {
 			fmt.Println(err)
 			if err == model.ErrNotAllowed {
-				c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+				c.JSON(http.StatusForbidden, gin.H{"errNumber": responseErr["Update Code Not Allowed"]})
 			} else {
-				c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+				c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
 			}
 		} else {
 			c.String(http.StatusOK, "update code succeeded")
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
 	}
 
 }
