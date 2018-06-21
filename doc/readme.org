@@ -1,0 +1,17 @@
+** Request and Response
+
+| Methord | url                      | 200 Response                              | Description           |
+|---------+--------------------------+-------------------------------------------+-----------------------|
+| GET     | /code?type               | JSON {"codes": [...]}                     | Get code list by type |
+| GET     | /code/{id}/{part}        | part=='/content' JSON{"content": content} | Get code content      |
+|         |                          | part=='/' JSON{"code": codeobject}        | Get code info         |
+| POST    | /code                    | String "create code succeeded"            | Create code           |
+| PUT     | /code                    | String "update code succeeded"            | Update code           |
+| GET     | /user/{userid}/code?type | JSON {"codes": [...]}                     | Get ones code list    |
+| POST    | /user                    | String "registration succeeded"           | Register              |
+| POST    | /login                   | JSON {"token": xxxxxx}                    | Login                 |
+| PUT     | /likes/{codeid}          | String "like code succeeded"              | Like code             |
+
+
+** All Non-200 response will bring a json: {"errNumber": "xxx"}
+   "xxx" could found in [[https://github.com/keller0/yxi-back/blob/master/handler/hErrors.go][handler/hErrors.go]].
