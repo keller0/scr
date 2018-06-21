@@ -90,6 +90,7 @@ func GetCodePart(c *gin.Context) {
 }
 
 // GetOnesCode return ones code
+// 200 403 500
 func GetOnesCode(c *gin.Context) {
 	var err error
 	var codes []model.CodeRes

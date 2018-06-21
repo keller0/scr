@@ -17,32 +17,33 @@ func LikeCode(c *gin.Context) {
 	codeid, err := strconv.ParseInt(codeID, 10, 64)
 	if err != nil {
 		fmt.Println(codeid, err.Error())
-		c.JSON(http.StatusNotFound, gin.H{"error": codeID + " dose not exist"})
+		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["Bad Requset"]})
 		c.Abort()
 		return
 	}
 	// check if logined
 	userid, err := util.JwtGetUserID(c.Request)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "please login"})
+		c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Like Code Not Allowed"]})
 		c.Abort()
 		return
 	}
 	// check code exist
 	if !model.CodeExist(codeid) {
-		c.JSON(http.StatusNotFound, gin.H{"error": codeID + " code dose not exist"})
+		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
 		c.Abort()
 		return
 	}
 	// check if already liked
 	if model.Liked(userid, codeid) {
-		c.JSON(http.StatusConflict, gin.H{"error": "already liked"})
+		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["Already Liked"]})
 		c.Abort()
 		return
 	}
 	err = model.Like(userid, codeid)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		fmt.Println(userid, codeid, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["ServerErr Like Code Failed"]})
 		c.Abort()
 		return
 	}

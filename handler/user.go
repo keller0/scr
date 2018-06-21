@@ -62,7 +62,7 @@ func CheckUserExist(c *gin.Context) {
 		var user model.User
 		user.Username = username
 		if user.UsernameExist() {
-			c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["User Alread Exist"]})
+			c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["User Already Exist"]})
 		} else {
 			c.JSON(http.StatusOK, gin.H{"error": ""})
 		}
@@ -95,13 +95,13 @@ func Register(c *gin.Context) {
 
 	if user.UsernameExist() {
 		// return if username allready exists
-		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["User Alread Exist"]})
+		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["User Already Exist"]})
 		c.Abort()
 		return
 	}
 	if user.EmailExist() {
 		// return if username allready exists
-		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["Email Alread Exist"]})
+		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["Email Already Exist"]})
 		c.Abort()
 		return
 	}
