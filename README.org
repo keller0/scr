@@ -2,4 +2,18 @@
 
 [[https://travis-ci.org/keller0/yxi-back][https://travis-ci.org/keller0/yxi-back.svg?branch=master]]
 
-** docs could found in [[https://github.com/keller0/yxi-back/blob/master/doc/][here]]
+** api docs could found in [[https://github.com/keller0/yxi-back/blob/master/doc/][here]]
+** build it
+   1. edit Dockerfile set up your environment variables
+      |-----------------------------------------+-------------------|
+      | Vairable                                | Description       |
+      |-----------------------------------------+-------------------|
+      | ENV YXI_BACK_PORT=":8090"               | yxi listen port   |
+      | ENV GIN_MODE="debug"                    | gin mode          |
+      | ENV GIN_LOG_PATH="/var/log/yxi/api.log" |                   |
+      | ENV YXI_BACK_KEY="secretkey"            | used for sign jwt |
+      | ENV YXI_BACK_MYSQL_ADDR="mariadb:3306"  |                   |
+      | ENV YXI_BACK_MYSQL_NAME="yxi"           |                   |
+      | ENV YXI_BACK_MYSQL_USER="root"          |                   |
+      | ENV YXI_BACK_MYSQL_PASS="111"           |                   |
+   2. run `make buildapi`
