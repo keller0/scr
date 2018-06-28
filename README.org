@@ -2,7 +2,6 @@
 
 [[https://travis-ci.org/keller0/yxi-back][https://travis-ci.org/keller0/yxi-back.svg?branch=master]]
 
-** api docs could found in [[https://github.com/keller0/yxi-back/blob/master/doc/][here]]
 ** build it
    1. edit Dockerfile set up your environment variables
       |-----------------------------------------+-------------------|
@@ -17,3 +16,4 @@
       | ENV YXI_BACK_MYSQL_USER="root"          |                   |
       | ENV YXI_BACK_MYSQL_PASS="111"           |                   |
    2. run `make buildapi`
+** api docs could found in [[https://github.com/keller0/yxi-back/blob/master/doc/][here]]

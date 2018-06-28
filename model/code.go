@@ -89,7 +89,6 @@ func GetPouplarCode(offset string) ([]CodeRes, error) {
 
 // this does not contain code's content
 func getCodes(where, orderby, order, limit, offset string) ([]CodeRes, error) {
-	fmt.Println(where, orderby, order, limit, offset)
 	selOut, err := mysql.Db.Query(
 		"SELECT code.id, IFNULL(user.username,\"" + anonymousUser + "\") username, " +
 			"code.title, code.description, code.lang, code.filename," +

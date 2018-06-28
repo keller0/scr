@@ -1,17 +1,146 @@
 ** Request and Response
 
-| Methord | url                      | 200 Response                              | Description           |
-|---------+--------------------------+-------------------------------------------+-----------------------|
-| GET     | /code?type               | JSON {"codes": [...]}                     | Get code list by type |
-| GET     | /code/{id}/{part}        | part=='/content' JSON{"content": content} | Get code content      |
-|         |                          | part=='/' JSON{"code": codeobject}        | Get code info         |
-| POST    | /code                    | String "create code succeeded"            | Create code           |
-| PUT     | /code                    | String "update code succeeded"            | Update code           |
-| GET     | /user/{userid}/code?type | JSON {"codes": [...]}                     | Get ones code list    |
-| POST    | /user                    | String "registration succeeded"           | Register              |
-| POST    | /login                   | JSON {"token": xxxxxx}                    | Login                 |
-| PUT     | /likes/{codeid}          | String "like code succeeded"              | Like code             |
+| Methord | url                          | 200 Response                              | Description           |
+|---------+------------------------------+-------------------------------------------+-----------------------|
+| GET     | /code?type&off               | JSON {"codes": [...]}                     | Get code list by type |
+| GET     | /code/{id}/{part}            | part=='/content' JSON{"content": content} | Get code content      |
+|         |                              | part=='/' JSON{"code": codeobject}        | Get code info         |
+| POST    | /code                        | String "create code succeeded"            | Create code           |
+| PUT     | /code                        | String "update code succeeded"            | Update code           |
+| GET     | /user/{userid}/code?type&off | JSON {"codes": [...]}                     | Get ones code list    |
+| POST    | /user                        | String "registration succeeded"           | Register              |
+| POST    | /login                       | JSON {"token": xxxxxx}                    | Login                 |
+| PUT     | /likes/{codeid}              | String "like code succeeded"              | Like code             |
 
 
 ** All Non-200 response will bring a json: {"errNumber": "xxx"}
    "xxx" could found in [[https://github.com/keller0/yxi-back/blob/master/handler/hErrors.go][handler/hErrors.go]].
+
+** example
+*** get code list, no code content
+#+BEGIN_SRC
+curl -X GET \
+  'http://localhost:8090/v1/code?type=public&off=17' |json_pp
+{
+   "codes" : [
+      {
+         "content" : "",
+         "public" : true,
+         "description" : "hello world",
+         "title" : "Untitled",
+         "lang" : "c",
+         "username" : "anonymous",
+         "filename" : "main.c",
+         "createat" : "2018-06-15 07:58:20",
+         "updateat" : "2018-06-15 07:58:20",
+         "likes" : 0,
+         "id" : 31
+      }
+   ]
+}
+#+END_SRC
+
+*** get code content, private code need auth
+**** all
+#+BEGIN_SRC
+curl -X GET \
+  http://localhost:8090/v1/code/31/ | json_pp
+{
+   "code" : {
+      "username" : "anonymous",
+      "content" : "#include<stdio.h>\n\nint main()\n{\n    printf(\"Hello, World!\\n\");\n}",
+      "updateat" : "2018-06-15 07:58:20",
+      "description" : "",
+      "public" : true,
+      "id" : 31,
+      "likes" : 0,
+      "createat" : "2018-06-15 07:58:20",
+      "title" : "Untitled",
+      "filename" : "main.c",
+      "lang" : "c"
+   }
+}
+
+#+END_SRC
+**** only content
+#+BEGIN_SRC
+curl -X GET \
+  http://localhost:8090/v1/code/31/content | json_pp
+{
+   "content" : "#include<stdio.h>\n\nint main()\n{\n    printf(\"Hello, World!\\n\");\n}"
+}
+#+END_SRC
+*** get ones code list, no code content
+**** public does not need auth
+#+BEGIN_SRC
+curl -X GET \
+  'http://localhost:8090/v1/user/27/code?type=public' | json_pp
+{
+   "codes" : [
+      {
+         "createat" : "2018-06-15 11:28:20",
+         "lang" : "c",
+         "username" : "cai",
+         "id" : 33,
+         "description" : "api design",
+         "content" : "",
+         "filename" : "main.c",
+         "title" : "杂志社",
+         "likes" : 1,
+         "updateat" : "2018-06-18 16:40:13",
+         "public" : true
+      }
+   ]
+}
+#+END_SRC
+**** private/all need auth
+#+BEGIN_SRC
+curl -X GET \
+  'http://localhost:8090/v1/user/27/code?type=all' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzE0OTc4MjEsImlkIjoyNywicnVudG9rZW4iOiJrR25vakJDNDUxaW5JU3cqUjJsc3dORV5nenUjZylvRVJTYzdVOXU3IiwidXNlcm5hbWUiOiJjYWkifQ.U4L0yxezPV42Dg09xdlIv1EZIOR4DAzn2rO8CySQajw' | json_pp
+{
+   "codes" : [
+      {
+         "lang" : "java",
+         "likes" : 0,
+         "updateat" : "2018-06-18 16:39:22",
+         "id" : 43,
+         "filename" : "Hi.java",
+         "description" : "",
+         "createat" : "2018-06-18 07:55:29",
+         "title" : "aaaaaaaaaaaaaaaaaaaa",
+         "public" : false,
+         "username" : "cai",
+         "content" : ""
+      }
+   ]
+}
+#+END_SRC
+*** like code
+#+BEGIN_SRC
+curl -X PUT \
+  http://localhost:8090/v1/likes/50 \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzE0OTc2NTQsImlkIjoyNywicnVudG9rZW4iOiJrR25vakJDNDUxaW5JU3cqUjJsc3dORV5nenUjZylvRVJTYzdVOXU3IiwidXNlcm5hbWUiOiJjYWkifQ.nQQxPhh61xnUsCF5E_h-PfTPt8ezoYfrgU2BQbUGAQU'
+like code succeeded
+#+END_SRC
+*** login
+#+BEGIN_SRC
+curl -X POST \
+  http://localhost:8090/v1/login \
+  -d '{
+        "user":"cai",
+        "password":"123"
+}'
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzE0OTc4NDYsImlkIjoyNywicnVudG9rZW4iOiJrR25vakJDNDUxaW5JU3cqUjJsc3dORV5nenUjZylvRVJTYzdVOXU3IiwidXNlcm5hbWUiOiJjYWkifQ.wUZPCxAJUlz69lwrPFJ_97gWlgcD1tu682jJkQfcPOo"}
+#+END_SRC
+*** register
+#+BEGIN_SRC
+curl -X POST \
+  http://localhost:8090/v1/user \
+  -d '{
+"user":"cai",
+"password":"123",
+"email":"1@qwe.com"
+}'
+registration succeeded
+#+END_SRC
