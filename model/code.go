@@ -59,43 +59,45 @@ type CodeRes struct {
 var anonymousUser = "anonymous"
 
 // GetOnesCode get one user's code
-func (c *Code) GetOnesCode() ([]CodeRes, error) {
+func (c *Code) GetOnesCode(offset string) ([]CodeRes, error) {
 
 	userid := strconv.Itoa(int(c.UserID))
-	return getCodes("code.user_id="+userid, "code.create_at", "desc", "15")
+	return getCodes("code.user_id="+userid, "code.create_at", "desc", "15", offset)
 }
 
 // GetOnesPublicCode get one user's public code
-func GetOnesPublicCode(userid string) ([]CodeRes, error) {
-	return getCodes("code.public=true and code.user_id="+userid, "code.create_at", "desc", "15")
+func GetOnesPublicCode(userid, offset string) ([]CodeRes, error) {
+	return getCodes("code.public=true and code.user_id="+userid, "code.create_at", "desc", "15", offset)
 }
 
 // GetOnesPrivateCode get one user's private code
-func (c *Code) GetOnesPrivateCode() ([]CodeRes, error) {
+func (c *Code) GetOnesPrivateCode(offset string) ([]CodeRes, error) {
 
 	userid := strconv.Itoa(int(c.UserID))
-	return getCodes("code.public=false and code.user_id="+userid, "code.create_at", "desc", "15")
+	return getCodes("code.public=false and code.user_id="+userid, "code.create_at", "desc", "15", offset)
 }
 
 // GetAllPublicCode get all public code from code table
-func GetAllPublicCode() ([]CodeRes, error) {
-	return getCodes("code.public=true", "code.create_at", "desc", "15")
+func GetAllPublicCode(offset string) ([]CodeRes, error) {
+	return getCodes("code.public=true", "code.create_at", "desc", "15", offset)
 }
 
 // GetPouplarCode get all populer code from code table
-func GetPouplarCode() ([]CodeRes, error) {
-	return getCodes("code.public=true", "likes", "desc", "15")
+func GetPouplarCode(offset string) ([]CodeRes, error) {
+	return getCodes("code.public=true", "likes", "desc", "15", offset)
 }
 
 // this does not contain code's content
-func getCodes(where, orderby, order, limit string) ([]CodeRes, error) {
+func getCodes(where, orderby, order, limit, offset string) ([]CodeRes, error) {
+	fmt.Println(where, orderby, order, limit, offset)
 	selOut, err := mysql.Db.Query(
 		"SELECT code.id, IFNULL(user.username,\"" + anonymousUser + "\") username, " +
 			"code.title, code.description, code.lang, code.filename," +
 			"code.create_at, code.update_at, code.public, count(likes.code_id) likes " +
 			"FROM code left join user on code.user_id=user.id " +
 			"left join likes on likes.code_id = code.id " +
-			"where " + where + " group by code.id ORDER BY " + orderby + " " + order + " LIMIT " + limit)
+			"where " + where + " group by code.id ORDER BY " + orderby + " " + order +
+			" LIMIT " + limit + " OFFSET " + offset)
 	if err != nil {
 		return nil, err
 	}

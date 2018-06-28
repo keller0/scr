@@ -96,9 +96,10 @@ func GetOnesCode(c *gin.Context) {
 	var codes []model.CodeRes
 	userid := c.Params.ByName("userid")
 	codetype := c.DefaultQuery("type", "public")
+	offsite := c.DefaultQuery("off", "0")
 	switch codetype {
 	case "public":
-		codes, err = model.GetOnesPublicCode(userid)
+		codes, err = model.GetOnesPublicCode(userid, offsite)
 	case "private":
 		userid, err := util.JwtGetUserID(c.Request)
 		if err != nil {
@@ -108,7 +109,7 @@ func GetOnesCode(c *gin.Context) {
 		}
 		var code model.Code
 		code.UserID = userid
-		codes, err = code.GetOnesPrivateCode()
+		codes, err = code.GetOnesPrivateCode(offsite)
 	case "all":
 		userid, err := util.JwtGetUserID(c.Request)
 		if err != nil {
@@ -118,9 +119,9 @@ func GetOnesCode(c *gin.Context) {
 		}
 		var code model.Code
 		code.UserID = userid
-		codes, err = code.GetOnesCode()
+		codes, err = code.GetOnesCode(offsite)
 	default:
-		codes, err = model.GetAllPublicCode()
+		codes, err = model.GetAllPublicCode(offsite)
 	}
 
 	if err != nil {
@@ -134,15 +135,17 @@ func GetOnesCode(c *gin.Context) {
 }
 
 // GetCode return code list depend on param.type
+// 200 404 500
 func GetCode(c *gin.Context) {
 	var err error
 	var codes []model.CodeRes
 	codetype := c.DefaultQuery("type", "public")
+	offsite := c.DefaultQuery("off", "0")
 	switch codetype {
 	case "public":
-		codes, err = model.GetAllPublicCode()
+		codes, err = model.GetAllPublicCode(offsite)
 	case "popular":
-		codes, err = model.GetPouplarCode()
+		codes, err = model.GetPouplarCode(offsite)
 	default:
 		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
 		c.Abort()
