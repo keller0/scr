@@ -27,9 +27,19 @@ services:
         constraints: [node.role == manager]
     networks:
       - webnet
+  elasticsearch:
+    image: elasticsearch
+    volumes:
+      - "es-search-db:/usr/share/elasticsearch/data"
+
+  kibana:
+    image: kibana
+    ports:
+      - 5601:5601
 
 networks:
   webnet:
 
 volumes:
   api-db:
+  es-search-db:
