@@ -25,15 +25,31 @@ services:
         constraints: [node.role == manager]
     networks:
       - webnet
+
   elasticsearch:
-    image: elasticsearch
+    image: keller0/yxi-es:6.3.0
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
-      - "es-search-db:/usr/share/elasticsearch/data"
+      - "es-db:/usr/share/elasticsearch/data"
+    networks:
+      - elk
 
   kibana:
-    image: kibana
+    image: keller0/yxi-kibana:6.3.0
     ports:
       - 5601:5601
+    networks:
+      - elk
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:6.3.0
+    volumes:
+      - "nginx-log:/var/log/nginx"
+      - "./config/filebeat.yml:/usr/share/filebeat/filebeat.yml"
+    networks:
+      - webnet
+      - elk
 
   nginx:
     image: nginx
@@ -49,9 +65,10 @@ services:
 
 networks:
   webnet:
+  elk:
 
 volumes:
   api-db:
-  es-search-db:
+  es-db:
   api-log:
   nginx-log:
