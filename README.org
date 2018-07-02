@@ -16,4 +16,4 @@
       | ENV YXI_BACK_MYSQL_USER="root"          |                   |
       | ENV YXI_BACK_MYSQL_PASS="111"           |                   |
    2. run `make buildapi`
-** api docs could found in [[https://github.com/keller0/yxi-back/blob/master/doc/][here]]
+** api docs could found in [[https://github.com/keller0/yxi-back/blob/master/docs/][here]]
