@@ -29,14 +29,36 @@ services:
   elasticsearch:
     image: keller0/yxi-es:6.3.0
     environment:
+      - cluster.name=es-cluster
+      - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     volumes:
-      - "es-db:/usr/share/elasticsearch/data"
+      - "esdata1:/usr/share/elasticsearch/data"
+    networks:
+      - elk
+
+  elasticsearch2:
+    image: keller0/yxi-es:6.3.0
+    environment:
+      - cluster.name=es-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - "esdata2:/usr/share/elasticsearch/data"
     networks:
       - elk
 
   kibana:
-    image: keller0/yxi-kibana:6.3.0
+    image: keller0/kibana:6.3.0
     ports:
       - 5601:5601
     networks:
@@ -69,6 +91,7 @@ networks:
 
 volumes:
   api-db:
-  es-db:
+  esdata1:
+  esdata2:
   api-log:
   nginx-log:
