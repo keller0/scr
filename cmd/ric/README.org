@@ -1,0 +1,7 @@
+* Run In Contianer
+  
+  this program will run custermer's code in docker containers, get
+  payload from container's stdin, print custermer's result to
+  container's stdout(include their stdout, stderr and exit code). If
+  RIC itself got error, those err will print to container's stderr and
+  exit with non 0 value.
