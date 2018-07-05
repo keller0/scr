@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/keller0/yxi-back/db"
+	"github.com/keller0/yxi-back/db/mysql"
 	"github.com/keller0/yxi-back/util"
 )
 

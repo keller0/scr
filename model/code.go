@@ -5,7 +5,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/keller0/yxi-back/db"
+	"github.com/keller0/yxi-back/db/mysql"
 )
 
 // Code for every code snippet

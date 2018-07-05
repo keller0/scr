@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/keller0/yxi-back/db"
+	"github.com/keller0/yxi-back/db/mysql"
 )
 
 // Liked check if a user allread liked "a" code
