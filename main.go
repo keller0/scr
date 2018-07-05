@@ -48,6 +48,13 @@ func main() {
 		public.POST("/user", handle.Register)
 		public.POST("/login", handle.Login)
 
+		run := public.Group("/run")
+		{
+			run.GET("/", handle.AllVersion)
+			run.GET("/:language", handle.VersionsOfOne)
+			run.POST("/:language", handle.RunCode)
+			run.POST("/:language/:version", handle.RunCode)
+		}
 	}
 
 	authorized := r.Group("/v1")
