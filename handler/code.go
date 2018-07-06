@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/keller0/yxi-back/internal/token"
 	"github.com/keller0/yxi-back/model"
-	"github.com/keller0/yxi-back/util"
 )
 
 // NewCode create a new code snippet
@@ -17,7 +17,7 @@ func NewCode(c *gin.Context) {
 	var err error
 	var code model.Code
 	if err = c.ShouldBindJSON(&code); err == nil {
-		userid, err := util.JwtGetUserID(c.Request)
+		userid, err := token.JwtGetUserID(c.Request)
 		if err != nil {
 			// anonymous
 			err = code.NewAnonymous()
@@ -53,7 +53,7 @@ func GetCodePart(c *gin.Context) {
 
 	// get user id encase the codeid's code is private
 	// the error now can be ignored, because publlic code did not need auth
-	code.UserID, _ = util.JwtGetUserID(c.Request)
+	code.UserID, _ = token.JwtGetUserID(c.Request)
 
 	switch part {
 	case "/content":
@@ -101,7 +101,7 @@ func GetOnesCode(c *gin.Context) {
 	case "public":
 		codes, err = model.GetOnesPublicCode(userid, offsite)
 	case "private":
-		userid, err := util.JwtGetUserID(c.Request)
+		userid, err := token.JwtGetUserID(c.Request)
 		if err != nil {
 			c.JSON(http.StatusForbidden, gin.H{"errNumber": responseErr["Get Code Not Allowed"]})
 			c.Abort()
@@ -111,7 +111,7 @@ func GetOnesCode(c *gin.Context) {
 		code.UserID = userid
 		codes, err = code.GetOnesPrivateCode(offsite)
 	case "all":
-		userid, err := util.JwtGetUserID(c.Request)
+		userid, err := token.JwtGetUserID(c.Request)
 		if err != nil {
 			c.JSON(http.StatusForbidden, gin.H{"errNumber": responseErr["Get Code Not Allowed"]})
 			c.Abort()
@@ -171,7 +171,7 @@ func UpdateCode(c *gin.Context) {
 	var code model.Code
 	var tokenUserID int64
 	if err = c.ShouldBindJSON(&code); err == nil {
-		tokenUserID, err = util.JwtGetUserID(c.Request)
+		tokenUserID, err = token.JwtGetUserID(c.Request)
 		if err != nil {
 			// anonymous user can not update code
 			c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Update Code Not Allowed"]})

@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/keller0/yxi-back/internal/token"
 	"github.com/keller0/yxi-back/model"
-	"github.com/keller0/yxi-back/util"
 )
 
 // LikeCode create
@@ -22,7 +22,7 @@ func LikeCode(c *gin.Context) {
 		return
 	}
 	// check if logined
-	userid, err := util.JwtGetUserID(c.Request)
+	userid, err := token.JwtGetUserID(c.Request)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Like Code Not Allowed"]})
 		c.Abort()

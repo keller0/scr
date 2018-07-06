@@ -5,7 +5,8 @@ import (
 	"time"
 
 	"github.com/keller0/yxi-back/db/mysql"
-	"github.com/keller0/yxi-back/util"
+	"github.com/keller0/yxi-back/internal/crypto"
+	"github.com/keller0/yxi-back/internal/token"
 )
 
 // User user struct in database
@@ -61,9 +62,9 @@ func (u *User) Login() (string, error) {
 		return "", err
 	}
 
-	if util.CheckPasswordHash(u.Password, password) {
+	if crypto.CheckPasswordHash(u.Password, password) {
 		exp := time.Now().Add(time.Hour * 24 * 15).Unix()
-		tokenString, err := util.JwtGenToken(id, u.Username, runToken, exp)
+		tokenString, err := token.JwtGenToken(id, u.Username, runToken, exp)
 		if err != nil {
 			return "", err
 		}
@@ -76,8 +77,8 @@ func (u *User) Login() (string, error) {
 // New create a new user account
 func (u *User) New() error {
 
-	var runToken = util.RandStringRunes(40)
-	passwordhashed, err := util.HashPassword(u.Password)
+	var runToken = crypto.RandString(40)
+	passwordhashed, err := crypto.HashPassword(u.Password)
 	if err != nil {
 		log.Println(err.Error())
 		return err

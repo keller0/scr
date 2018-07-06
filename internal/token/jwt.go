@@ -1,28 +1,17 @@
-package util
+package token
 
 import (
 	"errors"
-	"math/rand"
 	"net/http"
 	"os"
 
 	jwt_lib "github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var (
 	authSecret = os.Getenv("YXI_BACK_KEY")
-
-	letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()")
 )
-
-// CheckPasswordHash check if passwoed match bcrypt hash.
-// return true if match.
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
-}
 
 // JwtGenToken gnerate new token add claims
 // return signed string and nil if succeed.
@@ -70,19 +59,4 @@ func JwtGetUserID(r *http.Request) (int64, error) {
 	}
 
 	return -1, errors.New("get id failed")
-}
-
-// HashPassword use bcrypt hash user's password
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 11)
-	return string(bytes), err
-}
-
-// RandStringRunes return n bits rand string
-func RandStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }
