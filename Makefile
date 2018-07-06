@@ -15,7 +15,7 @@ test:
 .PHONY: build
 build:deps fmt
 	govendor sync
-	GOOS=linux GOARCH=amd64 go build -ldflags '-w -s' -o main
+	GOOS=linux GOARCH=amd64 go build -ldflags '-w -s' -o main cmd/apiServer/main.go
 
 vet:
 	go vet $(PACKAGES)
@@ -38,7 +38,7 @@ buildapi:
 dbuild:
 	docker run -it --rm -v `pwd`:/go/src/github.com/keller0/yxi-back \
 	-w /go/src/github.com/keller0/yxi-back golang:1.8 \
-	go build -ldflags '-w -s' -o main
+	go build -ldflags '-w -s' -o main cmd/apiServer/main.go
 
 buildimages:
 	cd scripts && ./build_images.sh
