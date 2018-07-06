@@ -82,7 +82,7 @@ func GetAllPublicCode(offset string) ([]CodeRes, error) {
 	return getCodes("code.public=true", "code.create_at", "desc", "15", offset)
 }
 
-// GetPouplarCode get all populer code from code table
+// GetPouplarCode get all popular code from code table
 func GetPouplarCode(offset string) ([]CodeRes, error) {
 	return getCodes("code.public=true", "likes", "desc", "15", offset)
 }

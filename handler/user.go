@@ -37,7 +37,7 @@ func Login(c *gin.Context) {
 		user.Password = loginJSON.Password
 
 		if !user.UsernameExist() {
-			// return if username allready exists
+			// return if username already exists
 			c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["UserNotExist"]})
 			c.Abort()
 			return
@@ -94,13 +94,13 @@ func Register(c *gin.Context) {
 	user.Email = registJSON.Email
 
 	if user.UsernameExist() {
-		// return if username allready exists
+		// return if username already exists
 		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["User Already Exist"]})
 		c.Abort()
 		return
 	}
 	if user.EmailExist() {
-		// return if username allready exists
+		// return if username already exists
 		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["Email Already Exist"]})
 		c.Abort()
 		return
