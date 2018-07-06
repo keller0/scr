@@ -36,13 +36,13 @@ buildapi:
 	docker build -t keller0/yxi-api .
 
 dbuild:
-	docker run -it --rm -v `pwd`:/go/src/github.com/keller0/yxi-back -w /go/src/github.com/keller0/yxi-back golang:1.8  go build -ldflags '-w -s' -o main
+	docker run -it --rm -v `pwd`:/go/src/github.com/keller0/yxi-back \
+	-w /go/src/github.com/keller0/yxi-back golang:1.8 \
+	go build -ldflags '-w -s' -o main
 
 buildimages:
 	cd scripts && ./build_images.sh
 
-tDB:
-	docker run --rm -d -p 3306:3306 -v `pwd`/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=111 mariadb:10.3
 clean:
 	rm ./main
 
