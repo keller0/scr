@@ -1,4 +1,4 @@
-package handle
+package docker
 
 import (
 	"bytes"
@@ -24,6 +24,17 @@ type PayLoad struct {
 	L string     `json:"language"`
 }
 
+type argument struct {
+	Compile []string `json:"compile"`
+	Run     []string `json:"run"`
+}
+
+// file type
+type oneFile struct {
+	Name    string `json:"name"`
+	Content string `json:"content"`
+}
+
 // Worker store all infomations about the run job
 type Worker struct {
 	Image       string // images name
@@ -37,23 +48,43 @@ type Worker struct {
 	ricErr bytes.Buffer
 }
 
-// Load payload to worker's stdin
+// LoadInfo Load payload to worker's stdin
 // language and image info from request url
-func (w *Worker) loadInfo(ar *Arun, language, image string) error {
+func (w *Worker) LoadInfo(p *PayLoad, language, image string) error {
 
-	var payload PayLoad
-	payload.F = ar.Files
-	payload.A = ar.Argument
-	payload.I = ar.Stdin
-	payload.L = language
+	p.L = language
 
-	js, err := json.Marshal(payload)
+	js, err := json.Marshal(p)
 	if err != nil {
 		return err
 	}
 	w.ricIn = bytes.NewBuffer(js)
 	w.Image = image
 	return nil
+}
+
+// Run start a worker
+func (w *Worker) Run() (string, string, error) {
+
+	containerJSON, err := w.createContainer()
+	defer func() {
+		err = w.cli.ContainerRemove(w.ctx, w.tmpID, types.ContainerRemoveOptions{})
+		fmt.Println("Container", w.tmpID, "removed")
+		if err != nil {
+			fmt.Println("failed to remove container ", w.tmpID)
+		}
+	}()
+
+	if err != nil {
+		return "", "", err
+	}
+	w.containerID = containerJSON.ID
+	err = w.attachContainer()
+	if err != nil && w.ricErr.Len() == 0 {
+		return "", "", err
+	}
+	// if container did not get error return ric's result
+	return w.ricOut.String(), w.ricErr.String(), nil
 }
 
 func (w *Worker) createContainer() (*types.ContainerJSON, error) {

@@ -6,27 +6,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/docker/docker/api/types"
 	"github.com/gin-gonic/gin"
+	"github.com/keller0/yxi-back/internal/docker"
 )
-
-// Arun - a run request from api client
-type Arun struct {
-	Files    []*oneFile `json:"files"`
-	Argument *argument  `json:"argument"`
-	Stdin    string     `json:"stdin"`
-}
-
-type argument struct {
-	Compile []string `json:"compile"`
-	Run     []string `json:"run"`
-}
-
-// file type
-type oneFile struct {
-	Name    string `json:"name"`
-	Content string `json:"content"`
-}
 
 type result struct {
 	UserResult *uResult `json:"userResult"`
@@ -57,13 +39,13 @@ func RunCode(c *gin.Context) {
 		}
 	}
 
-	var ar Arun
+	var ar docker.PayLoad
 	if err := c.ShouldBindJSON(&ar); err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 	// use docker to run ric
-	res, err := ar.workerRun(strings.ToLower(language), version)
+	res, err := workerRun(ar, strings.ToLower(language), version)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 	} else {
@@ -71,39 +53,22 @@ func RunCode(c *gin.Context) {
 	}
 }
 
-func (ar *Arun) workerRun(language, version string) (*result, error) {
+func workerRun(ar docker.PayLoad, language, version string) (*result, error) {
 
-	var w Worker
-	var err error
+	var w docker.Worker
+
 	// load info to worker
-	err = w.loadInfo(ar, language, V2Images(language, version))
+	err := w.LoadInfo(&ar, language, V2Images(language, version))
 	if err != nil {
 		return nil, err
 	}
 
-	containerJSON, err := w.createContainer()
-	defer func() {
-		err = w.cli.ContainerRemove(w.ctx, w.tmpID, types.ContainerRemoveOptions{})
-		fmt.Println("Container", w.tmpID, "removed")
-		if err != nil {
-			fmt.Println("failed to remove container ", w.tmpID)
-		}
-	}()
-
+	userResult, taskError, err := w.Run()
 	if err != nil {
 		return nil, err
 	}
-	w.containerID = containerJSON.ID
-	err = w.attachContainer()
-	if err != nil && w.ricErr.Len() == 0 {
-		return nil, err
-	}
-
-	userResult := w.ricOut.String()
-	taskError := w.ricErr.String()
 
 	var res result
-
 	e := json.Unmarshal([]byte(userResult), &res.UserResult)
 	if e != nil {
 		fmt.Println(e)
