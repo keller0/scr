@@ -14,14 +14,14 @@ var supportedLanguage = []string{
 	"php",
 	"python",
 	"bash",
-	"golang",
+	"go",
 }
 
 var cLanguage = []string{
 	"c",
 	"cpp",
 	"java",
-	"golang",
+	"go",
 }
 
 func goRun(workDir, stdin string, args ...string) (string, string, error) {
@@ -119,7 +119,7 @@ func (ar *PayLoad) compileAndRun() {
 
 		stdOut, stdErr, exitErr = goRun(workDir, ar.I, "java", javaClassName(fname))
 		returnStdOut(stdOut, stdErr, errToStr(exitErr))
-	case ar.L == "golang":
+	case ar.L == "go":
 		if len(ar.A.Compile) == 0 {
 			ar.A.Compile = []string{"go", "build"}
 		}

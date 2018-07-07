@@ -60,7 +60,7 @@ var VersionMap = map[string][]string{
 	"bash":   {"4.4"},
 	"php":    {"7.2.5"},
 	"java":   {"openjdk-8"},
-	"golang": {"1.8", "1.10"},
+	"go":     {"1.8", "1.10"},
 }
 
 var imageMap = map[string]string{
@@ -73,8 +73,8 @@ var imageMap = map[string]string{
 	"python-3.5":     "python:3.5",
 	"python-2.7":     "python:2.7-slim",
 	"java-openjdk-8": "java:8",
-	"golang-1.8":     "golang:1.8",
-	"golang-1.10":    "golang:1.10",
+	"go-1.8":         "golang:1.8",
+	"go-1.10":        "golang:1.10",
 }
 
 // V2Images return image name for one version of language
