@@ -34,7 +34,7 @@ for i in "${images[@]}"
 do
     echo "---------start building keller0/$i---------"
     build_image $i
-    #docker build -t "keller0/$i" .
+    docker build -t "keller0/$i" .
     echo "---------build keller0/$i succeed---------"
 done
 
