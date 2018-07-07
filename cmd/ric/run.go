@@ -14,12 +14,14 @@ var supportedLanguage = []string{
 	"php",
 	"python",
 	"bash",
+	"golang",
 }
 
 var cLanguage = []string{
 	"c",
 	"cpp",
 	"java",
+	"golang",
 }
 
 func goRun(workDir, stdin string, args ...string) (string, string, error) {
@@ -44,7 +46,7 @@ func (ar *PayLoad) Run() {
 		ar.A.Run = []string{ar.L}
 	}
 	args := ar.A.Run[0:]
-	workDir := ""
+	var workDir string
 	if len(ar.F) != 0 {
 		absFilePaths, err := writeFiles(ar.F)
 		if err != nil {
@@ -116,6 +118,30 @@ func (ar *PayLoad) compileAndRun() {
 		}
 
 		stdOut, stdErr, exitErr = goRun(workDir, ar.I, "java", javaClassName(fname))
+		returnStdOut(stdOut, stdErr, errToStr(exitErr))
+	case ar.L == "golang":
+		if len(ar.A.Compile) == 0 {
+			ar.A.Compile = []string{"go", "build"}
+		}
+		binName := "main"
+
+		args := append(ar.A.Compile, []string{"-o", binName}...)
+		args = append(args, absFilePaths...)
+		// compile
+		stdOut, stdErr, exitErr := goRun(workDir, "", args...)
+		if exitErr != nil {
+			if _, ok := exitErr.(*exec.ExitError); ok {
+				returnStdOut(stdOut, stdErr, errToStr(exitErr))
+				exitF("Compile Error")
+			}
+			exitF("Ric goRun Failed")
+		}
+
+		// run
+		binPath := filepath.Join(workDir, binName)
+		args = append(ar.A.Run, binPath)
+
+		stdOut, stdErr, exitErr = goRun(workDir, ar.I, args...)
 		returnStdOut(stdOut, stdErr, errToStr(exitErr))
 
 	default:

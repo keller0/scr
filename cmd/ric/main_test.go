@@ -20,9 +20,7 @@ func TestRunC(t *testing.T) {
 		"compile":[
 			"gcc"
 		],
-		"run" :[
-		
-		]
+		"run" :[]
 	}
  }
 `
@@ -84,4 +82,29 @@ func TestRunJava(t *testing.T) {
 	}
 	ar.compileAndRun()
 
+}
+
+func TestRunGo(t *testing.T) {
+
+	j := `
+{
+	"files" : [
+		{
+		"name":"hi.go",
+		"content":"package main\n\nimport \"fmt\"\nfunc main() {\n    fmt.Println(\"hello, world\")\n}"
+		}
+	],
+	"language" : "golang",
+	"argument" : {
+		"compile":[],
+		"run" :[]
+	}
+ }
+`
+	var ar PayLoad
+	err := json.Unmarshal([]byte(j), &ar)
+	if err != nil {
+		t.Error(err)
+	}
+	ar.compileAndRun()
 }
