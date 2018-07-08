@@ -94,12 +94,37 @@ func TestRunGo(t *testing.T) {
 		"content":"package main\n\nimport \"fmt\"\nfunc main() {\n    fmt.Println(\"hello, world\")\n}"
 		}
 	],
-	"language" : "golang",
+	"language" : "go",
 	"argument" : {
 		"compile":[],
 		"run" :[]
 	}
  }
+`
+	var ar PayLoad
+	err := json.Unmarshal([]byte(j), &ar)
+	if err != nil {
+		t.Error(err)
+	}
+	ar.compileAndRun()
+}
+
+func TestRunScala(t *testing.T) {
+
+	j := `
+{
+	"files" : [
+		{
+		"name":"Hi.scala",
+		"content":"object Hi {\n    def main(args: Array[String]) {\n        println(\"Hello, world!\")\n    }\n}"
+		}
+	],
+	"language" : "scala",
+	"argument" : {
+		"compile":[],
+		"run" :[]
+	}
+}
 `
 	var ar PayLoad
 	err := json.Unmarshal([]byte(j), &ar)

@@ -8,20 +8,22 @@ import (
 )
 
 var supportedLanguage = []string{
+	"bash",
 	"c",
 	"cpp",
+	"go",
 	"java",
 	"php",
 	"python",
-	"bash",
-	"go",
+	"scala",
 }
 
 var cLanguage = []string{
 	"c",
 	"cpp",
-	"java",
 	"go",
+	"java",
+	"scala",
 }
 
 func goRun(workDir, stdin string, args ...string) (string, string, error) {
@@ -101,9 +103,13 @@ func (ar *PayLoad) compileAndRun() {
 		stdOut, stdErr, exitErr = goRun(workDir, ar.I, args...)
 		returnStdOut(stdOut, stdErr, errToStr(exitErr))
 
-	case ar.L == "java":
+	case ar.L == "java" || ar.L == "scala":
 		if len(ar.A.Compile) == 0 {
-			ar.A.Compile = []string{"javac"}
+			if ar.L == "java" {
+				ar.A.Compile = []string{"javac"}
+			} else if ar.L == "scala" {
+				ar.A.Compile = []string{"scalac"}
+			}
 		}
 
 		args := append(ar.A.Compile, absFilePaths...)
@@ -117,8 +123,17 @@ func (ar *PayLoad) compileAndRun() {
 			exitF("Compile Error")
 		}
 
-		stdOut, stdErr, exitErr = goRun(workDir, ar.I, "java", javaClassName(fname))
+		if len(ar.A.Run) == 0 {
+			if ar.L == "java" {
+				ar.A.Run = []string{"java"}
+			} else if ar.L == "scala" {
+				ar.A.Run = []string{"scala"}
+			}
+		}
+		args = append(ar.A.Run, javaClassName(fname))
+		stdOut, stdErr, exitErr = goRun(workDir, ar.I, args...)
 		returnStdOut(stdOut, stdErr, errToStr(exitErr))
+
 	case ar.L == "go":
 		if len(ar.A.Compile) == 0 {
 			ar.A.Compile = []string{"go", "build"}
