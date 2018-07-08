@@ -62,6 +62,7 @@ var VersionMap = map[string][]string{
 	"java":   {"openjdk-8"},
 	"go":     {"1.8", "1.10"},
 	"scala":  {"2.12"},
+	"perl":   {"5.28"},
 }
 
 var imageMap = map[string]string{
@@ -77,6 +78,7 @@ var imageMap = map[string]string{
 	"go-1.8":         "golang:1.8",
 	"go-1.10":        "golang:1.10",
 	"scala-2.12":     "scala:2.12",
+	"perl-5.28":      "perl:5.28",
 }
 
 // V2Images return image name for one version of language
