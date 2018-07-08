@@ -61,20 +61,22 @@ var VersionMap = map[string][]string{
 	"php":    {"7.2.5"},
 	"java":   {"openjdk-8"},
 	"go":     {"1.8", "1.10"},
+	"scala":  {"2.12"},
 }
 
 var imageMap = map[string]string{
 	"bash-4.4":       "gcc:8.1", // for now
 	"c-gcc8.1":       "gcc:8.1",
-	"c-gcc7.1":       "gcc:7.3",
+	"c-gcc7.3":       "gcc:7.3",
 	"cpp-g++8.1":     "gcc:8.1",
-	"cpp-g++7.1":     "gcc:7.3",
+	"cpp-g++7.3":     "gcc:7.3",
 	"php-7.2.5":      "php:7.2.5",
 	"python-3.5":     "python:3.5",
 	"python-2.7":     "python:2.7-slim",
 	"java-openjdk-8": "java:8",
 	"go-1.8":         "golang:1.8",
 	"go-1.10":        "golang:1.10",
+	"scala-2.12":     "scala:2.12",
 }
 
 // V2Images return image name for one version of language
