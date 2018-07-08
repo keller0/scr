@@ -13,10 +13,11 @@ var supportedLanguage = []string{
 	"cpp",
 	"go",
 	"java",
+	"perl",
 	"php",
 	"python",
 	"scala",
-	"perl",
+	"ruby",
 }
 
 var cLanguage = []string{

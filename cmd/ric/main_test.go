@@ -158,3 +158,28 @@ func TestRunPerl(t *testing.T) {
 	}
 	ar.Run()
 }
+
+func TestRunRuby(t *testing.T) {
+
+	j := `
+{
+	"files" : [
+		{
+		"name":"Hi.rb",
+		"content":"#!/usr/bin/env ruby\n\nputs 'Hello world'"
+		}
+	],
+	"language" : "ruby",
+	"argument" : {
+		"compile":[],
+		"run" :[]
+	}
+}
+`
+	var ar PayLoad
+	err := json.Unmarshal([]byte(j), &ar)
+	if err != nil {
+		t.Error(err)
+	}
+	ar.Run()
+}
