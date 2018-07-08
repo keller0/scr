@@ -6,6 +6,7 @@ images=("bash:4.4" \
     "python:2.7-slim" "python:3.5" \
     "php:7.2.5" \
     "java:8" \
+    "scala:2.12" \
     "golang:1.8" "golang:1.10")
 
 # build ric
@@ -19,6 +20,9 @@ build_image () {
     if [ $1 = "bash:4.4" ]
     then
         echo "FROM gcc:8.1" > "Dockerfile"
+    elif [ $1 = "scala:2.12" ]
+    then
+        echo "FROM bigtruedata/scala:2.12" > "Dockerfile"
     else
         echo "FROM $1" > "Dockerfile"
     fi
