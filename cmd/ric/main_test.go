@@ -133,3 +133,28 @@ func TestRunScala(t *testing.T) {
 	}
 	ar.compileAndRun()
 }
+
+func TestRunPerl(t *testing.T) {
+
+	j := `
+{
+	"files" : [
+		{
+		"name":"Hi.pl",
+		"content":"#!/usr/bin/perl\n\nuse strict;\nuse warnings;\n\nprint \"Hello, World!\\n\";"
+		}
+	],
+	"language" : "perl",
+	"argument" : {
+		"compile":[],
+		"run" :[]
+	}
+}
+`
+	var ar PayLoad
+	err := json.Unmarshal([]byte(j), &ar)
+	if err != nil {
+		t.Error(err)
+	}
+	ar.Run()
+}

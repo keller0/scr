@@ -16,6 +16,7 @@ var supportedLanguage = []string{
 	"php",
 	"python",
 	"scala",
+	"perl",
 }
 
 var cLanguage = []string{
