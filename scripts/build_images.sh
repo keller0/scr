@@ -1,14 +1,16 @@
 #!/bin/bash
 set -e
 
-images=("bash:4.4" \
+images=(
+    "bash:4.4" \
     "gcc:8.1" "gcc:7.3" \
-    "python:2.7-slim" "python:3.5" \
-    "php:7.2.5" \
+    "golang:1.8" "golang:1.10" \
     "java:8" \
+    "perl:5.28" \
+    "php:7.2.5" \
+    "python:2.7-slim" "python:3.5" \
     "scala:2.12" \
-    "perl:5.28"
-    "golang:1.8" "golang:1.10")
+    )
 
 # build ric
 cd ../cmd/ric && make dbuild
