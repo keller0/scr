@@ -7,6 +7,7 @@ images=("bash:4.4" \
     "php:7.2.5" \
     "java:8" \
     "scala:2.12" \
+    "perl:5.28"
     "golang:1.8" "golang:1.10")
 
 # build ric
