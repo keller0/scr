@@ -7,6 +7,10 @@ var responseErr = map[string]string{
 	"Username is not valid":   "4002", // 用户名不合法
 	"Password is too short":   "4003", // 密码太短了
 	"Username is too long":    "4004", // 用户名太长了
+	"Language not support":    "4005", // 语言不支持
+	"Payload not valid":       "4006", // 代码格式错误
+	"Run code error":          "4007", // 运行代码错误
+	"Time out":                "4080", // 代码超时
 	"User Already Exist":      "4090", // 用户已经存在了
 	"Email Already Exist":     "4091", // 邮箱地址已经存在了
 	"Already Liked":           "4092", // 已经点过赞了

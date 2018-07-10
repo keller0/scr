@@ -27,27 +27,36 @@ func RunCode(c *gin.Context) {
 	version := c.Params.ByName("version")
 	// check language an version
 	if !LanIsSupported(language) {
-		c.String(http.StatusBadRequest, language+" is not support")
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Language not support"]})
 		return
 	}
 	if version == "" {
 		version = VersionMap[language][0]
 	} else {
 		if !LVIsSupported(language, version) {
-			c.String(http.StatusBadRequest, language+" "+version+" is not support")
+			c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Language not support"]})
 			return
 		}
 	}
 
 	var ar docker.PayLoad
 	if err := c.ShouldBindJSON(&ar); err != nil {
-		c.String(http.StatusBadRequest, err.Error())
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Payload not valid"]})
 		return
 	}
 	// use docker to run ric
 	res, err := workerRun(ar, strings.ToLower(language), version)
 	if err != nil {
-		c.String(http.StatusInternalServerError, err.Error())
+		if err == docker.ErrWorkerTimeOut {
+			c.JSON(http.StatusRequestTimeout, gin.H{"errNumber": responseErr["Time out"]})
+		} else {
+			c.JSON(http.StatusInternalServerError,
+				gin.H{
+					"errNumber": responseErr["Run code error"],
+					"msg":       err.Error(),
+				})
+		}
 	} else {
 		c.JSON(http.StatusOK, res)
 	}

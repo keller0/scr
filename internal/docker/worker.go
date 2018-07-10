@@ -48,6 +48,10 @@ type Worker struct {
 	ricErr bytes.Buffer
 }
 
+var (
+	ErrWorkerTimeOut = errors.New("Time out")
+)
+
 // LoadInfo Load payload to worker's stdin
 // language and image info from request url
 func (w *Worker) LoadInfo(p *PayLoad, language, image string) error {
@@ -83,7 +87,7 @@ func (w *Worker) Run() (string, string, error) {
 	if err != nil && w.ricErr.Len() == 0 {
 		return "", "", err
 	}
-	// if container did not get error return ric's result
+
 	return w.ricOut.String(), w.ricErr.String(), nil
 }
 
@@ -197,6 +201,11 @@ func (w *Worker) attachContainer() (err error) {
 
 	case err = <-waitCh:
 		fmt.Println("Container", w.containerID, "wait finished with", err)
+
+	case <-time.After(10 * time.Second):
+		w.killContainer(w.containerID, waitCh)
+		err = ErrWorkerTimeOut
+		fmt.Println("Container", w.containerID, "time out")
 	}
 	return
 }
@@ -241,7 +250,7 @@ func (w *Worker) waitForContainer() error {
 func (w *Worker) killContainer(id string, waitCh chan error) (err error) {
 	for {
 
-		fmt.Println("Container", id, " Killing ...")
+		fmt.Println("Container", id, "Killing ...")
 		w.cli.ContainerKill(w.ctx, id, "SIGKILL")
 
 		// Wait for signal that container were killed
