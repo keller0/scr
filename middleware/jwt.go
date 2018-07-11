@@ -14,9 +14,10 @@ var (
 // JwtAuth only alow requests with jwt
 func JwtAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ok, err := token.JwtOK(c.Request)
-		if err != nil && !ok {
+		id, err := token.JwtGetUserID(c.Request)
+		if err != nil {
 			c.AbortWithError(401, err)
 		}
+		c.Set("uid", id)
 	}
 }
