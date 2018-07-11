@@ -10,7 +10,7 @@ images=(
     "php:7.2.5" \
     "python:2.7-slim" "python:3.5" \
     "ruby:2.5" \
-    "scala:2.12" \
+    #"scala:2.12" \
     )
 
 # build ric

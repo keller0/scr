@@ -61,7 +61,6 @@ var VersionMap = map[string][]string{
 	"php":    {"7.2.5"},
 	"java":   {"openjdk-8"},
 	"go":     {"1.8", "1.10"},
-	"scala":  {"2.12"},
 	"perl":   {"5.28"},
 	"ruby":   {"2.5"},
 }
@@ -78,7 +77,6 @@ var imageMap = map[string]string{
 	"java-openjdk-8": "java:8",
 	"go-1.8":         "golang:1.8",
 	"go-1.10":        "golang:1.10",
-	"scala-2.12":     "scala:2.12",
 	"perl-5.28":      "perl:5.28",
 	"ruby-2.5":       "ruby:2.5",
 }
