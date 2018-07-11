@@ -52,8 +52,13 @@ func main() {
 		{
 			run.GET("/", handle.AllVersion)
 			run.GET("/:language", handle.VersionsOfOne)
-			run.POST("/:language", handle.RunCode)
-			run.POST("/:language/:version", handle.RunCode)
+
+			rQueue := run.Group("/")
+			rQueue.Use(mid.PublicLimit())
+			{
+				rQueue.POST("/:language", handle.RunCode)
+				rQueue.POST("/:language/:version", handle.RunCode)
+			}
 		}
 	}
 
