@@ -1,14 +1,8 @@
 package mid
 
 import (
-	"os"
-
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/yxi-back/internal/token"
-)
-
-var (
-	authSecret = os.Getenv("YXI_BACK_KEY")
 )
 
 // JwtAuth only alow requests with jwt
