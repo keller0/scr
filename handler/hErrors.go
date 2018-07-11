@@ -9,7 +9,6 @@ var responseErr = map[string]string{
 	"Username is too long":    "4004", // 用户名太长了
 	"Language not support":    "4005", // 语言不支持
 	"Payload not valid":       "4006", // 代码格式错误
-	"Run code error":          "4007", // 运行代码错误
 	"Time out":                "4080", // 代码超时
 	"User Already Exist":      "4090", // 用户已经存在了
 	"Email Already Exist":     "4091", // 邮箱地址已经存在了
@@ -25,4 +24,5 @@ var responseErr = map[string]string{
 	"ServerErr Create Code Failed": "5002", // 创建代码失败 服务器错误
 	"ServerErr Get Code Failed":    "5003", // 获取代码失败
 	"ServerErr Like Code Failed":   "5004", // 点赞失败
+	"Run code error":               "5005", // 运行代码错误
 }
