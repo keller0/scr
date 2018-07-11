@@ -37,6 +37,9 @@ COPY ./run /home/ric/run
 RUN chmod +x /home/ric/run
 
 USER ric
+WORKDIR /home/ric/
+CMD ["/home/ric/run"]
+ENTRYPOINT "/home/ric/run"
 EOF
 }
 
