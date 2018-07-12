@@ -291,6 +291,12 @@
 			"revisionTime": "2018-05-09T19:01:05Z"
 		},
 		{
+			"checksumSHA1": "c6pbpF7eowwO59phRTpF8cQ80Z0=",
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "f35b8ab0b5a2cef36673838d662e249dd9c94686",
+			"revisionTime": "2018-05-06T18:05:49Z"
+		},
+		{
 			"checksumSHA1": "z1jqX/kf16YO8Rd7bCtY+p4+TEs=",
 			"path": "github.com/ugorji/go/codec",
 			"revision": "02537d3a3e32ef636a53519265d211bd208ca488",
