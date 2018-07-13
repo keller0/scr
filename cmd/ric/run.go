@@ -19,6 +19,7 @@ var supportedLanguage = []string{
 	"python",
 	"scala",
 	"ruby",
+	"rust",
 }
 
 var cLanguage = []string{
@@ -27,6 +28,7 @@ var cLanguage = []string{
 	"go",
 	"java",
 	"scala",
+	"rust",
 }
 
 func goRun(workDir, stdin string, args ...string) (string, string, error) {
@@ -81,12 +83,15 @@ func (ar *PayLoad) compileAndRun() {
 	workDir := filepath.Dir(absFilePaths[0])
 
 	switch {
-	case ar.L == "c" || ar.L == "cpp":
+	case ar.L == "c" || ar.L == "cpp" || ar.L == "rust":
 		if len(ar.A.Compile) == 0 {
-			if ar.L == "c" {
+			switch ar.L {
+			case "c":
 				ar.A.Compile = []string{"gcc"}
-			} else {
+			case "cpp":
 				ar.A.Compile = []string{"g++"}
+			case "rust":
+				ar.A.Compile = []string{"rustc"}
 			}
 		}
 		binName := "a.out"

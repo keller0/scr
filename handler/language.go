@@ -64,6 +64,7 @@ var VersionMap = map[string][]string{
 	"haskell": {"ghc-8"},
 	"perl":    {"5.28"},
 	"ruby":    {"2.5"},
+	"rust":    {"1.27"},
 }
 
 var imageMap = map[string]string{
@@ -81,6 +82,7 @@ var imageMap = map[string]string{
 	"haskell-ghc-8":  "haskell:8",
 	"perl-5.28":      "perl:5.28",
 	"ruby-2.5":       "ruby:2.5",
+	"rust-1.27":      "rust:1.27",
 }
 
 // V2Images return image name for one version of language
