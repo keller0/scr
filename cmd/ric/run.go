@@ -12,6 +12,7 @@ var supportedLanguage = []string{
 	"c",
 	"cpp",
 	"go",
+	"haskell",
 	"java",
 	"perl",
 	"php",
@@ -47,7 +48,11 @@ func goRun(workDir, stdin string, args ...string) (string, string, error) {
 func (ar *PayLoad) Run() {
 
 	if len(ar.A.Run) == 0 {
-		ar.A.Run = []string{ar.L}
+		if ar.L == "haskell" {
+			ar.A.Run = []string{"runhaskell"}
+		} else {
+			ar.A.Run = []string{ar.L}
+		}
 	}
 	args := ar.A.Run[0:]
 	var workDir string

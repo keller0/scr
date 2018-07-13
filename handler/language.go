@@ -56,13 +56,14 @@ var VersionMap = map[string][]string{
 		"g++8.1",
 		"g++7.3",
 	},
-	"python": {"3.5"},
-	"bash":   {"4.4"},
-	"php":    {"7.2.5"},
-	"java":   {"openjdk-8"},
-	"go":     {"1.8", "1.10"},
-	"perl":   {"5.28"},
-	"ruby":   {"2.5"},
+	"python":  {"3.5"},
+	"bash":    {"4.4"},
+	"php":     {"7.2.5"},
+	"java":    {"openjdk-8"},
+	"go":      {"1.8", "1.10"},
+	"haskell": {"ghc-8"},
+	"perl":    {"5.28"},
+	"ruby":    {"2.5"},
 }
 
 var imageMap = map[string]string{
@@ -77,6 +78,7 @@ var imageMap = map[string]string{
 	"java-openjdk-8": "java:8",
 	"go-1.8":         "golang:1.8",
 	"go-1.10":        "golang:1.10",
+	"haskell-ghc-8":  "haskell:8",
 	"perl-5.28":      "perl:5.28",
 	"ruby-2.5":       "ruby:2.5",
 }
