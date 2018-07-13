@@ -3,17 +3,33 @@
 [[https://travis-ci.org/keller0/yxi-back][https://travis-ci.org/keller0/yxi-back.svg?branch=master]]
 
 ** build it
-   1. edit Dockerfile set up your environment variables
-      |-----------------------------------------+-------------------|
-      | Vairable                                | Description       |
-      |-----------------------------------------+-------------------|
-      | ENV YXI_BACK_PORT=":8090"               | yxi listen port   |
-      | ENV GIN_MODE="debug"                    | gin mode          |
-      | ENV GIN_LOG_PATH="/var/log/yxi/api.log" |                   |
-      | ENV YXI_BACK_KEY="secretkey"            | used for sign jwt |
-      | ENV YXI_BACK_MYSQL_ADDR="mariadb:3306"  |                   |
-      | ENV YXI_BACK_MYSQL_NAME="yxi"           |                   |
-      | ENV YXI_BACK_MYSQL_USER="root"          |                   |
-      | ENV YXI_BACK_MYSQL_PASS="111"           |                   |
-   2. run `make buildapi`
+*** dependents
+	1. docker
+	2. make
+*** build images
+**** build ric images
+#+BEGIN_SRC
+make buildimages
+#+END_SRC
+
+**** edit Dockerfile set up your environment variables
+
+|---------------------+------------------------+--------------------|
+| Vairable            | Example                | Description        |
+|---------------------+------------------------+--------------------|
+| YXI_BACK_PORT       | ":8090"                | yxi listen port    |
+| GIN_MODE            | "debug"                | gin mode           |
+| GIN_LOG_PATH        | "/var/log/yxi/api.log" | gin log path       |
+| YXI_BACK_KEY        | "secretkey"            | used for sign jwt  |
+| YXI_BACK_MYSQL_ADDR | "localhost:3306"       | mysql/mariadb addr |
+| YXI_BACK_MYSQL_NAME | "yxi"                  | db name            |
+| YXI_BACK_MYSQL_USER | "root"                 | db user name       |
+| YXI_BACK_MYSQL_PASS | "111"                  | db password        |
+
+
+**** build api
+#+BEGIN_SRC
+make buildapi
+#+END_SRC
+
 ** api docs could found in [[https://github.com/keller0/yxi-back/blob/master/docs/][here]]
