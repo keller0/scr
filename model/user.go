@@ -84,6 +84,7 @@ func (u *User) New() error {
 		return err
 	}
 	insUser, err := mysql.Db.Prepare("INSERT INTO user(username, password, email, run_token) values(?,?,?,?)")
+	defer insUser.Close()
 	if err != nil {
 		log.Println(err.Error())
 		return err

@@ -100,6 +100,7 @@ func getCodes(where, orderby, order, limit, offset string) ([]CodeRes, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer selOut.Close()
 
 	codes := []CodeRes{}
 	for selOut.Next() {
@@ -180,6 +181,7 @@ func (c *Code) New() error {
 	insCode, err := mysql.Db.Prepare("INSERT INTO code" +
 		"(user_id, title, description, lang, filename, content, public) " +
 		"values(?,?,?,?,?,?,?)")
+	defer insCode.Close()
 	if err != nil {
 		log.Fatal(err.Error())
 		return err
@@ -195,6 +197,7 @@ func (c *Code) NewAnonymous() error {
 	insCode, err := mysql.Db.Prepare("INSERT INTO code" +
 		"(title, description, lang, filename, content, public) " +
 		"values(?,?,?,?,?,?)")
+	defer insCode.Close()
 	if err != nil {
 		log.Fatal(err.Error())
 		return err
@@ -233,7 +236,7 @@ func (c *Code) UpdateCode(tokenUserID int64) error {
 
 	updateCode, err := mysql.Db.Prepare("UPDATE code " +
 		"SET title=?, description=?, filename=?, content=?, public=?, user_id=?, update_at=now() WHERE id=?")
-
+	defer updateCode.Close()
 	if err != nil {
 		log.Fatal(err.Error())
 		return err

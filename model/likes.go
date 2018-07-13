@@ -24,6 +24,7 @@ func Liked(userID, CodeID int64) bool {
 func Like(userID, CodeID int64) error {
 
 	insUser, err := mysql.Db.Prepare("INSERT INTO likes(user_id, code_id) values(?,?)")
+	defer insUser.Close()
 	if err != nil {
 		log.Println(err.Error())
 		return err
