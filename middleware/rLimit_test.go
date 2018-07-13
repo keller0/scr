@@ -18,10 +18,10 @@ func TestLimit(t *testing.T) {
 
 	r.POST("/c", func(c *gin.Context) {
 		time.Sleep(3 * time.Second)
-		c.String(200, "fuck")
+		c.String(200, "foo")
 	})
 	r.POST("/u", func(c *gin.Context) {
-		c.String(200, "fuck")
+		c.String(200, "foo")
 	})
 
 	wg := &sync.WaitGroup{}
@@ -34,7 +34,7 @@ func TestLimit(t *testing.T) {
 			r.ServeHTTP(w, req)
 
 			assert.Equal(t, 200, w.Code)
-			assert.Equal(t, "fuck", w.Body.String())
+			assert.Equal(t, "foo", w.Body.String())
 			wg.Done()
 		}()
 	}
