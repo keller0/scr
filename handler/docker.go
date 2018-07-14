@@ -50,6 +50,8 @@ func RunCode(c *gin.Context) {
 	if err != nil {
 		if err == docker.ErrWorkerTimeOut {
 			c.JSON(http.StatusRequestTimeout, gin.H{"errNumber": responseErr["Time out"]})
+		} else if err == docker.ErrTooMuchOutPut {
+			c.JSON(http.StatusRequestTimeout, gin.H{"errNumber": responseErr["Too much output"]})
 		} else {
 			c.JSON(http.StatusInternalServerError,
 				gin.H{

@@ -49,7 +49,9 @@ type Worker struct {
 }
 
 var (
-	ErrWorkerTimeOut = errors.New("Time out")
+	MaxOutInBytes    int64 = 2 * 1024 * 1024
+	ErrTooMuchOutPut       = errors.New("Too much out put")
+	ErrWorkerTimeOut       = errors.New("Time out")
 )
 
 // LoadInfo Load payload to worker's stdin
@@ -170,7 +172,10 @@ func (w *Worker) attachContainer() (err error) {
 
 	// Copy any output to the build trace
 	go func() {
-		_, err := stdcopy.StdCopy(&w.ricOut, &w.ricErr, hijacked.Reader)
+		oc, err := stdcopy.StdCopy(&w.ricOut, &w.ricErr, hijacked.Reader)
+		if oc > MaxOutInBytes {
+			attachCh <- ErrTooMuchOutPut
+		}
 		if err != nil {
 			attachCh <- err
 		}

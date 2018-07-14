@@ -9,6 +9,7 @@ var responseErr = map[string]string{
 	"Username is too long":    "4004", // 用户名太长了
 	"Language not support":    "4005", // 语言不支持
 	"Payload not valid":       "4006", // 代码格式错误
+	"Too much output":         "4007", // 代码输出太多
 	"Time out":                "4080", // 代码超时
 	"User Already Exist":      "4090", // 用户已经存在了
 	"Email Already Exist":     "4091", // 邮箱地址已经存在了
