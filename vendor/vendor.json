@@ -251,6 +251,12 @@
 			"revisionTime": "2018-05-26T01:43:29Z"
 		},
 		{
+			"checksumSHA1": "vk7IwYvmS+Nm0sL37Akzk/6w9t8=",
+			"path": "github.com/mailgun/mailgun-go",
+			"revision": "15f93e2afc54c83d7664adcfd233be4e68606a09",
+			"revisionTime": "2018-04-23T15:29:11Z"
+		},
+		{
 			"checksumSHA1": "w5RcOnfv5YDr3j2bd1YydkPiZx4=",
 			"path": "github.com/mattn/go-isatty",
 			"revision": "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c",

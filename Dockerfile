@@ -19,4 +19,7 @@ ENV YXI_BACK_MYSQL_ADDR="mariadb:3306"
 ENV YXI_BACK_MYSQL_NAME="yxi"
 ENV YXI_BACK_MYSQL_USER="root"
 ENV YXI_BACK_MYSQL_PASS="111"
+ENV MAILGUN_API_KEY="sample private key"
+ENV MAILGUN_PUB_KEY="sample public key"
+ENV MAILGUN_DOMAIN="mg.example.io"
 CMD ["./main"]
