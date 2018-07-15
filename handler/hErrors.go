@@ -20,6 +20,7 @@ var responseErr = map[string]string{
 	"CodeNotExist":            "4041", // 代码不存在
 	"Get Code Not Allowed":    "4030", // 没有权限获取代码
 	"Update Code Not Allowed": "4031", // 没有权限更新代码
+	"Delete Code Not Allowed": "4032", // 没有权限删除代码
 
 	"ServerErr Register Failed":    "5001", // 注册失败 服务器错误
 	"ServerErr Create Code Failed": "5002", // 创建代码失败 服务器错误

@@ -169,28 +169,59 @@ func UpdateCode(c *gin.Context) {
 
 	var err error
 	var code model.Code
-	var tokenUserID int64
-	if err = c.ShouldBindJSON(&code); err == nil {
-		tokenUserID, err = token.JwtGetUserID(c.Request)
-		if err != nil {
-			// anonymous user can not update code
-			c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Update Code Not Allowed"]})
-			c.Abort()
-			return
-		}
-		err = code.UpdateCode(tokenUserID)
-		if err != nil {
-			fmt.Println(err)
-			if err == model.ErrNotAllowed {
-				c.JSON(http.StatusForbidden, gin.H{"errNumber": responseErr["Update Code Not Allowed"]})
-			} else {
-				c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
-			}
+
+	if err = c.ShouldBindJSON(&code); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
+		c.Abort()
+		return
+	}
+	tokenUserID, e := c.Get("uid")
+	if !e {
+		// anonymous user can not update code
+		c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Update Code Not Allowed"]})
+		c.Abort()
+		return
+	}
+	err = code.UpdateCode(tokenUserID.(int64))
+	if err != nil {
+		fmt.Println(err)
+		if err == model.ErrNotAllowed {
+			c.JSON(http.StatusForbidden, gin.H{"errNumber": responseErr["Update Code Not Allowed"]})
 		} else {
-			c.String(http.StatusOK, "update code succeeded")
+			c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
+		c.String(http.StatusOK, "update code succeeded")
 	}
 
+}
+
+// DeleteCode delete code by id
+func DeleteCode(c *gin.Context) {
+	id := c.Param("codeid")
+
+	codeid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		fmt.Println(codeid, err.Error())
+		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
+		c.Abort()
+		return
+	}
+	tokenUserID, e := c.Get("uid")
+	if !e {
+		c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Delete Code Not Allowed"]})
+		c.Abort()
+		return
+	}
+
+	err = model.DeleteCodeByID(codeid, tokenUserID.(int64))
+	if err != nil {
+		if err == model.ErrUserNotMatch {
+			c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Delete Code Not Allowed"]})
+		} else {
+			c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
+		}
+	} else {
+		c.String(http.StatusOK, "delete code succeeded")
+	}
 }

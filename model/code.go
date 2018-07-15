@@ -252,3 +252,24 @@ func (c *Code) UpdateCode(tokenUserID int64) error {
 
 	return err
 }
+
+// DeleteCodeByID delete code by code and user id
+func DeleteCodeByID(codeid, userid int64) error {
+	var theuser int64
+	err := mysql.Db.QueryRow("SELECT IFNULL(user_id, -1) FROM code WHERE id=? ",
+		codeid).Scan(&theuser)
+	if err != nil {
+		return err
+	}
+	if theuser != userid {
+		return ErrUserNotMatch
+	}
+	delStmt, err := mysql.Db.Prepare("DELETE FROM code WHERE id=? and user_id=?")
+	if err != nil {
+		log.Fatal(err.Error())
+		return err
+	}
+	_, err = delStmt.Exec(codeid, userid)
+
+	return err
+}

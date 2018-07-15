@@ -9,4 +9,5 @@ var (
 	ErrNotAllowed = errors.New("request not allowed")
 	// ErrLoginWrongPass wrong password
 	ErrLoginWrongPass = errors.New("Wrong Password")
+	ErrUserNotMatch   = errors.New("user not match")
 )
