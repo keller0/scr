@@ -46,6 +46,8 @@ func main() {
 
 		public.POST("/user", handle.Register)
 		public.POST("/login", handle.Login)
+		public.POST("/account/password/email", handle.SendResetPassEmail)
+		public.POST("/account/password", handle.ResetPassByEmail)
 
 		run := public.Group("/run")
 		{

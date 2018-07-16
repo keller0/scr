@@ -2,10 +2,8 @@ package handle
 
 import (
 	"log"
-	"math/rand"
 	"net/http"
 	"regexp"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/yxi-back/model"
@@ -22,8 +20,8 @@ type register struct {
 	Email    string `form:"email" json:"email" binding:"required"`
 }
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
+type resetMail struct {
+	Email string `form:"email" json:"email" binding:"required"`
 }
 
 // Login return a jwt if user info is valid.
@@ -128,4 +126,29 @@ func (r *register) Validate() string {
 		return responseErr["Password is too short"]
 	}
 	return ""
+}
+
+// ResetPassByEmail reset user's password use email and token
+func ResetPassByEmail(c *gin.Context) {
+
+}
+
+// SendResetPassEmail send reset password link to email
+func SendResetPassEmail(c *gin.Context) {
+	var j resetMail
+	err := c.ShouldBindJSON(&j)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
+		return
+	}
+	err = model.SendResetToken(j.Email)
+	if err != nil {
+		if err == model.ErrEmailNotExist {
+			c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Email Not Exist"]})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["Send reset email Failed"]})
+		}
+		return
+	}
+	c.String(http.StatusOK, "send email succeeded")
 }

@@ -10,6 +10,7 @@ var responseErr = map[string]string{
 	"Language not support":    "4005", // 语言不支持
 	"Payload not valid":       "4006", // 代码格式错误
 	"Too much output":         "4007", // 代码输出太多
+	"Email Not Exist":         "4040", // 邮箱不存在
 	"Time out":                "4080", // 代码超时
 	"User Already Exist":      "4090", // 用户已经存在了
 	"Email Already Exist":     "4091", // 邮箱地址已经存在了
@@ -27,4 +28,5 @@ var responseErr = map[string]string{
 	"ServerErr Get Code Failed":    "5003", // 获取代码失败
 	"ServerErr Like Code Failed":   "5004", // 点赞失败
 	"Run code error":               "5005", // 运行代码错误
+	"Send reset email Failed":      "5006", // 发送重置密码邮件失败
 }
