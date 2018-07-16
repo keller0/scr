@@ -2,6 +2,7 @@ package crypto
 
 import (
 	"math/rand"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -9,6 +10,10 @@ import (
 var (
 	letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()")
 )
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 // CheckPasswordHash check if passwoed match bcrypt hash.
 // return true if match.
