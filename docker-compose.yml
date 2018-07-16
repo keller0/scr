@@ -28,7 +28,18 @@ services:
         constraints: [node.role == manager]
     networks:
       - webnet
-
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - "redis-data:/data"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    command: redis-server --appendonly yes
+    networks:
+      - webnet
   elasticsearch:
     image: keller0/yxi-es:6.3.0
     environment:
@@ -98,3 +109,4 @@ volumes:
   esdata2:
   api-log:
   nginx-log:
+  redis-data:

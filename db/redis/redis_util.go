@@ -47,6 +47,16 @@ func Set(key string, value []byte) error {
 	return err
 }
 
+func Expire(key string, ex int) error {
+	conn := Pool.Get()
+	defer conn.Close()
+	_, err := conn.Do("EXPIRE", key, ex)
+	if err != nil {
+		return fmt.Errorf("redis-error setting key %s expire %d:%v", key, ex, err)
+	}
+	return err
+}
+
 func Exists(key string) (bool, error) {
 
 	conn := Pool.Get()
@@ -114,25 +124,4 @@ func IncrApiKey(key string) (int, error) {
 	defer conn.Close()
 
 	return redis.Int(conn.Do("HINCRBY", apihash, key, 1))
-}
-
-func LimitApiKeyDura(key, dur string) (int, error) {
-	conn := Pool.Get()
-	defer conn.Close()
-	tmpkey := key + "tmp" + dur
-	// if tmpkey not exist redis will set it to 1
-	ok, err := redis.Bool(conn.Do("EXISTS", tmpkey))
-	if err != nil {
-		return 0, fmt.Errorf("error checking if key %s exists: %v", tmpkey, err)
-	}
-	if ok != true {
-		// set api tmp count
-		_, err := conn.Do("SET", tmpkey, 1, "ex", dur)
-		if err != nil {
-			return 0, fmt.Errorf("error set %s exists: %v", tmpkey, err)
-		}
-		return 0, nil
-	}
-
-	return redis.Int(conn.Do("INCR", tmpkey))
 }

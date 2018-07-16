@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
+	"github.com/keller0/yxi-back/internal"
 )
 
 var (
@@ -15,11 +16,8 @@ var (
 )
 
 func init() {
-	redisHost := os.Getenv("REDIS_ADDR")
-	if redisHost == "" {
-		redisHost = ":6379"
-	}
-	redisPass := os.Getenv("REDIS_PASS")
+	redisHost := internal.GetEnv("REDIS_ADDR", ":6379")
+	redisPass := internal.GetEnv("REDIS_PASS", "")
 	options := redis.DialPassword(redisPass)
 
 	Pool = newPool(redisHost, options)
