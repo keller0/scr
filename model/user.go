@@ -129,3 +129,28 @@ func SendResetToken(email string) (err error) {
 	log.Println("send-mail id :", id)
 	return
 }
+
+// UpdatePassByToken update password use email and token
+func UpdatePassByToken(email, token, pass string) (err error) {
+	rtoken, err := redis.Get(redisPrefixResetPassEmail + email)
+	log.Println(string(rtoken))
+	if err != nil {
+		log.Println(err)
+		return ErrTokenNotMatch
+	}
+	if string(rtoken) != token {
+		return ErrTokenNotMatch
+	}
+	passwordhashed, err := crypto.HashPassword(pass)
+	if err != nil {
+		return err
+	}
+	updatePassStmt, err := mysql.Db.Prepare("UPDATE user SET password=? where email=?")
+	defer updatePassStmt.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = updatePassStmt.Exec(passwordhashed, email)
+	return
+}

@@ -24,6 +24,12 @@ type resetMail struct {
 	Email string `form:"email" json:"email" binding:"required"`
 }
 
+type resetPass struct {
+	Email string `form:"email" json:"email" binding:"required"`
+	Pass  string `form:"pass" json:"pass" binding:"required"`
+	Token string `form:"token" json:"token" binding:"required"`
+}
+
 // Login return a jwt if user info is valid.
 // 200 400 401 404
 func Login(c *gin.Context) {
@@ -123,9 +129,26 @@ func (r *register) Validate() string {
 	return ""
 }
 
-// ResetPassByEmail reset user's password use email and token
-func ResetPassByEmail(c *gin.Context) {
-
+// UpdatePassByEmail reset user's password use email and token
+func UpdatePassByEmail(c *gin.Context) {
+	var j resetPass
+	err := c.ShouldBindJSON(&j)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
+		return
+	}
+	err = model.UpdatePassByToken(j.Email, j.Token, j.Pass)
+	if err != nil {
+		log.Println(err)
+		if err == model.ErrTokenNotMatch {
+			c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Token not match"]})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["Update Password Failed"]})
+		}
+		return
+	}
+	c.String(http.StatusOK, "update password succeeded")
+	return
 }
 
 // SendResetPassEmail send reset password link to email

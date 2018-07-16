@@ -16,6 +16,7 @@ var responseErr = map[string]string{
 	"Email Already Exist":     "4091", // 邮箱地址已经存在了
 	"Already Liked":           "4092", // 已经点过赞了
 	"Wrong Password":          "4010", // 密码错误
+	"Token not match":         "4011", // token错误
 	"Like Code Not Allowed":   "4011", // 对代码点赞需要登录
 	"UserNotExist":            "4040", // 用户不存在
 	"CodeNotExist":            "4041", // 代码不存在
@@ -29,4 +30,5 @@ var responseErr = map[string]string{
 	"ServerErr Like Code Failed":   "5004", // 点赞失败
 	"Run code error":               "5005", // 运行代码错误
 	"Send reset email Failed":      "5006", // 发送重置密码邮件失败
+	"Update Password Failed":       "5007", // 更新密码失败
 }

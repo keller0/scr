@@ -11,4 +11,5 @@ var (
 	ErrLoginWrongPass = errors.New("Wrong Password")
 	ErrUserNotMatch   = errors.New("user not match")
 	ErrEmailNotExist  = errors.New("email not exist")
+	ErrTokenNotMatch  = errors.New("token not match")
 )
