@@ -37,7 +37,6 @@ func Login(c *gin.Context) {
 		if !user.UsernameExist() {
 			// return if username already exists
 			c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["UserNotExist"]})
-			c.Abort()
 			return
 		}
 		tokenString, err := user.Login()
@@ -78,13 +77,11 @@ func Register(c *gin.Context) {
 	err = c.ShouldBindJSON(&registJSON)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
-		c.Abort()
 		return
 	}
 
 	if es := registJSON.Validate(); es != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"errNumber": es})
-		c.Abort()
 		return
 	}
 	var user model.User
@@ -94,13 +91,11 @@ func Register(c *gin.Context) {
 	if user.UsernameExist() {
 		// return if username already exists
 		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["User Already Exist"]})
-		c.Abort()
 		return
 	}
 	if user.EmailExist() {
 		// return if username already exists
 		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["Email Already Exist"]})
-		c.Abort()
 		return
 	}
 

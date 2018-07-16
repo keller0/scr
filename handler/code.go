@@ -45,7 +45,6 @@ func GetCodePart(c *gin.Context) {
 	if err != nil {
 		fmt.Println(codeid, err.Error())
 		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
-		c.Abort()
 		return
 	}
 	var code model.Code
@@ -66,7 +65,6 @@ func GetCodePart(c *gin.Context) {
 			} else {
 				c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
 			}
-			c.Abort()
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"content": content})
@@ -79,7 +77,6 @@ func GetCodePart(c *gin.Context) {
 			} else {
 				c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
 			}
-			c.Abort()
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"code": codeRes})
@@ -104,7 +101,6 @@ func GetOnesCode(c *gin.Context) {
 		userid, err := token.JwtGetUserID(c.Request)
 		if err != nil {
 			c.JSON(http.StatusForbidden, gin.H{"errNumber": responseErr["Get Code Not Allowed"]})
-			c.Abort()
 			return
 		}
 		var code model.Code
@@ -114,7 +110,6 @@ func GetOnesCode(c *gin.Context) {
 		userid, err := token.JwtGetUserID(c.Request)
 		if err != nil {
 			c.JSON(http.StatusForbidden, gin.H{"errNumber": responseErr["Get Code Not Allowed"]})
-			c.Abort()
 			return
 		}
 		var code model.Code
@@ -126,7 +121,6 @@ func GetOnesCode(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["ServerErr Get Code Failed"]})
-		c.Abort()
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -148,13 +142,11 @@ func GetCode(c *gin.Context) {
 		codes, err = model.GetPouplarCode(offsite)
 	default:
 		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
-		c.Abort()
 		return
 	}
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["ServerErr Get Code Failed"]})
-		c.Abort()
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -172,14 +164,12 @@ func UpdateCode(c *gin.Context) {
 
 	if err = c.ShouldBindJSON(&code); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
-		c.Abort()
 		return
 	}
 	tokenUserID, e := c.Get("uid")
 	if !e {
 		// anonymous user can not update code
 		c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Update Code Not Allowed"]})
-		c.Abort()
 		return
 	}
 	err = code.UpdateCode(tokenUserID.(int64))
@@ -204,13 +194,11 @@ func DeleteCode(c *gin.Context) {
 	if err != nil {
 		fmt.Println(codeid, err.Error())
 		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
-		c.Abort()
 		return
 	}
 	tokenUserID, e := c.Get("uid")
 	if !e {
 		c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Delete Code Not Allowed"]})
-		c.Abort()
 		return
 	}
 

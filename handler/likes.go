@@ -17,34 +17,29 @@ func LikeCode(c *gin.Context) {
 	if err != nil {
 		fmt.Println(codeid, err.Error())
 		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["Bad Requset"]})
-		c.Abort()
 		return
 	}
 	// check if logined
 	uid, e := c.Get("uid")
 	if !e {
 		c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Like Code Not Allowed"]})
-		c.Abort()
 		return
 	}
 	userid := uid.(int64)
 	// check code exist
 	if !model.CodeExist(codeid) {
 		c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["CodeNotExist"]})
-		c.Abort()
 		return
 	}
 	// check if already liked
 	if model.Liked(userid, codeid) {
 		c.JSON(http.StatusConflict, gin.H{"errNumber": responseErr["Already Liked"]})
-		c.Abort()
 		return
 	}
 	err = model.Like(userid, codeid)
 	if err != nil {
 		fmt.Println(userid, codeid, err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["ServerErr Like Code Failed"]})
-		c.Abort()
 		return
 	}
 	c.String(http.StatusOK, "like code succeeded")
