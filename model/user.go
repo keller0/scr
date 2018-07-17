@@ -2,6 +2,7 @@ package model
 
 import (
 	"log"
+	"net/url"
 	"time"
 
 	"github.com/keller0/yxi-back/db/mysql"
@@ -120,8 +121,11 @@ func SendResetToken(email string) (err error) {
 	if err != nil {
 		return
 	}
+	es := url.QueryEscape(email)
+	ts := url.QueryEscape(token)
+	msg := "To reset your password please click this link" +
+		" https://yxi.io/account?email=" + es + "&token=" + ts
 
-	msg := "To reset your password please click this link https://yxi.io/account?email=" + email + "&token=" + token
 	id, err := mailgun.SimpleMessage("Reset password", msg, email)
 	if err != nil {
 		return
