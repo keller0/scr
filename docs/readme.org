@@ -11,6 +11,8 @@
 | POST    | /user                        | String "registration succeeded"           | Register              |
 | POST    | /login                       | JSON {"token": xxxxxx}                    | Login                 |
 | PUT     | /likes/{codeid}              | String "like code succeeded"              | Like code             |
+| POST    | /account/password/email      | String "send email succeeded"             | Send reset pass email |
+| POST    | /account/password            | String "update password succeeded"        | Update pass           |
 
 
 ** All Non-200 response will bring a json: {"errNumber": "xxx"}
@@ -143,4 +145,26 @@ curl -X POST \
 "email":"1@qwe.com"
 }'
 registration succeeded
+#+END_SRC
+*** send reset password email
+#+BEGIN_SRC
+curl -X POST \
+  http://localhost:8090/v1/account/password/email \
+  -d '{
+	"email":"caijiaqi2017@gmail.com"
+}'
+send email succeeded
+#+END_SRC
+*** update password use email and token
+#+BEGIN_SRC
+curl -X POST \
+  http://localhost:8090/v1/account/password \
+  -H 'Cache-Control: no-cache' \
+  -H 'Postman-Token: ddbbf7ae-b439-4efe-a7d4-5f603dfc2a7a' \
+  -d '{
+"email":"caijiaqi2017@gmail.com",
+"pass":"123",
+"token":"%z4^ugUolqXs&SGLl@hBjWWf1YI$9DTW7FdE)QYJfK5q1yfH3cO^YDR9RaP9"
+}'
+update password succeeded
 #+END_SRC
