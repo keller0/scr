@@ -117,6 +117,7 @@ func (w *Worker) createContainer() (*types.ContainerJSON, error) {
 			CPUPeriod: 100000,
 			CPUQuota:  50000,
 			Memory:    100 * 1024 * 1024,
+			PidsLimit: 50,
 			// advanced kernel-level features
 			// CPURealtimePeriod : 1000000,
 			// CPURealtimeRuntime: 950000,
