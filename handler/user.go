@@ -141,7 +141,7 @@ func UpdatePassByEmail(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		if err == model.ErrTokenNotMatch {
-			c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["Token not match"]})
+			c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["ResetTokenNotMatch"]})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["Update Password Failed"]})
 		}
@@ -152,6 +152,7 @@ func UpdatePassByEmail(c *gin.Context) {
 }
 
 // SendResetPassEmail send reset password link to email
+// 400 500 200
 func SendResetPassEmail(c *gin.Context) {
 	var j resetMail
 	err := c.ShouldBindJSON(&j)
@@ -162,7 +163,7 @@ func SendResetPassEmail(c *gin.Context) {
 	err = model.SendResetToken(j.Email)
 	if err != nil {
 		if err == model.ErrEmailNotExist {
-			c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Email Not Exist"]})
+			c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["EmailNotExist"]})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["Send reset email Failed"]})
 		}

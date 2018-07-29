@@ -10,19 +10,19 @@ var responseErr = map[string]string{
 	"Language not support":    "4005", // 语言不支持
 	"Payload not valid":       "4006", // 代码格式错误
 	"Too much output":         "4007", // 代码输出太多
-	"Email Not Exist":         "4040", // 邮箱不存在
+	"Wrong Password":          "4010", // 密码错误
+	"Like Code Not Allowed":   "4011", // 对代码点赞需要登录
+	"ResetTokenNotMatch":      "4012", // 重置密码的token错误
+	"Get Code Not Allowed":    "4030", // 没有权限获取代码
+	"Update Code Not Allowed": "4031", // 没有权限更新代码
+	"Delete Code Not Allowed": "4032", // 没有权限删除代码
+	"UserNotExist":            "4040", // 用户不存在
+	"CodeNotExist":            "4041", // 代码不存在
+	"EmailNotExist":           "4042", // 邮箱不存在
 	"Time out":                "4080", // 代码超时
 	"User Already Exist":      "4090", // 用户已经存在了
 	"Email Already Exist":     "4091", // 邮箱地址已经存在了
 	"Already Liked":           "4092", // 已经点过赞了
-	"Wrong Password":          "4010", // 密码错误
-	"Token not match":         "4011", // token错误
-	"Like Code Not Allowed":   "4011", // 对代码点赞需要登录
-	"UserNotExist":            "4040", // 用户不存在
-	"CodeNotExist":            "4041", // 代码不存在
-	"Get Code Not Allowed":    "4030", // 没有权限获取代码
-	"Update Code Not Allowed": "4031", // 没有权限更新代码
-	"Delete Code Not Allowed": "4032", // 没有权限删除代码
 
 	"ServerErr Register Failed":    "5001", // 注册失败 服务器错误
 	"ServerErr Create Code Failed": "5002", // 创建代码失败 服务器错误
