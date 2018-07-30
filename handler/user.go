@@ -4,12 +4,14 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/yxi-back/model"
 )
 
 type login struct {
+	//user could be username or email
 	User     string `form:"user" json:"user" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
 }
@@ -37,14 +39,25 @@ func Login(c *gin.Context) {
 	var loginJSON login
 	if err = c.ShouldBindJSON(&loginJSON); err == nil {
 		var user model.User
-		user.Username = loginJSON.User
+		if strings.Index(loginJSON.User, "@") != -1 {
+			user.Email = loginJSON.User
+			user.Username = ""
+			if !user.EmailExist() {
+				// return if email not exists
+				c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["EmailNotExist"]})
+				return
+			}
+		} else {
+			user.Username = loginJSON.User
+			user.Email = ""
+			if !user.UsernameExist() {
+				// return if username not exists
+				c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["UserNotExist"]})
+				return
+			}
+		}
 		user.Password = loginJSON.Password
 
-		if !user.UsernameExist() {
-			// return if username already exists
-			c.JSON(http.StatusNotFound, gin.H{"errNumber": responseErr["UserNotExist"]})
-			return
-		}
 		tokenString, err := user.Login()
 		if err != nil {
 			log.Println(err.Error())

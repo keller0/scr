@@ -64,18 +64,24 @@ func emailExist(email string) bool {
 // Login check user password and return jwt
 func (u *User) Login() (string, error) {
 
-	var password, runToken string
+	var password, runToken, username string
 	var id int64
 	var err error
-	err = mysql.Db.QueryRow("SELECT id, password, run_token FROM user WHERE username=?",
-		u.Username).Scan(&id, &password, &runToken)
+	if u.Username != "" {
+		// use username to login
+		err = mysql.Db.QueryRow("SELECT id, username, password, run_token FROM user WHERE username=?",
+			u.Username).Scan(&id, &username, &password, &runToken)
+	} else {
+		// use email to login
+		err = mysql.Db.QueryRow("SELECT id, username, password, run_token FROM user WHERE email=?",
+			u.Email).Scan(&id, &username, &password, &runToken)
+	}
 	if err != nil {
 		return "", err
 	}
-
 	if crypto.CheckPasswordHash(u.Password, password) {
 		exp := time.Now().Add(time.Hour * 24 * 15).Unix()
-		tokenString, err := token.JwtGenToken(id, u.Username, runToken, exp)
+		tokenString, err := token.JwtGenToken(id, username, runToken, exp)
 		if err != nil {
 			return "", err
 		}
