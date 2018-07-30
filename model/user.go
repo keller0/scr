@@ -130,7 +130,7 @@ func SendResetToken(email string) (err error) {
 	es := url.QueryEscape(email)
 	ts := url.QueryEscape(token)
 	msg := "To reset your password please click this link" +
-		" https://yxi.io/account?email=" + es + "&token=" + ts
+		" https://yxi.io/password_new?email=" + es + "&token=" + ts
 
 	id, err := mailgun.SimpleMessage("Reset password", msg, email)
 	if err != nil {
@@ -143,7 +143,6 @@ func SendResetToken(email string) (err error) {
 // UpdatePassByToken update password use email and token
 func UpdatePassByToken(email, token, pass string) (err error) {
 	rtoken, err := redis.Get(redisPrefixResetPassEmail + email)
-	log.Println(string(rtoken))
 	if err != nil {
 		log.Println(err)
 		return ErrTokenNotMatch
@@ -162,5 +161,10 @@ func UpdatePassByToken(email, token, pass string) (err error) {
 	}
 
 	_, err = updatePassStmt.Exec(passwordhashed, email)
+	if err != nil {
+		return err
+	}
+	err = redis.Delete(redisPrefixResetPassEmail + email)
+
 	return
 }
