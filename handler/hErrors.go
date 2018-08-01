@@ -31,4 +31,5 @@ var responseErr = map[string]string{
 	"Run code error":               "5005", // 运行代码错误
 	"Send reset email Failed":      "5006", // 发送重置密码邮件失败
 	"Update Password Failed":       "5007", // 更新密码失败
+	"Send Register email Failed":   "5008", // 发送注册确认邮件失败
 }
