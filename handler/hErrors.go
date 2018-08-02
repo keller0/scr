@@ -13,6 +13,7 @@ var responseErr = map[string]string{
 	"Wrong Password":          "4010", // 密码错误
 	"Like Code Not Allowed":   "4011", // 对代码点赞需要登录
 	"ResetTokenNotMatch":      "4012", // 重置密码的token错误
+	"RegisterTokenNotMatch":   "4013", // 注册账户的token错误
 	"Get Code Not Allowed":    "4030", // 没有权限获取代码
 	"Update Code Not Allowed": "4031", // 没有权限更新代码
 	"Delete Code Not Allowed": "4032", // 没有权限删除代码

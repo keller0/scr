@@ -44,10 +44,11 @@ func main() {
 		// get user's code list
 		public.GET("/user/:userid/code", handle.GetOnesCode)
 
-		public.POST("/user", handle.Register)
+		public.POST("/user", handle.SendRegisterEmail)
 		public.POST("/login", handle.Login)
 		public.POST("/account/password/email", handle.SendResetPassEmail)
 		public.POST("/account/password", handle.UpdatePassByEmail)
+		public.POST("/account/complete", handle.RegisterComplete)
 
 		run := public.Group("/run")
 		{

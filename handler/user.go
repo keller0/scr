@@ -16,10 +16,15 @@ type login struct {
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
+type registerMail struct {
+	User  string `form:"user" json:"user" binding:"required"`
+	Email string `form:"email" json:"email" binding:"required"`
+}
 type register struct {
-	User     string `form:"user" json:"user" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
-	Email    string `form:"email" json:"email" binding:"required"`
+	User  string `form:"user" json:"user" binding:"required"`
+	Email string `form:"email" json:"email" binding:"required"`
+	Pass  string `form:"pass" json:"pass" binding:"required"`
+	Token string `form:"token" json:"token" binding:"required"`
 }
 
 type resetMail struct {
@@ -87,11 +92,12 @@ func CheckUserExist(c *gin.Context) {
 	}
 }
 
-// Register use post data to create a user account
+// SendRegisterEmail use post data to create a tmp user account
+// send email then wait user to verify
 // 200 400 409 500
-func Register(c *gin.Context) {
+func SendRegisterEmail(c *gin.Context) {
 	var err error
-	var registJSON register
+	var registJSON registerMail
 
 	err = c.ShouldBindJSON(&registJSON)
 	if err != nil {
@@ -118,12 +124,56 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	user.Password = registJSON.Password
-	e := user.New()
+	e := user.SendRegisterToken()
 	if e != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["ServerErr Register Failed"]})
+		c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["Send Register email Failed"]})
+	}
+	c.String(http.StatusOK, "send registration email succeeded")
+}
+
+// RegisterComplete use post data to create a user account
+// 200 400 409 500
+func RegisterComplete(c *gin.Context) {
+	var err error
+	var registerJSON register
+
+	err = c.ShouldBindJSON(&registerJSON)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Bad Requset"]})
+		return
+	}
+	if es := registerJSON.Validate(); es != "" {
+		c.JSON(http.StatusBadRequest, gin.H{"errNumber": es})
+		return
+	}
+	var user model.User
+	user.Username = registerJSON.User
+	user.Email = registerJSON.Email
+	user.Password = registerJSON.Pass
+
+	err = user.New(registerJSON.Token)
+	if err != nil {
+		if err == model.ErrTokenNotMatch {
+			c.JSON(http.StatusUnauthorized, gin.H{"errNumber": responseErr["RegisterTokenNotMatch"]})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["ServerErr Register Failed"]})
+		}
 	}
 	c.String(http.StatusOK, "registration succeeded")
+}
+
+func (r *registerMail) Validate() string {
+	re := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	reName := regexp.MustCompile("^[a-zA-Z0-9]+$")
+	switch {
+	case !re.MatchString(r.Email):
+		return responseErr["Email is not valid"]
+	case !reName.MatchString(r.User):
+		return responseErr["Username is not valid"]
+	case len(r.User) > 15:
+		return responseErr["Username is too long"]
+	}
+	return ""
 }
 
 func (r *register) Validate() string {
@@ -134,9 +184,7 @@ func (r *register) Validate() string {
 		return responseErr["Email is not valid"]
 	case !reName.MatchString(r.User):
 		return responseErr["Username is not valid"]
-	case len(r.User) > 15:
-		return responseErr["Username is too long"]
-	case len(r.Password) < 9:
+	case len(r.Pass) < 9:
 		return responseErr["Password is too short"]
 	}
 	return ""

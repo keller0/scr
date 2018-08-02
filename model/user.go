@@ -14,6 +14,7 @@ import (
 
 var (
 	redisPrefixResetPassEmail = "reset-pass-"
+	redisPrefixRegister       = "register-"
 )
 
 // User user struct in database
@@ -91,8 +92,44 @@ func (u *User) Login() (string, error) {
 	return "", ErrLoginWrongPass
 }
 
+// SendRegisterToken generate a token, store it in redis and send msg to email
+func (u *User) SendRegisterToken() (err error) {
+
+	token := crypto.RandString(30)
+	err = redis.Set(redisPrefixRegister+u.Email, []byte(token))
+	if err != nil {
+		return
+	}
+	err = redis.Expire(redisPrefixRegister+u.Email, 3600*24*2)
+	if err != nil {
+		return
+	}
+
+	es := url.QueryEscape(u.Email)
+	ts := url.QueryEscape(token)
+	us := url.QueryEscape(u.Username)
+
+	msg := "To complete your account registration please click this link " +
+		"https://yxi.io/singup_complete/?email=" + es + "&token=" + ts + "&user=" + us
+	id, err := mailgun.SimpleMessage("Complete your account registration", msg, u.Email)
+	if err != nil {
+		return
+	}
+	log.Println("send-mail id :", id)
+	return
+}
+
 // New create a new user account
-func (u *User) New() error {
+func (u *User) New(token string) error {
+
+	rtoken, err := redis.Get(redisPrefixRegister + u.Email)
+	if err != nil {
+		log.Println(err)
+		return ErrTokenNotMatch
+	}
+	if string(rtoken) != token {
+		return ErrTokenNotMatch
+	}
 
 	var runToken = crypto.RandString(40)
 	passwordhashed, err := crypto.HashPassword(u.Password)
@@ -106,9 +143,13 @@ func (u *User) New() error {
 		log.Println(err.Error())
 		return err
 	}
+	_, err = insUser.Exec(u.Username, passwordhashed, u.Email, runToken)
+	if err != nil {
+		return err
+	}
+	err = redis.Delete(redisPrefixRegister + u.Email)
 
-	_, e := insUser.Exec(u.Username, passwordhashed, u.Email, runToken)
-	return e
+	return err
 }
 
 // SendResetToken generate a token, store it in redis and send msg to email
