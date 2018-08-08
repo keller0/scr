@@ -2,30 +2,14 @@
 
 [[https://travis-ci.org/keller0/yxi-back][https://travis-ci.org/keller0/yxi-back.svg?branch=master]]
 
-** build it
-*** dependents
-	1. docker
-	2. make
+** build it(you need docker and make)
 *** build images
 **** build ric images
 #+BEGIN_SRC
 make buildimages
 #+END_SRC
 
-**** edit Dockerfile set up your environment variables
-
-|---------------------+------------------------+--------------------|
-| Vairable            | Example                | Description        |
-|---------------------+------------------------+--------------------|
-| YXI_BACK_PORT       | ":8090"                | yxi listen port    |
-| GIN_MODE            | "debug"                | gin mode           |
-| GIN_LOG_PATH        | "/var/log/yxi/api.log" | gin log path       |
-| YXI_BACK_KEY        | "secretkey"            | used for sign jwt  |
-| YXI_BACK_MYSQL_ADDR | "localhost:3306"       | mysql/mariadb addr |
-| YXI_BACK_MYSQL_NAME | "yxi"                  | db name            |
-| YXI_BACK_MYSQL_USER | "root"                 | db user name       |
-| YXI_BACK_MYSQL_PASS | "111"                  | db password        |
-
+**** Edit [[https://github.com/keller0/yxi-back/blob/master/Dockerfile][Dockerfile]] to set up your environment variables
 
 **** build api
 #+BEGIN_SRC
