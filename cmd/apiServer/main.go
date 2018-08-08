@@ -7,21 +7,22 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/yxi-back/handler"
-	mid "github.com/keller0/yxi-back/middleware"
+	"github.com/keller0/yxi-back/internal"
+	"github.com/keller0/yxi-back/middleware"
 )
 
 var (
-	yxiPort    = os.Getenv("YXI_BACK_PORT")
-	ginMode    = os.Getenv(gin.ENV_GIN_MODE)
-	ginLogPath = os.Getenv("GIN_LOG_PATH")
+	yxiPort    = internal.GetEnv("YXI_BACK_PORT", ":8090")
+	ginMode    = internal.GetEnv("GIN_MODE", "debug")
+	ginLogPath = internal.GetEnv("GIN_LOG_PATH", "/var/log/yxi/api.log")
 )
 
 func main() {
 
 	if ginMode == gin.ReleaseMode {
 		gin.DisableConsoleColor()
-		f, error := os.Create(ginLogPath)
-		if error != nil {
+		f, err := os.Create(ginLogPath)
+		if err != nil {
 			panic("create log file failed")
 		}
 		gin.DefaultWriter = io.MultiWriter(f)
