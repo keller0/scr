@@ -45,7 +45,7 @@ func goRun(workDir, stdin string, args ...string) (string, string, error) {
 	return stdout.String(), stderr.String(), err
 }
 
-// Run will run payload, if the language need compille
+// Run will run payload, if the language need compile
 // it will call CompileAndRun()
 func (ar *PayLoad) Run() {
 
@@ -74,7 +74,7 @@ func (ar *PayLoad) Run() {
 func (ar *PayLoad) compileAndRun() {
 	// if no file return
 	if len(ar.F) == 0 {
-		exitF("No fileds are given")
+		exitF("No files given")
 	}
 	absFilePaths, err := writeFiles(ar.F)
 	if err != nil {
@@ -126,7 +126,7 @@ func (ar *PayLoad) compileAndRun() {
 
 		args := append(ar.A.Compile, absFilePaths...)
 
-		fname := filepath.Base(absFilePaths[0])
+		filename := filepath.Base(absFilePaths[0])
 
 		// compile
 		stdOut, stdErr, exitErr := goRun(workDir, "", args...)
@@ -142,7 +142,7 @@ func (ar *PayLoad) compileAndRun() {
 				ar.A.Run = []string{"scala"}
 			}
 		}
-		args = append(ar.A.Run, javaClassName(fname))
+		args = append(ar.A.Run, javaClassName(filename))
 		stdOut, stdErr, exitErr = goRun(workDir, ar.I, args...)
 		returnStdOut(stdOut, stdErr, errToStr(exitErr))
 
@@ -194,7 +194,7 @@ func (ar *PayLoad) isSupport() bool {
 	return false
 }
 
-func javaClassName(fname string) string {
-	ext := filepath.Ext(fname)
-	return fname[0 : len(fname)-len(ext)]
+func javaClassName(filename string) string {
+	ext := filepath.Ext(filename)
+	return filename[0 : len(filename)-len(ext)]
 }
