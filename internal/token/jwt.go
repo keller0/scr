@@ -2,15 +2,14 @@ package token
 
 import (
 	"errors"
-	"net/http"
-	"os"
-
 	jwt_lib "github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
+	"github.com/keller0/yxi-back/internal"
+	"net/http"
 )
 
 var (
-	authSecret = os.Getenv("YXI_BACK_KEY")
+	authSecret = internal.GetEnv("YXI_BACK_KEY", "secretkey")
 )
 
 // JwtGenToken gnerate new token add claims
