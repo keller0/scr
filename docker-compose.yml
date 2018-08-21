@@ -2,6 +2,8 @@ version: "3"
 services:
   yxi-api:
     image: keller0/yxi-api
+    env_file:
+      - ./config/api/api.env
     ports:
       - "8090:8090"
     deploy:
@@ -19,6 +21,8 @@ services:
       - webnet
   mariadb:
     image: mariadb:10.3
+    env_file:
+      - ./config/mysql.env
     ports:
       - "3306:3306"
     volumes:
