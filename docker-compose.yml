@@ -3,7 +3,7 @@ services:
   yxi-api:
     image: keller0/yxi-api
     env_file:
-      - ./config/api/api.env
+      - ./config/api.env
     ports:
       - "8090:8090"
     deploy:
