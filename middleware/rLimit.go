@@ -6,11 +6,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/yxi-back/internal/token"
+	"github.com/keller0/yxi-back/internal"
+	"strconv"
 )
 
 var (
 	rq               counter
-	maxRequestNumber = 100
+	maxRequestNumber = internal.GetEnv("MAX_PUBLIC_RUN", "100")
 )
 
 type counter struct {
@@ -40,7 +42,8 @@ func (c *counter) done() {
 }
 
 func init() {
-	rq = counter{cap: maxRequestNumber, val: 0}
+	max ,_ := strconv.Atoi(maxRequestNumber)
+	rq = counter{cap: max, val: 0}
 }
 
 // PublicLimit limit unlogined users

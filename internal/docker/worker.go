@@ -2,18 +2,18 @@ package docker
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"time"
-
-	"encoding/json"
-
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
+	"github.com/keller0/yxi-back/internal"
 	"golang.org/x/net/context"
+	"io"
+	"strconv"
+	"time"
 )
 
 // PayLoad as stdin pass to ric container's stdin
@@ -52,6 +52,8 @@ var (
 	MaxOutInBytes    int64 = 2 * 1024 * 1024
 	ErrTooMuchOutPut       = errors.New("Too much out put")
 	ErrWorkerTimeOut       = errors.New("Time out")
+	memLimit               = internal.GetEnv("CONTAINER_MEM_LIMIT", "50")
+	diskLimit              = internal.GetEnv("CONTAINER_DISK_LIMIT", "5")
 )
 
 // LoadInfo Load payload to worker's stdin
@@ -95,7 +97,7 @@ func (w *Worker) Run() (string, string, error) {
 
 func (w *Worker) createContainer() (*types.ContainerJSON, error) {
 	ctx := context.Background()
-	cli, err := client.NewEnvClient()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	w.cli = cli
 	w.ctx = ctx
 	if err != nil {
@@ -112,17 +114,19 @@ func (w *Worker) createContainer() (*types.ContainerJSON, error) {
 		OpenStdin:    true,
 		StdinOnce:    true,
 	}
+	ml, _ := strconv.Atoi(memLimit)
+	dl, _ := strconv.Atoi(diskLimit)
 	hostConfig := &container.HostConfig{
 		Resources: container.Resources{
 			CPUPeriod: 100000,
 			CPUQuota:  50000,
-			Memory:    100 * 1024 * 1024,
+			Memory:    int64(ml) * 1024 * 1024,
 			PidsLimit: 50,
 			// advanced kernel-level features
 			// CPURealtimePeriod : 1000000,
 			// CPURealtimeRuntime: 950000,
 
-			DiskQuota: 5 * 1024 * 1024,
+			DiskQuota: int64(dl) * 1024 * 1024,
 		},
 		Privileged: false,
 		LogConfig: container.LogConfig{
