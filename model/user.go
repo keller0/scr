@@ -110,7 +110,7 @@ func (u *User) SendRegisterToken() (err error) {
 	us := url.QueryEscape(u.Username)
 
 	msg := "To complete your account registration please click this link " +
-		"https://yxi.io/singup_complete/?email=" + es + "&token=" + ts + "&user=" + us
+		"https://www.yxi.io/singup_complete/?email=" + es + "&token=" + ts + "&user=" + us
 	id, err := mailgun.SimpleMessage("Complete your account registration", msg, u.Email)
 	if err != nil {
 		return
@@ -171,7 +171,7 @@ func SendResetToken(email string) (err error) {
 	es := url.QueryEscape(email)
 	ts := url.QueryEscape(token)
 	msg := "To reset your password please click this link" +
-		" https://yxi.io/password_new?email=" + es + "&token=" + ts
+		" https://www.yxi.io/password_new?email=" + es + "&token=" + ts
 
 	id, err := mailgun.SimpleMessage("Reset password", msg, email)
 	if err != nil {
