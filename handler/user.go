@@ -127,6 +127,7 @@ func SendRegisterEmail(c *gin.Context) {
 	e := user.SendRegisterToken()
 	if e != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["Send Register email Failed"]})
+		return
 	}
 	c.String(http.StatusOK, "send registration email succeeded")
 }
