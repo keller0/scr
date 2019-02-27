@@ -56,7 +56,7 @@ var VersionMap = map[string][]string{
 		"g++8.1",
 		"g++7.3",
 	},
-	"python":  {
+	"python": {
 		"2.7",
 		"3.5",
 	},

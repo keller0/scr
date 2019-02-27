@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keller0/yxi.io/internal/token"
 	"github.com/keller0/yxi.io/internal"
+	"github.com/keller0/yxi.io/internal/token"
 	"strconv"
 )
 
@@ -42,7 +42,7 @@ func (c *counter) done() {
 }
 
 func init() {
-	max ,_ := strconv.Atoi(maxRequestNumber)
+	max, _ := strconv.Atoi(maxRequestNumber)
 	rq = counter{cap: max, val: 0}
 }
 

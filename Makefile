@@ -13,17 +13,11 @@ test:
 	go test
 
 .PHONY: build
-build:deps fmt
-	govendor sync
+build:fmt
 	GOOS=linux GOARCH=amd64 go build -ldflags '-w -s' -o main cmd/apiServer/main.go
 
 vet:
 	go vet $(PACKAGES)
-
-deps:
-	@hash govendor > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/kardianos/govendor; \
-	fi
 
 .PHONY: misspell-check
 misspell-check:
