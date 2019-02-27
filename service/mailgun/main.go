@@ -1,7 +1,7 @@
 package mailgun
 
 import (
-	"github.com/keller0/yxi-back/internal"
+	"github.com/keller0/yxi.io/internal"
 	mail "github.com/mailgun/mailgun-go"
 )
 

@@ -4,7 +4,7 @@ import (
 	"errors"
 	jwt_lib "github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
-	"github.com/keller0/yxi-back/internal"
+	"github.com/keller0/yxi.io/internal"
 	"net/http"
 )
 

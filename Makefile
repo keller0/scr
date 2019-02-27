@@ -36,8 +36,8 @@ buildapi:
 	docker build -t keller0/yxi-api .
 
 dbuild:
-	docker run -it --rm -v `pwd`:/go/src/github.com/keller0/yxi-back \
-	-w /go/src/github.com/keller0/yxi-back golang:1.8 \
+	docker run -it --rm -v `pwd`:/go/src/github.com/keller0/yxi.io \
+	-w /go/src/github.com/keller0/yxi.io golang:1.8 \
 	go build -ldflags '-w -s' -o main cmd/apiServer/main.go
 
 buildimages:

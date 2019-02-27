@@ -5,11 +5,11 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/keller0/yxi-back/db/mysql"
-	"github.com/keller0/yxi-back/db/redis"
-	"github.com/keller0/yxi-back/internal/crypto"
-	"github.com/keller0/yxi-back/internal/token"
-	"github.com/keller0/yxi-back/service/mailgun"
+	"github.com/keller0/yxi.io/db/mysql"
+	"github.com/keller0/yxi.io/db/redis"
+	"github.com/keller0/yxi.io/internal/crypto"
+	"github.com/keller0/yxi.io/internal/token"
+	"github.com/keller0/yxi.io/service/mailgun"
 )
 
 var (

@@ -1,6 +1,6 @@
 * YXI.io backend
 
-[[https://travis-ci.org/keller0/yxi-back][https://travis-ci.org/keller0/yxi-back.svg?branch=master]]
+[[https://travis-ci.org/keller0/yxi.io][https://travis-ci.org/keller0/yxi.io.svg?branch=master]]
 
 ** build it(you need docker and make)
 *** make ric and yxi-api docker images
@@ -8,5 +8,5 @@
 make buildimages
 make buildapi
 #+END_SRC
-*** You may need to edit [[https://github.com/keller0/yxi-back/blob/master/config][env files]] to set up your environment variables
-** api docs could found in [[https://github.com/keller0/yxi-back/blob/master/docs/][here]]
+*** You may need to edit [[https://github.com/keller0/yxi.io/blob/master/config][env files]] to set up your environment variables
+** api docs could found in [[https://github.com/keller0/yxi.io/blob/master/docs/][here]]

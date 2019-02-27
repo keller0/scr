@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/keller0/yxi-back/internal"
+	"github.com/keller0/yxi.io/internal"
 )
 
 var (

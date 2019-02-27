@@ -2,7 +2,7 @@ package mid
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/keller0/yxi-back/internal/token"
+	"github.com/keller0/yxi.io/internal/token"
 )
 
 // JwtAuth only alow requests with jwt

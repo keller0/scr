@@ -1,6 +1,6 @@
 FROM golang:1.8 as builder
 
-WORKDIR /go/src/github.com/keller0/yxi-back/
+WORKDIR /go/src/github.com/keller0/yxi.io/
 COPY . .
 
 RUN go get -d -v ./... \
@@ -10,5 +10,5 @@ RUN go get -d -v ./... \
 FROM alpine:latest  
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
-COPY --from=builder /go/src/github.com/keller0/yxi-back/main ./main
+COPY --from=builder /go/src/github.com/keller0/yxi.io/main ./main
 CMD ["./main"]

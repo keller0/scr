@@ -6,7 +6,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/keller0/yxi-back/internal"
+	"github.com/keller0/yxi.io/internal"
 )
 
 // Db mysql connection pool

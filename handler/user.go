@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keller0/yxi-back/model"
+	"github.com/keller0/yxi.io/model"
 )
 
 type login struct {

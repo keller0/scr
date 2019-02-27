@@ -16,7 +16,7 @@
 
 
 ** All Non-200 response will bring a json: {"errNumber": "xxx"}
-   "xxx" could found in [[https://github.com/keller0/yxi-back/blob/master/handler/hErrors.go][handler/hErrors.go]].
+   "xxx" could found in [[https://github.com/keller0/yxi.io/blob/master/handler/hErrors.go][handler/hErrors.go]].
 
 ** example
 *** get code list, no code content

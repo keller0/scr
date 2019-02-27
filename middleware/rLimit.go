@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keller0/yxi-back/internal/token"
-	"github.com/keller0/yxi-back/internal"
+	"github.com/keller0/yxi.io/internal/token"
+	"github.com/keller0/yxi.io/internal"
 	"strconv"
 )
 

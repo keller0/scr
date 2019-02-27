@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keller0/yxi-back/model"
+	"github.com/keller0/yxi.io/model"
 )
 
 // LikeCode create
