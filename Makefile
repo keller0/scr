@@ -19,23 +19,22 @@ build:fmt
 vet:
 	go vet $(PACKAGES)
 
-.PHONY: misspell-check
-misspell-check:
-	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/client9/misspell/cmd/misspell; \
-	fi
-	misspell -error $(GOFILES)
-
 buildapi:
 	docker build -t keller0/yxi-api .
 
 dbuild:
 	docker run -it --rm -v `pwd`:/go/src/github.com/keller0/yxi.io \
-	-w /go/src/github.com/keller0/yxi.io golang:1.8 \
+	-w /go/src/github.com/keller0/yxi.io golang:1.12 \
 	go build -ldflags '-w -s' -o main cmd/apiServer/main.go
 
 buildimages:
-	cd scripts && ./build_images.sh
+	cd scripts && ./images.sh -b
+
+push2ali:
+    cd scripts && ./images.sh -a
+
+push2dh:
+    cd scripts && ./images.sh -d
 
 clean:
 	rm ./main
