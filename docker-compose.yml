@@ -1,7 +1,7 @@
 version: "3"
 services:
   yxi-api:
-    image: keller0/yxi-api
+    image: yximages/yxi-api
     env_file:
       - ./config/api.env
     ports:
@@ -19,19 +19,6 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
       - webnet
-  mariadb:
-    image: mariadb:10.3
-    env_file:
-      - ./config/mysql.env
-    ports:
-      - "3306:3306"
-    volumes:
-      - "api-db:/var/lib/mysql"
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-    networks:
-      - webnet
   redis:
     image: redis
     ports:
@@ -44,52 +31,6 @@ services:
     command: redis-server --appendonly yes
     networks:
       - webnet
-  elasticsearch:
-    image: keller0/yxi-es:6.3.0
-    environment:
-      - cluster.name=es-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - "esdata1:/usr/share/elasticsearch/data"
-    networks:
-      - elk
-
-  elasticsearch2:
-    image: keller0/yxi-es:6.3.0
-    environment:
-      - cluster.name=es-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "discovery.zen.ping.unicast.hosts=elasticsearch"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - "esdata2:/usr/share/elasticsearch/data"
-    networks:
-      - elk
-
-  kibana:
-    image: keller0/kibana:6.3.0
-    ports:
-      - 5601:5601
-    networks:
-      - elk
-
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:6.3.0
-    volumes:
-      - "nginx-log:/var/log/nginx"
-      - "./config/filebeat.yml:/usr/share/filebeat/filebeat.yml"
-    networks:
-      - webnet
-      - elk
 
   nginx:
     image: nginx
@@ -105,12 +46,8 @@ services:
 
 networks:
   webnet:
-  elk:
 
 volumes:
-  api-db:
-  esdata1:
-  esdata2:
   api-log:
   nginx-log:
   redis-data:

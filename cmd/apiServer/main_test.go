@@ -1,4 +1,4 @@
-package handle
+package main
 
 import (
 	"bytes"
@@ -7,13 +7,14 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/keller0/yxi.io/handler"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRunCpp(t *testing.T) {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
-	router.POST("/:language", RunCode)
+	router.POST("/:language", handle.RunCode)
 	w := httptest.NewRecorder()
 
 	buf := bytes.NewBufferString(cppHelloWorld)
@@ -26,7 +27,7 @@ func TestRunCpp(t *testing.T) {
 
 func TestRunGo(t *testing.T) {
 	router := gin.New()
-	router.POST("/:language", RunCode)
+	router.POST("/:language", handle.RunCode)
 
 	w := httptest.NewRecorder()
 
