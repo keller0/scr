@@ -100,8 +100,41 @@ push_to_docker_hub () {
     done
 }
 
+pull_from_docker_hub () {
+    for i in "${images[@]}"
+    do
+        if [ $i = "bash:4.4" ]
+        then
+            continue
+        elif [ $i = "rakudo-star" ]
+        then
+            docker pull "yximages/perl6"
+        else
+            docker pull "yximages/$i"
+        fi
+
+    done
+}
+
+pull_from_ali () {
+    for i in "${images[@]}"
+    do
+        if [ $i = "bash:4.4" ]
+        then
+            continue
+        elif [ $i = "rakudo-star" ]
+        then
+            docker pull "registry.cn-shanghai.aliyuncs.com/yxi/perl6"
+        else
+            docker pull "registry.cn-shanghai.aliyuncs.com/yxi/$i"
+        fi
+
+    done
+}
+
 print_usage() {
-  echo "-b build, -a push to aliyun, -d push to docker hub"
+  echo "    -b build, -a push to aliyun, -d push to docker hub\n
+    -p pull images from docker hub, -pa pull images from aliyun"
 }
 
 
@@ -110,7 +143,10 @@ while getopts 'badh' flag; do
     a) push_to_ali ;;
     b) build_local ;;
     d) push_to_docker_hub ;;
+    p) pull_from_docker_hub ;;
+    pa) pull_from_ali ;;
     h) print_usage
        exit 1 ;;
   esac
 done
+print_usage

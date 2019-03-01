@@ -8,10 +8,6 @@ all: build
 fmt:
 	$(GOFMT) -w $(GOFILES)
 
-.PHONY: test
-test:
-	go test
-
 .PHONY: build
 build:fmt
 	GOOS=linux GOARCH=amd64 go build -ldflags '-w -s' -o main cmd/apiServer/main.go
@@ -20,7 +16,7 @@ vet:
 	go vet $(PACKAGES)
 
 buildapi:
-	docker build -t keller0/yxi-api .
+	docker build -t yximages/yxi-api .
 
 dbuild:
 	docker run -it --rm -v `pwd`:/go/src/github.com/keller0/yxi.io \
@@ -36,6 +32,11 @@ push2ali:
 push2dh:
 	cd scripts && ./images.sh -d
 
+pullimages:
+	cd scripts && ./images.sh -p
+
+pullali:
+	cd scripts && ./images.sh -pa
 clean:
 	rm ./main
 
