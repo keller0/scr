@@ -22,7 +22,7 @@ func AllVersion(c *gin.Context) {
 	for l, vs := range VersionMap {
 		var versions []tVersion
 		for _, v := range vs {
-			versions = append(versions, tVersion{v, "/v1/" + l + "/" + v})
+			versions = append(versions, tVersion{v, "/api/v1/" + l + "/" + v})
 		}
 		all = append(all, tLanguage{l, &versions})
 	}
@@ -34,12 +34,12 @@ func VersionsOfOne(c *gin.Context) {
 
 	language := c.Params.ByName("language")
 	if !LanIsSupported(language) {
-		c.String(http.StatusNotFound, "%s is not supported yet...", language)
+		c.String(http.StatusNotFound, "%s is not supported", language)
 	} else {
 		var all []tLanguage
 		var versions []tVersion
 		for _, v := range VersionMap[language] {
-			versions = append(versions, tVersion{v, "/v1/run/" + language + "/" + v})
+			versions = append(versions, tVersion{v, "/api/v1/" + language + "/" + v})
 		}
 		all = append(all, tLanguage{language, &versions})
 		c.JSON(http.StatusOK, all)
@@ -48,50 +48,77 @@ func VersionsOfOne(c *gin.Context) {
 
 // VersionMap stands for all languages and versions
 var VersionMap = map[string][]string{
+	"bash": {"4.4"},
 	"c": {
-		"gcc8.1",
-		"gcc7.3",
+		"gcc8.3",
+		"gcc7.4",
+		"gcc6.5",
+		"gcc5.5",
 	},
 	"cpp": {
-		"g++8.1",
-		"g++7.3",
+		"gcc8.3",
+		"gcc7.4",
+		"gcc6.5",
+		"gcc5.5",
+	},
+	"go": {"1.12", "1.11"},
+	"haskell": {
+		"ghc-8.6",
 	},
 	"python": {
+		"3.7",
 		"2.7",
-		"3.5",
 	},
-	"bash":    {"4.4"},
-	"php":     {"7.2.5"},
-	"java":    {"openjdk-8"},
-	"go":      {"1.8", "1.10"},
-	"haskell": {"ghc-8"},
-	"perl":    {"5.28"},
-	"ruby":    {"2.5"},
-	"rust":    {"1.27"},
+	"php": {"7.2.5"},
+	"java": {
+		"13",
+		"12",
+		"11",
+		"8",
+	},
+
+	"perl":  {"5.28"},
+	"perl6": {"latest"},
+	"ruby":  {"2.6"},
+	"rust":  {"latest"},
 }
 
 var imageMap = map[string]string{
-	"bash-4.4":       "gcc:8.1", // for now
-	"c-gcc8.1":       "gcc:8.1",
-	"c-gcc7.3":       "gcc:7.3",
-	"cpp-g++8.1":     "gcc:8.1",
-	"cpp-g++7.3":     "gcc:7.3",
-	"php-7.2.5":      "php:7.2.5",
-	"python-3.5":     "python:3.5",
-	"python-2.7":     "python:2.7-slim",
-	"java-openjdk-8": "java:8",
-	"go-1.8":         "golang:1.8",
-	"go-1.10":        "golang:1.10",
-	"haskell-ghc-8":  "haskell:8",
-	"perl-5.28":      "perl:5.28",
-	"ruby-2.5":       "ruby:2.5",
-	"rust-1.27":      "rust:1.27",
+	"bash-4.4": "gcc:8.3", // for now
+
+	"c-gcc8.3": "gcc:8.3",
+	"c-gcc7.4": "gcc:7.4",
+	"c-gcc6.5": "gcc:6.5",
+	"c-gcc5.5": "gcc:5.5",
+
+	"cpp-gcc8.3": "gcc:8.3",
+	"cpp-gcc7.4": "gcc:7.4",
+	"cpp-gcc6.5": "gcc:6.5",
+	"cpp-gcc5.5": "gcc:5.5",
+
+	"php-7.2.5":  "php:7.2.5",
+	"python-3.7": "python:3.7",
+	"python-2.7": "python:2.7",
+
+	"java-13": "openjdk:13",
+	"java-12": "openjdk:12",
+	"java-11": "openjdk:11",
+	"java-8":  "openjdk:8",
+
+	"go-1.11": "golang:1.11",
+	"go-1.12": "golang:1.12",
+
+	"haskell-ghc-8.6": "haskell:8.6",
+	"perl-5.28":       "perl:5.28",
+	"perl6-latest":    "perl6",
+	"ruby-2.6":        "ruby:2.6",
+	"rust-latest":     "rust",
 }
 
 // V2Images return image name for one version of language
 func V2Images(language, version string) string {
 
-	return "keller0" + "/" + imageMap[language+"-"+version]
+	return "yximages" + "/" + imageMap[language+"-"+version]
 
 }
 

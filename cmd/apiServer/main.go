@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/yxi.io/handler"
 	"github.com/keller0/yxi.io/internal"
-	"github.com/keller0/yxi.io/middleware"
 )
 
 var (
@@ -34,43 +33,18 @@ func main() {
 	config.AddAllowHeaders("Authorization")
 	r.Use(cors.New(config))
 
-	public := r.Group("/v1")
+	run := r.Group("/api")
 	{
-		// get code list
-		public.GET("/code", handle.GetCode)
-
-		public.GET("/code/:codeid/*part", handle.GetCodePart)
-		public.POST("/code", handle.NewCode)
-
-		// get user's code list
-		public.GET("/user/:userid/code", handle.GetOnesCode)
-
-		public.POST("/user", handle.SendRegisterEmail)
-		public.POST("/login", handle.Login)
-		public.POST("/account/password/email", handle.SendResetPassEmail)
-		public.POST("/account/password", handle.UpdatePassByEmail)
-		public.POST("/account/complete", handle.RegisterComplete)
-
-		run := public.Group("/run")
+		v1 := run.Group("/v1")
 		{
-			run.GET("/", handle.AllVersion)
-			run.GET("/:language", handle.VersionsOfOne)
 
-			rQueue := run.Group("/")
-			rQueue.Use(mid.PublicLimit())
-			{
-				rQueue.POST("/:language", handle.RunCode)
-				rQueue.POST("/:language/:version", handle.RunCode)
-			}
+			v1.GET("/", handle.AllVersion)
+			v1.GET("/:language", handle.VersionsOfOne)
+
+			v1.POST("/:language", handle.RunCode)
+			v1.POST("/:language/:version", handle.RunCode)
+
 		}
-	}
-
-	authorized := r.Group("/v1")
-	authorized.Use(mid.JwtAuth())
-	{
-		authorized.PUT("/likes/:codeid", handle.LikeCode)
-		authorized.PUT("/code", handle.UpdateCode)
-		authorized.DELETE("/code/:codeid", handle.DeleteCode)
 	}
 
 	r.Run(yxiPort)
