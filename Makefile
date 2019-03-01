@@ -31,10 +31,10 @@ buildimages:
 	cd scripts && ./images.sh -b
 
 push2ali:
-    cd scripts && ./images.sh -a
+	cd scripts && ./images.sh -a
 
 push2dh:
-    cd scripts && ./images.sh -d
+	cd scripts && ./images.sh -d
 
 clean:
 	rm ./main
