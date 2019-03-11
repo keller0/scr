@@ -125,8 +125,10 @@ pull_from_ali () {
         elif [ $i = "rakudo-star" ]
         then
             docker pull "registry.cn-shanghai.aliyuncs.com/yxi/perl6"
+            docker tag "registry.cn-shanghai.aliyuncs.com/yxi/perl6" "yximages/perl6"
         else
             docker pull "registry.cn-shanghai.aliyuncs.com/yxi/$i"
+            docker tag "registry.cn-shanghai.aliyuncs.com/yxi/$i" "yximages/$i"
         fi
 
     done
@@ -138,15 +140,16 @@ print_usage() {
 }
 
 
-while getopts 'badh' flag; do
+while getopts 'abddplh' flag; do
   case "${flag}" in
     a) push_to_ali ;;
     b) build_local ;;
     d) push_to_docker_hub ;;
     p) pull_from_docker_hub ;;
-    pa) pull_from_ali ;;
+    l) pull_from_ali ;;
     h) print_usage
        exit 1 ;;
   esac
+  exit 0;
 done
 print_usage

@@ -36,7 +36,7 @@ pullimages:
 	cd scripts && ./images.sh -p
 
 pullali:
-	cd scripts && ./images.sh -pa
+	cd scripts && ./images.sh -l
 clean:
 	rm ./main
 
