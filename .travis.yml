@@ -10,7 +10,7 @@ env:
 install: true
 
 script:
-  - make pullimages
+  - make runnerimages
   - make test
   - make dev
 
