@@ -1,5 +1,10 @@
 language: go
+
+services:
+  - docker
+
 sudo: false
+
 go:
   - "1.11"
   - "1.12"
