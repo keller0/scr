@@ -1,10 +1,5 @@
 language: go
 
-services:
-  - docker
-
-sudo: false
-
 go:
   - "1.12"
 
@@ -14,6 +9,7 @@ env:
 install: true
 
 script:
+  - sudo apt-get install git
   - make dev
 
 clean:
