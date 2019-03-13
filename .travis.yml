@@ -6,7 +6,6 @@ services:
 sudo: false
 
 go:
-  - "1.11"
   - "1.12"
 
 env:
@@ -15,8 +14,6 @@ env:
 install: true
 
 script:
-  - make runnerimages
-  - make test
   - make dev
 
 clean:
