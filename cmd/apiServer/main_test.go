@@ -14,7 +14,7 @@ import (
 func TestRunCpp(t *testing.T) {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
-	router.POST("/:language", handle.RunCode)
+	router.POST("/:language", handler.RunCode)
 	w := httptest.NewRecorder()
 
 	buf := bytes.NewBufferString(cppHelloWorld)
@@ -27,7 +27,7 @@ func TestRunCpp(t *testing.T) {
 
 func TestRunGo(t *testing.T) {
 	router := gin.New()
-	router.POST("/:language", handle.RunCode)
+	router.POST("/:language", handler.RunCode)
 
 	w := httptest.NewRecorder()
 

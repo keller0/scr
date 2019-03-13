@@ -10,7 +10,6 @@ env:
 install: true
 
 script:
-  - make vet
   - make test
   - make dev
 
