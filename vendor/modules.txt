@@ -42,19 +42,15 @@ github.com/gin-gonic/gin
 github.com/gin-gonic/gin/binding
 github.com/gin-gonic/gin/json
 github.com/gin-gonic/gin/render
-# github.com/go-sql-driver/mysql v0.0.0-20180523134417-ceae19ce1c5a
-github.com/go-sql-driver/mysql
 # github.com/gogo/protobuf v1.2.1
 github.com/gogo/protobuf/proto
-# github.com/golang/protobuf v0.0.0-20180518215737-70c277a8a150
+# github.com/golang/protobuf v1.2.0
 github.com/golang/protobuf/proto
 # github.com/gomodule/redigo v2.0.0+incompatible
 github.com/gomodule/redigo/redis
 github.com/gomodule/redigo/internal
 # github.com/json-iterator/go v0.0.0-20180526014329-8744d7c5c7b4
 github.com/json-iterator/go
-# github.com/mailgun/mailgun-go v0.0.0-20180423152911-15f93e2afc54
-github.com/mailgun/mailgun-go
 # github.com/mattn/go-isatty v0.0.4
 github.com/mattn/go-isatty
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
@@ -74,19 +70,14 @@ github.com/pmezard/go-difflib/difflib
 github.com/stretchr/testify/assert
 # github.com/ugorji/go v0.0.0-20180307152341-02537d3a3e32
 github.com/ugorji/go/codec
-# golang.org/x/crypto v0.0.0-20180602220124-df8d4716b347
-golang.org/x/crypto/bcrypt
-golang.org/x/crypto/blowfish
 # golang.org/x/net v0.0.0-20190227160552-c95aed5357e7
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/proxy
 golang.org/x/net/internal/socks
-# golang.org/x/sys v0.0.0-20180507135725-7db1c3b1a980
+# golang.org/x/sys v0.0.0-20180909124046-d0be0721c37e
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# google.golang.org/appengine v1.1.0
-google.golang.org/appengine/cloudsql
 # gopkg.in/go-playground/validator.v8 v8.18.2
 gopkg.in/go-playground/validator.v8
 # gopkg.in/yaml.v2 v2.2.1
