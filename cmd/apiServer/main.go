@@ -38,11 +38,11 @@ func main() {
 		v1 := run.Group("/v1")
 		{
 
-			v1.GET("/", handle.AllVersion)
-			v1.GET("/:language", handle.VersionsOfOne)
+			v1.GET("/", handler.AllVersion)
+			v1.GET("/:language", handler.VersionsOfOne)
 
-			v1.POST("/:language", handle.RunCode)
-			v1.POST("/:language/:version", handle.RunCode)
+			v1.POST("/:language", handler.RunCode)
+			v1.POST("/:language/:version", handler.RunCode)
 
 		}
 	}

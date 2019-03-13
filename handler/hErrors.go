@@ -1,4 +1,4 @@
-package handle
+package handler
 
 var responseErr = map[string]string{
 

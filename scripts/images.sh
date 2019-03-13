@@ -54,7 +54,7 @@ build_local () {
     cd -
     mv ../cmd/ric/run ./run
     echo "---------build ric succeed---------"
-
+    # build ric imagws
     for i in "${images[@]}"
     do
         echo "---------start building yximages/$i---------"
@@ -62,7 +62,7 @@ build_local () {
         echo "---------build yximages/$i succeed---------"
     done
 
-    rm ./run
+    rm -f ./run
     rm ./Dockerfile
 }
 

@@ -2,28 +2,30 @@ GOFMT ?= gofmt "-s"
 PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
 GOFILES := $(shell find . -name "*.go" -type f -not -path "./vendor/*")
 
-all: build
+all: apiimage runnerimages
+	docker run -it --rm -p 8090:8090 yximages/yxi-api
 
 .PHONY: fmt
 fmt:
 	$(GOFMT) -w $(GOFILES)
 
-.PHONY: build
-build:fmt
-	GOOS=linux GOARCH=amd64 go build -ldflags '-w -s' -o main cmd/apiServer/main.go
+.PHONY: dev
+dev:fmt vet
+	GOOS=linux GOARCH=amd64 go build -mod=vendor -ldflags '-w -s' -o main cmd/apiServer/main.go
 
 vet:
 	go vet $(PACKAGES)
 
-buildapi:
+test:
+	go test -v -mod=vendor ./...
+
+apiimage:
 	docker build -t yximages/yxi-api .
 
-dbuild:
-	docker run -it --rm -v `pwd`:/go/src/github.com/keller0/yxi.io \
-	-w /go/src/github.com/keller0/yxi.io golang:1.12 \
-	go build -ldflags '-w -s' -o main cmd/apiServer/main.go
+dbuild: apiimage
+	docker run -it --rm -p 8090:8090 yximages/yxi-api
 
-buildimages:
+runnerimages:
 	cd scripts && ./images.sh -b
 
 push2ali:
@@ -37,6 +39,7 @@ pullimages:
 
 pullali:
 	cd scripts && ./images.sh -l
+
 clean:
 	rm ./main
 

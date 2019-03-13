@@ -2,12 +2,17 @@ language: go
 sudo: false
 go:
   - "1.11"
+  - "1.12"
 
-install:
-  - make build
+env:
+  - GO111MODULE=on
+
+install: true
 
 script:
   - make vet
+  - make test
+  - make dev
 
 clean:
   - make clean
