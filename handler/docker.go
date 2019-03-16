@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keller0/yxi.io/internal/docker"
+	"github.com/keller0/scr/internal/docker"
 )
 
 type result struct {

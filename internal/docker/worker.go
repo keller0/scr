@@ -9,7 +9,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
-	"github.com/keller0/yxi.io/internal"
+	"github.com/keller0/scr/internal"
 	"golang.org/x/net/context"
 	"io"
 	"strconv"
