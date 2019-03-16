@@ -2,10 +2,11 @@ package token
 
 import (
 	"errors"
+	"net/http"
+
 	jwt_lib "github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/keller0/yxi.io/internal"
-	"net/http"
 )
 
 var (
