@@ -3,7 +3,7 @@ PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
 GOFILES := $(shell find . -name "*.go" -type f -not -path "./vendor/*")
 
 all: apiimage runnerimages
-	docker run -it --rm -p 8090:8090 yximages/yxi-api
+	docker run -it --rm -p 8090:8090 -v "/var/run/docker.sock:/var/run/docker.sock" yximages/yxi-api
 
 .PHONY: fmt
 fmt:
@@ -11,7 +11,7 @@ fmt:
 
 .PHONY: dev
 dev:fmt vet
-	GOOS=linux GOARCH=amd64 go build -mod=vendor -ldflags '-w -s' -o main cmd/apiServer/main.go
+	go build -mod=vendor -ldflags '-w -s' -o main cmd/apiServer/main.go
 
 vet:
 	go vet $(PACKAGES)
@@ -23,7 +23,7 @@ apiimage:
 	docker build -t yximages/yxi-api .
 
 dbuild: apiimage
-	docker run -it --rm -p 8090:8090 yximages/yxi-api
+	docker run -it --rm -p 8090:8090 -v "/var/run/docker.sock:/var/run/docker.sock" yximages/yxi-api
 
 runnerimages:
 	cd scripts && ./images.sh -b
