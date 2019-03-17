@@ -1,4 +1,4 @@
-module github.com/keller0/yxi.io
+module github.com/keller0/scr
 
 require (
 	github.com/Microsoft/go-winio v0.4.12 // indirect
