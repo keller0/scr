@@ -19,18 +19,6 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
       - webnet
-  redis:
-    image: redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - "redis-data:/data"
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-    command: redis-server --appendonly yes
-    networks:
-      - webnet
 
   nginx:
     image: nginx
@@ -50,4 +38,3 @@ networks:
 volumes:
   api-log:
   nginx-log:
-  redis-data:

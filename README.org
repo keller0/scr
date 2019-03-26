@@ -2,7 +2,6 @@
   [[https://travis-ci.org/keller0/yxi.io][https://travis-ci.org/keller0/scr.svg?branch=master]]
 
   Writen in [[https://golang.org/][GO]].
-
   Using [[https://gin-gonic.github.io/gin/][gin]] web framwork.
   Using [[https://www.docker.com/][docker]] to run code in containers.
 
@@ -21,7 +20,6 @@
 ** build it(you need docker and make)
     run make will build images and start the api container, or you can pull
 containers from dockerhub or aliyun, you can read the Makefile to finger it out.
-
 
 ** restAPI
 *** API URLs
@@ -42,7 +40,6 @@ containers from dockerhub or aliyun, you can read the Makefile to finger it out.
 |                  | version  is not supported | "java openjdk-100 is not support"                                      |
 |                  | request data not vaild    | "json: cannot unmarshal..."                                            |
 |              500 | Internal Server Error     | "xxxx"                                                                 |
-
 
 *** request exampls
 **** get version info of C
@@ -68,7 +65,7 @@ curl -X GET   http://localhost:8080/v1/c
 
 **** run a C program
 #+BEGIN_SRC
-curl -X POST   http://localhost:8090/api/v1/c   -H 'Content-Type: application/json'   -d '{
+curl -X POST   http://localhost:8090/v1/c   -H 'Content-Type: application/json'   -d '{
    "files" : [
       {
          "content" : "#include<stdio.h>\n\nint main()\n{\n    printf(\"Hello, World!\\n\");\n}",
