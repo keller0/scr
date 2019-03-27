@@ -28,7 +28,7 @@ type file struct {
 	Content string `json:"content"`
 }
 
-// Result of user's program
+// Result of go's cmd.Run
 type Result struct {
 	Stdout    string `json:"stdout"`
 	Stderr    string `json:"stderr"`
@@ -37,28 +37,29 @@ type Result struct {
 
 func main() {
 
-	var ar PayLoad
+	var pl PayLoad
 	var err error
 	b, err := ioutil.ReadAll(os.Stdin)
-	err = json.Unmarshal(b, &ar)
+	err = json.Unmarshal(b, &pl)
 	if err != nil {
 		exitF(err.Error())
 	}
 
-	ar.L = strings.ToLower(ar.L)
-	if !ar.isSupport() {
-		exitF("language %s is not supported.", ar.L)
+	pl.L = strings.ToLower(pl.L)
+	if !pl.isSupport() {
+		exitF("language %s is not supported.", pl.L)
 	}
 
 	// get result from user's program
 
-	if ar.needCompile() {
-		ar.compileAndRun()
+	if pl.needCompile() {
+		pl.compileAndRun()
 	} else {
-		ar.Run()
+		pl.Run()
 	}
 }
 
+// exitF means the ric return error not user's code
 func exitF(format string, a ...interface{}) {
 	fmt.Fprintf(os.Stderr, format, a...)
 	os.Exit(1)
@@ -85,7 +86,7 @@ func writeFiles(files []*file) ([]string, error) {
 	paths := make([]string, len(files), len(files))
 	for i, file := range files {
 
-		path, err := writeFile(tmpPath, file)
+		path, err := writeOneFile(tmpPath, file)
 		if err != nil {
 			return nil, err
 		}
@@ -95,7 +96,7 @@ func writeFiles(files []*file) ([]string, error) {
 	return paths, nil
 }
 
-func writeFile(basePath string, file *file) (string, error) {
+func writeOneFile(basePath string, file *file) (string, error) {
 
 	absPath := filepath.Join(basePath, file.Name)
 

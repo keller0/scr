@@ -47,56 +47,50 @@ func goRun(workDir, stdin string, args ...string) (string, string, error) {
 
 // Run will run payload, if the language need compile
 // it will call CompileAndRun()
-func (ar *PayLoad) Run() {
+func (pl *PayLoad) Run() {
 
-	if len(ar.A.Run) == 0 {
-		if ar.L == "haskell" {
-			ar.A.Run = []string{"runhaskell"}
+	if len(pl.A.Run) == 0 {
+		if pl.L == "haskell" {
+			pl.A.Run = []string{"runhaskell"}
 		} else {
-			ar.A.Run = []string{ar.L}
+			pl.A.Run = []string{pl.L}
 		}
 	}
-	args := ar.A.Run[0:]
+	args := pl.A.Run[0:]
 	var workDir string
-	if len(ar.F) != 0 {
-		absFilePaths, err := writeFiles(ar.F)
+	if len(pl.F) != 0 {
+		absFilePaths, err := writeFiles(pl.F)
 		if err != nil {
 			exitF("Write files failed")
 		}
 		workDir = filepath.Dir(absFilePaths[0])
-		args = append(ar.A.Run[0:], absFilePaths...)
+		args = append(pl.A.Run[0:], absFilePaths...)
 	}
 
-	stdOut, stdErr, exitErr := goRun(workDir, ar.I, args...)
+	stdOut, stdErr, exitErr := goRun(workDir, pl.I, args...)
 	returnStdOut(stdOut, stdErr, errToStr(exitErr))
 }
 
-func (ar *PayLoad) compileAndRun() {
-	// if no file return
-	if len(ar.F) == 0 {
-		exitF("No files given")
-	}
-	absFilePaths, err := writeFiles(ar.F)
-	if err != nil {
-		exitF("Write files failed")
-	}
-	workDir := filepath.Dir(absFilePaths[0])
+func (pl *PayLoad) compileAndRun() {
 
 	switch {
-	case ar.L == "c" || ar.L == "cpp" || ar.L == "rust":
-		if len(ar.A.Compile) == 0 {
-			switch ar.L {
+	case pl.L == "c" || pl.L == "cpp" || pl.L == "rust":
+		absFilePaths := pl.dealFiles()
+		workDir := filepath.Dir(absFilePaths[0])
+
+		if len(pl.A.Compile) == 0 {
+			switch pl.L {
 			case "c":
-				ar.A.Compile = []string{"gcc"}
+				pl.A.Compile = []string{"gcc"}
 			case "cpp":
-				ar.A.Compile = []string{"g++"}
+				pl.A.Compile = []string{"g++"}
 			case "rust":
-				ar.A.Compile = []string{"rustc"}
+				pl.A.Compile = []string{"rustc"}
 			}
 		}
 		binName := "a.out"
 
-		args := append(ar.A.Compile, []string{"-o", binName}...)
+		args := append(pl.A.Compile, []string{"-o", binName}...)
 		args = append(args, absFilePaths...)
 		// compile
 		stdOut, stdErr, exitErr := goRun(workDir, "", args...)
@@ -110,84 +104,37 @@ func (ar *PayLoad) compileAndRun() {
 
 		// run
 		binPath := filepath.Join(workDir, binName)
-		args = append(ar.A.Run, binPath)
+		args = append(pl.A.Run, binPath)
 
-		stdOut, stdErr, exitErr = goRun(workDir, ar.I, args...)
+		stdOut, stdErr, exitErr = goRun(workDir, pl.I, args...)
 		returnStdOut(stdOut, stdErr, errToStr(exitErr))
 
-	case ar.L == "java" || ar.L == "scala":
-		if len(ar.A.Compile) == 0 {
-			if ar.L == "java" {
-				ar.A.Compile = []string{"javac"}
-			} else if ar.L == "scala" {
-				ar.A.Compile = []string{"scalac"}
-			}
-		}
+	case pl.L == "java":
+		runJava(pl)
 
-		args := append(ar.A.Compile, absFilePaths...)
+	case pl.L == "scala":
+		runScala(pl)
 
-		filename := filepath.Base(absFilePaths[0])
-
-		// compile
-		stdOut, stdErr, exitErr := goRun(workDir, "", args...)
-		if exitErr != nil {
-			returnStdOut(stdOut, stdErr, errToStr(exitErr))
-			exitF("Compile Error")
-		}
-
-		if len(ar.A.Run) == 0 {
-			if ar.L == "java" {
-				ar.A.Run = []string{"java"}
-			} else if ar.L == "scala" {
-				ar.A.Run = []string{"scala"}
-			}
-		}
-		args = append(ar.A.Run, javaClassName(filename))
-		stdOut, stdErr, exitErr = goRun(workDir, ar.I, args...)
-		returnStdOut(stdOut, stdErr, errToStr(exitErr))
-
-	case ar.L == "go":
-		if len(ar.A.Compile) == 0 {
-			ar.A.Compile = []string{"go", "build"}
-		}
-		binName := "main"
-
-		args := append(ar.A.Compile, []string{"-o", binName}...)
-		args = append(args, absFilePaths...)
-		// compile
-		stdOut, stdErr, exitErr := goRun(workDir, "", args...)
-		if exitErr != nil {
-			if _, ok := exitErr.(*exec.ExitError); ok {
-				returnStdOut(stdOut, stdErr, errToStr(exitErr))
-				exitF("Compile Error")
-			}
-			exitF("Ric goRun Failed")
-		}
-
-		// run
-		binPath := filepath.Join(workDir, binName)
-		args = append(ar.A.Run, binPath)
-
-		stdOut, stdErr, exitErr = goRun(workDir, ar.I, args...)
-		returnStdOut(stdOut, stdErr, errToStr(exitErr))
+	case pl.L == "go":
+		runGo(pl)
 
 	default:
-		exitF("Unsupported compile language: %s", ar.L)
+		exitF("Unsupported compile language: %s", pl.L)
 	}
 }
 
-func (ar *PayLoad) needCompile() bool {
+func (pl *PayLoad) needCompile() bool {
 	for _, l := range cLanguage {
-		if ar.L == l {
+		if pl.L == l {
 			return true
 		}
 	}
 	return false
 }
 
-func (ar *PayLoad) isSupport() bool {
+func (pl *PayLoad) isSupport() bool {
 	for _, l := range supportedLanguage {
-		if ar.L == l {
+		if pl.L == l {
 			return true
 		}
 	}
@@ -197,4 +144,98 @@ func (ar *PayLoad) isSupport() bool {
 func javaClassName(filename string) string {
 	ext := filepath.Ext(filename)
 	return filename[0 : len(filename)-len(ext)]
+}
+
+// deal files, save file and return those absolute paths
+func (pl *PayLoad) dealFiles() []string {
+	if len(pl.F) == 0 {
+		exitF("No files given")
+	}
+	absFilePaths, err := writeFiles(pl.F)
+	if err != nil {
+		exitF("Write files failed")
+	}
+	return absFilePaths
+}
+
+func runGo(pl *PayLoad) {
+	absFilePaths := pl.dealFiles()
+	workDir := filepath.Dir(absFilePaths[0])
+	if len(pl.A.Compile) == 0 {
+		pl.A.Compile = []string{"go", "build"}
+	}
+	binName := "main"
+
+	args := append(pl.A.Compile, []string{"-o", binName}...)
+	args = append(args, absFilePaths...)
+	// compile
+	stdOut, stdErr, exitErr := goRun(workDir, "", args...)
+	if exitErr != nil {
+		if _, ok := exitErr.(*exec.ExitError); ok {
+			returnStdOut(stdOut, stdErr, errToStr(exitErr))
+			exitF("Compile Error")
+		}
+		exitF("Ric goRun Failed")
+	}
+
+	// run
+	binPath := filepath.Join(workDir, binName)
+	args = append(pl.A.Run, binPath)
+
+	stdOut, stdErr, exitErr = goRun(workDir, pl.I, args...)
+	returnStdOut(stdOut, stdErr, errToStr(exitErr))
+}
+
+func runJava(pl *PayLoad) {
+	absFilePaths := pl.dealFiles()
+	workDir := filepath.Dir(absFilePaths[0])
+
+	if len(pl.A.Compile) == 0 {
+		pl.A.Compile = []string{"javac"}
+	}
+
+	args := append(pl.A.Compile, absFilePaths...)
+
+	filename := filepath.Base(absFilePaths[0])
+
+	// compile
+	stdOut, stdErr, exitErr := goRun(workDir, "", args...)
+	if exitErr != nil {
+		returnStdOut(stdOut, stdErr, errToStr(exitErr))
+		exitF("Compile Error")
+	}
+
+	if len(pl.A.Run) == 0 {
+		pl.A.Run = []string{"java"}
+	}
+	args = append(pl.A.Run, javaClassName(filename))
+	stdOut, stdErr, exitErr = goRun(workDir, pl.I, args...)
+	returnStdOut(stdOut, stdErr, errToStr(exitErr))
+}
+
+func runScala(pl *PayLoad) {
+	absFilePaths := pl.dealFiles()
+	workDir := filepath.Dir(absFilePaths[0])
+
+	if len(pl.A.Compile) == 0 {
+		pl.A.Compile = []string{"scalac"}
+	}
+
+	args := append(pl.A.Compile, absFilePaths...)
+
+	filename := filepath.Base(absFilePaths[0])
+
+	// compile
+	stdOut, stdErr, exitErr := goRun(workDir, "", args...)
+	if exitErr != nil {
+		returnStdOut(stdOut, stdErr, errToStr(exitErr))
+		exitF("Compile Error")
+	}
+
+	if len(pl.A.Run) == 0 {
+		pl.A.Run = []string{"scala"}
+	}
+	args = append(pl.A.Run, javaClassName(filename))
+	stdOut, stdErr, exitErr = goRun(workDir, pl.I, args...)
+	returnStdOut(stdOut, stdErr, errToStr(exitErr))
 }
