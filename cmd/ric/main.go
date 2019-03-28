@@ -50,13 +50,7 @@ func main() {
 		exitF("language %s is not supported.", pl.L)
 	}
 
-	// get result from user's program
-
-	if pl.needCompile() {
-		pl.compileAndRun()
-	} else {
-		pl.Run()
-	}
+	pl.runCode()
 }
 
 // exitF means the ric return error not user's code

@@ -22,15 +22,6 @@ var supportedLanguage = []string{
 	"rust",
 }
 
-var cLanguage = []string{
-	"c",
-	"cpp",
-	"go",
-	"java",
-	"scala",
-	"rust",
-}
-
 func goRun(workDir, stdin string, args ...string) (string, string, error) {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
@@ -45,33 +36,7 @@ func goRun(workDir, stdin string, args ...string) (string, string, error) {
 	return stdout.String(), stderr.String(), err
 }
 
-// Run will run payload, if the language need compile
-// it will call CompileAndRun()
-func (pl *PayLoad) Run() {
-
-	if len(pl.A.Run) == 0 {
-		if pl.L == "haskell" {
-			pl.A.Run = []string{"runhaskell"}
-		} else {
-			pl.A.Run = []string{pl.L}
-		}
-	}
-	args := pl.A.Run[0:]
-	var workDir string
-	if len(pl.F) != 0 {
-		absFilePaths, err := writeFiles(pl.F)
-		if err != nil {
-			exitF("Write files failed")
-		}
-		workDir = filepath.Dir(absFilePaths[0])
-		args = append(pl.A.Run[0:], absFilePaths...)
-	}
-
-	stdOut, stdErr, exitErr := goRun(workDir, pl.I, args...)
-	returnStdOut(stdOut, stdErr, errToStr(exitErr))
-}
-
-func (pl *PayLoad) compileAndRun() {
+func (pl *PayLoad) runCode() {
 
 	switch {
 	case pl.L == "c" || pl.L == "cpp" || pl.L == "rust":
@@ -119,17 +84,28 @@ func (pl *PayLoad) compileAndRun() {
 		runGo(pl)
 
 	default:
-		exitF("Unsupported compile language: %s", pl.L)
-	}
-}
 
-func (pl *PayLoad) needCompile() bool {
-	for _, l := range cLanguage {
-		if pl.L == l {
-			return true
+		if len(pl.A.Run) == 0 {
+			if pl.L == "haskell" {
+				pl.A.Run = []string{"runhaskell"}
+			} else {
+				pl.A.Run = []string{pl.L}
+			}
 		}
+		args := pl.A.Run[0:]
+		var workDir string
+		if len(pl.F) != 0 {
+			absFilePaths, err := writeFiles(pl.F)
+			if err != nil {
+				exitF("Write files failed")
+			}
+			workDir = filepath.Dir(absFilePaths[0])
+			args = append(pl.A.Run[0:], absFilePaths...)
+		}
+
+		stdOut, stdErr, exitErr := goRun(workDir, pl.I, args...)
+		returnStdOut(stdOut, stdErr, errToStr(exitErr))
 	}
-	return false
 }
 
 func (pl *PayLoad) isSupport() bool {
