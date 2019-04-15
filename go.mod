@@ -3,7 +3,6 @@ module github.com/keller0/scr
 require (
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v0.0.0-20180509190105-fff01bc14d96
 	github.com/docker/go-connections v0.4.0 // indirect
@@ -13,7 +12,6 @@ require (
 	github.com/gin-gonic/gin v0.0.0-20180329063307-6d913fc343cf
 	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect
-	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-cmp v0.2.0 // indirect
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/json-iterator/go v0.0.0-20180526014329-8744d7c5c7b4 // indirect
