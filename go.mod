@@ -22,7 +22,7 @@ require (
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/stretchr/testify v1.2.2
+	github.com/stretchr/testify v1.2.3-0.20181224173747-660f15d67dbb
 	github.com/ugorji/go v0.0.0-20180307152341-02537d3a3e32 // indirect
 	golang.org/x/net v0.0.0-20190227160552-c95aed5357e7
 	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6 // indirect
