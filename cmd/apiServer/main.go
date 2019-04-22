@@ -7,13 +7,13 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/scr/cmd/apiServer/handler"
-	"github.com/keller0/scr/internal"
+	"github.com/keller0/scr/internal/env"
 )
 
 var (
-	yxiPort    = internal.GetEnv("YXI_BACK_PORT", ":8090")
-	ginMode    = internal.GetEnv("GIN_MODE", "debug")
-	ginLogPath = internal.GetEnv("GIN_LOG_PATH", "/var/log/yxi/api.log")
+	yxiPort    = env.Get("YXI_BACK_PORT", ":8090")
+	ginMode    = env.Get("GIN_MODE", "debug")
+	ginLogPath = env.Get("GIN_LOG_PATH", "/var/log/yxi/api.log")
 )
 
 func main() {

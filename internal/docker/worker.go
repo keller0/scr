@@ -9,7 +9,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
-	"github.com/keller0/scr/internal"
+	"github.com/keller0/scr/internal/env"
 	"golang.org/x/net/context"
 	"io"
 	"strconv"
@@ -52,8 +52,8 @@ var (
 	MaxOutInBytes    int64 = 2 * 1024 * 1024
 	ErrTooMuchOutPut       = errors.New("Too much out put")
 	ErrWorkerTimeOut       = errors.New("Time out")
-	memLimit               = internal.GetEnv("CONTAINER_MEM_LIMIT", "50")
-	diskLimit              = internal.GetEnv("CONTAINER_DISK_LIMIT", "5")
+	memLimit               = env.Get("CONTAINER_MEM_LIMIT", "50")
+	diskLimit              = env.Get("CONTAINER_DISK_LIMIT", "5")
 )
 
 // LoadInfo Load payload to worker's stdin

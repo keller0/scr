@@ -1,4 +1,4 @@
-package internal
+package env
 
 import (
 	"os"
@@ -12,8 +12,8 @@ func TestGetEnv(t *testing.T) {
 		t.Error(err)
 	}
 
-	if GetEnv(testName, "good") != "good" {
-		t.Error("GetEnv fall back error")
+	if Get(testName, "good") != "good" {
+		t.Error("env.Get fall back error")
 	}
 
 	err = os.Setenv(testName, "good")
@@ -21,8 +21,8 @@ func TestGetEnv(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if GetEnv(testName, "foo") != "good" {
-		t.Error("GetEnv error")
+	if Get(testName, "foo") != "good" {
+		t.Error("env.Get error")
 	}
 
 }

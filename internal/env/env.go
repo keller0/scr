@@ -1,9 +1,9 @@
-package internal
+package env
 
 import "os"
 
 // GetEnv get environment variable or use default value
-func GetEnv(key, fallback string) string {
+func Get(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}
