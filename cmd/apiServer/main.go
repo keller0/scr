@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/keller0/scr/handler"
+	"github.com/keller0/scr/cmd/apiServer/handler"
 	"github.com/keller0/scr/internal"
 )
 

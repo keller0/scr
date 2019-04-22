@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keller0/scr/handler"
+	"github.com/keller0/scr/cmd/apiServer/handler"
 	"github.com/stretchr/testify/assert"
 )
 
