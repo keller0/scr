@@ -2,9 +2,6 @@
 github.com/Microsoft/go-winio
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
-# github.com/dgrijalva/jwt-go v3.2.0+incompatible
-github.com/dgrijalva/jwt-go
-github.com/dgrijalva/jwt-go/request
 # github.com/docker/distribution v2.7.1+incompatible
 github.com/docker/distribution/reference
 github.com/docker/distribution/digestset
@@ -46,11 +43,10 @@ github.com/gin-gonic/gin/render
 github.com/gogo/protobuf/proto
 # github.com/golang/protobuf v1.2.0
 github.com/golang/protobuf/proto
-# github.com/gomodule/redigo v2.0.0+incompatible
-github.com/gomodule/redigo/redis
-github.com/gomodule/redigo/internal
 # github.com/json-iterator/go v0.0.0-20180526014329-8744d7c5c7b4
 github.com/json-iterator/go
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+github.com/konsorten/go-windows-terminal-sequences
 # github.com/mattn/go-isatty v0.0.4
 github.com/mattn/go-isatty
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
@@ -66,7 +62,9 @@ github.com/opencontainers/image-spec/specs-go
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/stretchr/testify v1.2.2
+# github.com/sirupsen/logrus v1.4.1
+github.com/sirupsen/logrus
+# github.com/stretchr/testify v1.2.3-0.20181224173747-660f15d67dbb
 github.com/stretchr/testify/assert
 # github.com/ugorji/go v0.0.0-20180307152341-02537d3a3e32
 github.com/ugorji/go/codec

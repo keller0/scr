@@ -2,7 +2,6 @@ module github.com/keller0/scr
 
 require (
 	github.com/Microsoft/go-winio v0.4.12 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v0.0.0-20180509190105-fff01bc14d96
 	github.com/docker/go-connections v0.4.0 // indirect
@@ -21,7 +20,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/sirupsen/logrus v1.4.1
 	github.com/stretchr/testify v1.2.3-0.20181224173747-660f15d67dbb
 	github.com/ugorji/go v0.0.0-20180307152341-02537d3a3e32 // indirect
 	golang.org/x/net v0.0.0-20190227160552-c95aed5357e7
