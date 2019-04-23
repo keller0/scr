@@ -2,7 +2,15 @@ GOFMT ?= gofmt "-s"
 PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
 GOFILES := $(shell find . -name "*.go" -type f -not -path "./vendor/*")
 
-all: apiimage runnerimages
+help:
+	@echo "vet/test/fmt"
+	@echo "push/push pullali/pushali"
+	@echo "all: build all images and run in docker"
+	@echo "api: build yxi-api image"
+	@echo "drun: run yxi-api in docker"
+	@echo "runners: build all runner images"
+
+all: api runners
 	docker run -it --rm -p 8090:8090 -v "/var/run/docker.sock:/var/run/docker.sock" yximages/yxi-api
 
 .PHONY: fmt
@@ -19,26 +27,27 @@ vet:
 test:
 	go test -v -mod=vendor ./...
 
-apiimage:
+api:
 	docker build -t yximages/yxi-api .
 
-dbuild: apiimage
+drun:
 	docker run -it --rm -p 8090:8090 -v "/var/run/docker.sock:/var/run/docker.sock" yximages/yxi-api
 
-runnerimages:
+runners:
 	cd scripts && ./images.sh -b
 
-push2ali:
-	cd scripts && ./images.sh -a
 
-push2dh:
+push:
 	cd scripts && ./images.sh -d
 
-pullimages:
+pull:
 	cd scripts && ./images.sh -p
 
 pullali:
 	cd scripts && ./images.sh -l
+
+pushali:
+	cd scripts && ./images.sh -a
 
 clean:
 	rm ./main
