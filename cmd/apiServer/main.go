@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	yxiPort = env.Get("YXI_BACK_PORT", ":8090")
+	yxiPort    = env.Get("YXI_BACK_PORT", ":8090")
 	ginLogPath = env.Get("GIN_LOG_PATH", "/var/log/yxi/api.log")
 )
 

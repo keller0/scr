@@ -10,6 +10,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/keller0/scr/internal/env"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"io"
 	"strconv"
@@ -77,10 +78,10 @@ func (w *Worker) Run() (string, string, error) {
 	containerJSON, err := w.createContainer()
 	defer func() {
 		err = w.cli.ContainerRemove(w.ctx, w.tmpID, types.ContainerRemoveOptions{})
-		fmt.Println("Container", w.tmpID, "removed")
 		if err != nil {
-			fmt.Println("failed to remove container ", w.tmpID)
+			log.Error("failed to remove container ", w.tmpID)
 		}
+		log.Info("container ", w.tmpID, " removed")
 	}()
 
 	if err != nil {
@@ -159,20 +160,20 @@ func (w *Worker) attachContainer() (err error) {
 		Stderr: true,
 	}
 
-	fmt.Println("container", w.containerID, "Attaching...")
+	log.Info("container ", w.containerID, " Attaching...")
 	hijacked, err := w.cli.ContainerAttach(w.ctx, w.containerID, options)
 	if err != nil {
 		return
 	}
 	defer hijacked.Close()
 
-	fmt.Println("Container", w.containerID, "Starting ...")
+	log.Info("container ", w.containerID, " Starting ...")
 	err = w.cli.ContainerStart(w.ctx, w.containerID, types.ContainerStartOptions{})
 	if err != nil {
 		return
 	}
 
-	fmt.Println("Container", w.containerID, "Waiting for attach to finish...")
+	log.Info("container ", w.containerID, " Waiting for attach to finish...")
 	attachCh := make(chan error, 2)
 
 	// Copy any output to the build trace
@@ -207,28 +208,28 @@ func (w *Worker) attachContainer() (err error) {
 
 	case err = <-attachCh:
 		w.killContainer(w.containerID, waitCh)
-		fmt.Println("Container", w.containerID, "attach finished with", err)
+		log.Info("container ", w.containerID, " attach finished with", err)
 
 	case err = <-waitCh:
-		fmt.Println("Container", w.containerID, "wait finished with", err)
+		log.Info("container ", w.containerID, " wait finished with", err)
 
 	case <-time.After(10 * time.Second):
 		w.killContainer(w.containerID, waitCh)
 		err = ErrWorkerTimeOut
-		fmt.Println("Container", w.containerID, "time out")
+		log.Info("container ", w.containerID, " time out")
 	}
 	return
 }
 
 func (w *Worker) waitForContainer() error {
-	fmt.Println("Container", w.containerID, "Waiting...")
+	log.Info("container ", w.containerID, " Waiting...")
 
 	retries := 0
 	// Use active wait
 	for {
 		container, err := w.cli.ContainerInspect(w.ctx, w.containerID)
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Info(err.Error())
 			if client.IsErrNotFound(err) {
 				return err
 			}
@@ -260,7 +261,7 @@ func (w *Worker) waitForContainer() error {
 func (w *Worker) killContainer(id string, waitCh chan error) (err error) {
 	for {
 
-		fmt.Println("Container", id, "Killing ...")
+		log.Info("container ", id, " Killing ...")
 		w.cli.ContainerKill(w.ctx, id, "SIGKILL")
 
 		// Wait for signal that container were killed

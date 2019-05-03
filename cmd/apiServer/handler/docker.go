@@ -18,7 +18,7 @@ type result struct {
 type uResult struct {
 	Stdout    string `json:"stdout"`
 	Stderr    string `json:"stderr"`
-	Exiterror string `json:"exiterror"`
+	ExitError string `json:"exiterror"`
 }
 
 // RunCode depended on language type and version

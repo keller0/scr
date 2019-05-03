@@ -30,7 +30,7 @@ test:
 api:
 	docker build -t yximages/yxi-api .
 
-drun:
+drun: api
 	docker run -it --rm -p 8090:8090 -v "/var/run/docker.sock:/var/run/docker.sock" yximages/yxi-api
 
 runners:
