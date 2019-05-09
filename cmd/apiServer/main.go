@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/scr/cmd/apiServer/handler"
+	"github.com/keller0/scr/internal/docker"
 	"github.com/keller0/scr/internal/env"
 	log "github.com/sirupsen/logrus"
 )
@@ -31,7 +32,7 @@ func main() {
 		v1.POST("/:language/:version", handler.RunCode)
 
 	}
-
+	docker.StartManagers()
 	err := r.Run(yxiPort)
 	log.Error(err)
 

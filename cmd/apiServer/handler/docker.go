@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/keller0/scr/internal/docker"
+	log "github.com/sirupsen/logrus"
 )
 
 type result struct {
@@ -19,6 +21,25 @@ type uResult struct {
 	Stdout    string `json:"stdout"`
 	Stderr    string `json:"stderr"`
 	ExitError string `json:"exiterror"`
+}
+
+// PayLoad as stdin pass to ric container's stdin
+type PayLoad struct {
+	F []*oneFile `json:"files"`
+	A *argument  `json:"argument"`
+	I string     `json:"stdin"`
+	L string     `json:"language"`
+}
+
+type argument struct {
+	Compile []string `json:"compile"`
+	Run     []string `json:"run"`
+}
+
+// file type
+type oneFile struct {
+	Name    string `json:"name"`
+	Content string `json:"content"`
 }
 
 // RunCode depended on language type and version
@@ -39,14 +60,16 @@ func RunCode(c *gin.Context) {
 		}
 	}
 
-	var ar docker.PayLoad
-	if err := c.ShouldBindJSON(&ar); err != nil {
+	var pl PayLoad
+	if err := c.ShouldBindJSON(&pl); err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Payload not valid"]})
 		return
 	}
+
+	img := V2Images(strings.ToLower(language), version)
 	// use docker to run ric
-	res, err := workerRun(ar, strings.ToLower(language), version)
+	res, err := runJob(pl, img)
 	if err != nil {
 		if err == docker.ErrWorkerTimeOut {
 			c.JSON(http.StatusRequestTimeout, gin.H{"errNumber": responseErr["Time out"]})
@@ -64,17 +87,19 @@ func RunCode(c *gin.Context) {
 	}
 }
 
-func workerRun(ar docker.PayLoad, language, version string) (*result, error) {
+func runJob(pl PayLoad, img string) (*result, error) {
 
-	var w docker.Worker
+	var job docker.Job
 
-	// load info to worker
-	err := w.LoadInfo(&ar, language, V2Images(language, version))
+	bs, err := json.Marshal(pl)
 	if err != nil {
 		return nil, err
 	}
 
-	userResult, taskError, err := w.Run()
+	job.Payload = bytes.NewBuffer(bs)
+	job.Image = img
+
+	userResult, taskError, err := job.Do()
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +107,8 @@ func workerRun(ar docker.PayLoad, language, version string) (*result, error) {
 	var res result
 	e := json.Unmarshal([]byte(userResult), &res.UserResult)
 	if e != nil {
-		fmt.Println(e)
+		log.Info(e)
+		return nil, err
 	}
 
 	res.TaskError = taskError
