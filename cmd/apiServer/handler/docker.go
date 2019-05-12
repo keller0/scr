@@ -3,7 +3,6 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -60,16 +59,15 @@ func RunCode(c *gin.Context) {
 		}
 	}
 	img := V2Images(strings.ToLower(language), version)
-	log.Info("run code ", img)
-
 	var pl PayLoad
 	if err := c.ShouldBindJSON(&pl); err != nil {
 		log.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Payload not valid"]})
 		return
 	}
-	log.Info(fmt.Sprintf("bind json %v", pl))
 
+	pl.L = strings.ToLower(language)
+	log.Info("request language: ", pl.L, " version: ", img)
 	// use docker to run ric
 	userResult, ricResp, err := runJob(pl, img)
 	if err != nil {

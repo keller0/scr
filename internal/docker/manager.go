@@ -56,9 +56,7 @@ func (jb *Job) Do() (string, string, error) {
 	work.ctx = context.Background()
 	defer removeContainer(containerID)
 
-	out, error, err := work.Run()
-
-	return out, error, err
+	return work.Run()
 
 }
 
