@@ -3,7 +3,6 @@ package docker
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -23,9 +22,9 @@ var (
 )
 
 var (
-	doneWorkers chan string
-	gccWorker   chan string
-	goWorker    chan string
+	GccWorker  chan string
+	GoWorker   chan string
+	QuitSignal chan int
 )
 
 type Job struct {
@@ -33,15 +32,21 @@ type Job struct {
 	Payload io.Reader
 }
 
+func init() {
+	log.Info("initing")
+	GccWorker = make(chan string, 2)
+	GoWorker = make(chan string, 2)
+	QuitSignal = make(chan int)
+}
+
 func (jb *Job) Do() (string, string, error) {
 
 	work := new(Worker)
-
-	// TODO get a container instead create one
-	containerID, err := getWorkerByName(jb.Image)
+	containerID, err := getContainerByName(jb.Image)
 	if err != nil {
 		return "", "", err
 	}
+	log.Info("got container: ", containerID)
 	work.containerID = containerID
 	work.cli, err = client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
@@ -49,63 +54,80 @@ func (jb *Job) Do() (string, string, error) {
 	}
 	work.ricIn = jb.Payload
 	work.ctx = context.Background()
-	defer func() {
-		doneWorkers <- containerID
-	}()
+	defer removeContainer(containerID)
 
-	return work.Run()
+	out, error, err := work.Run()
+
+	return out, error, err
 
 }
 
 func StartManagers() {
 
 	log.Info("starting manager")
-	go startWorkers(gccWorker, "yximages/gcc:8.3", 10)
-	go startWorkers(goWorker, "yximages/golang:1.12", 10)
-	go WorkersGo(doneWorkers)
+	go startWorkers(GccWorker, "yximages/gcc:8.3", QuitSignal)
+	go startWorkers(GoWorker, "yximages/golang:1.12", QuitSignal)
 
 }
 
-func startWorkers(ws chan string, image string, num int) {
-	ws = make(chan string, num)
+func startWorkers(ws chan string, image string, q chan int) {
 	for {
-		log.Debug("starting a ", image)
-		cId, err := CreateContainer(image)
-		if err != nil {
-			log.Error("create contianer failed")
+		select {
+		case <-q:
+			close(ws)
+			log.Info("stopping workers")
+			return
+
+		default:
+			log.Debug("starting a ", image)
+			cId, err := CreateContainer(image)
+			if err != nil {
+				log.Error("create contianer failed")
+			}
+			ws <- cId
 		}
-		ws <- cId
 	}
 
 }
 
-// WorkersGo remove containers
-func WorkersGo(wsg chan string) {
-	for {
-		ws := <-wsg
-		fmt.Println(ws, "removing...")
-		cli, err := client.NewClientWithOpts(client.FromEnv)
-		if err != nil {
-			panic(err)
-		}
-		err = cli.ContainerRemove(context.Background(), ws, types.ContainerRemoveOptions{})
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("removed container:", ws)
+func removeContainer(cid string) {
+	log.Info(cid, "removing ", cid)
 
-		time.Sleep(3 * time.Second)
-		fmt.Println(ws, "removed")
+	cli, err := client.NewClientWithOpts(client.FromEnv)
+	if err != nil {
+		log.Error(err)
 	}
+	err = cli.ContainerRemove(context.Background(), cid, types.ContainerRemoveOptions{})
+	if err != nil {
+		log.Error(err)
+	}
+	log.Info("removed container:", cid)
+
 }
 
-func getWorkerByName(image string) (string, error) {
+// JobStop stop all jobs
+func JobStop() {
+	log.Info("start to stop all jobs")
+	close(QuitSignal)
+	time.Sleep(2 * time.Second)
+
+	log.Info("start remove all containers")
+	for len(GccWorker) > 0 {
+		removeContainer(<-GccWorker)
+	}
+	for len(GoWorker) > 0 {
+		removeContainer(<-GoWorker)
+	}
+	log.Info("all job stoped")
+}
+
+func getContainerByName(image string) (string, error) {
+	log.Info("try get a container of:", image)
 	switch image {
-
 	case "yximages/gcc:8.3":
-		return <-gccWorker, nil
+		return <-GccWorker, nil
 	case "yximages/golang:1.12":
-		return <-goWorker, nil
+		return <-GoWorker, nil
 	default:
 		return CreateContainer(image)
 	}

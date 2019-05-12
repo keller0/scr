@@ -60,6 +60,9 @@ func TestCreate(t *testing.T) {
 func TestStartManagers(t *testing.T) {
 	StartManagers()
 	time.Sleep(13 * time.Second)
+	fmt.Println(len(GccWorker))
+	fmt.Println(len(GoWorker))
 
-	assert.Equal(t, true, len(workers) < 13)
+	assert.Equal(t, true, len(GccWorker) < 13)
+
 }

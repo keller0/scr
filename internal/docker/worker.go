@@ -17,7 +17,6 @@ import (
 type Worker struct {
 	Image       string // images name
 	containerID string
-	tmpID       string
 	cli         *client.Client
 	ctx         context.Context
 	// ric's stdin stdout stderr
@@ -88,18 +87,27 @@ func (w *Worker) attachContainer() (err error) {
 
 	select {
 	case <-w.ctx.Done():
-		w.killContainer(w.containerID, waitCh)
+		err = w.killContainer(w.containerID, waitCh)
+		log.Error(err)
 		err = errors.New("Aborted")
 
 	case err = <-attachCh:
-		w.killContainer(w.containerID, waitCh)
+		errk := w.killContainer(w.containerID, waitCh)
+		if errk != nil {
+			log.Error(errk)
+		}
+
 		log.Info("container ", w.containerID, " attach finished with ", err)
 
 	case err = <-waitCh:
 		log.Info("container ", w.containerID, " wait finished with ", err)
 
 	case <-time.After(10 * time.Second):
-		w.killContainer(w.containerID, waitCh)
+		errk := w.killContainer(w.containerID, waitCh)
+		if errk != nil {
+			log.Error(errk)
+		}
+
 		err = ErrWorkerTimeOut
 		log.Info("container ", w.containerID, " time out")
 	}
@@ -119,19 +127,19 @@ func (w *Worker) waitForContainer() error {
 				return err
 			}
 
-			if retries > 3 {
+			if retries > 6 {
 				return err
 			}
 
 			retries++
-			time.Sleep(time.Second)
+			time.Sleep(500 * time.Millisecond)
 			continue
 		}
 
 		// Reset retry timer
 		retries = 0
 		if container.State.Running {
-			time.Sleep(time.Second)
+			time.Sleep(500 * time.Millisecond)
 			continue
 		}
 
@@ -143,16 +151,19 @@ func (w *Worker) waitForContainer() error {
 	}
 }
 
-func (w *Worker) killContainer(id string, waitCh chan error) (err error) {
+func (w *Worker) killContainer(id string, waitCh chan error) error {
 	for {
 		log.Info("container ", id, " Killing ...")
-		w.cli.ContainerKill(w.ctx, id, "SIGKILL")
-
+		err := w.cli.ContainerKill(w.ctx, id, "SIGKILL")
+		if err != nil {
+			log.Error(err)
+			return err
+		}
 		// Wait for signal that container were killed
 		// or retry after some time
 		select {
 		case err = <-waitCh:
-			return
+			return err
 
 		case <-time.After(time.Second):
 		}

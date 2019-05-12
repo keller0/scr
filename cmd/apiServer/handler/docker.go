@@ -59,18 +59,21 @@ func RunCode(c *gin.Context) {
 			return
 		}
 	}
+	img := V2Images(strings.ToLower(language), version)
+	log.Info("run code ", img)
 
 	var pl PayLoad
 	if err := c.ShouldBindJSON(&pl); err != nil {
-		fmt.Println(err)
+		log.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Payload not valid"]})
 		return
 	}
+	log.Info(fmt.Sprintf("bind json %v", pl))
 
-	img := V2Images(strings.ToLower(language), version)
 	// use docker to run ric
-	res, err := runJob(pl, img)
+	userResult, ricResp, err := runJob(pl, img)
 	if err != nil {
+		// api error
 		if err == docker.ErrWorkerTimeOut {
 			c.JSON(http.StatusRequestTimeout, gin.H{"errNumber": responseErr["Time out"]})
 		} else if err == docker.ErrTooMuchOutPut {
@@ -82,36 +85,39 @@ func RunCode(c *gin.Context) {
 					"msg":       err.Error(),
 				})
 		}
+		return
 	} else {
-		c.JSON(http.StatusOK, res)
+		if len(ricResp) > 0 {
+			log.Error(ricResp)
+			c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["Run code error"], "msg": ricResp})
+		} else {
+			var res result
+			res.TaskError = ricResp
+			e := json.Unmarshal([]byte(userResult), &res.UserResult)
+			if e != nil {
+				// decode user result error
+				log.Error(e)
+				c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["Run code error"], "msg": e.Error()})
+			} else {
+				c.JSON(http.StatusOK, res)
+			}
+
+		}
+		return
 	}
 }
 
-func runJob(pl PayLoad, img string) (*result, error) {
+func runJob(pl PayLoad, img string) (string, string, error) {
 
 	var job docker.Job
 
 	bs, err := json.Marshal(pl)
 	if err != nil {
-		return nil, err
+		return "", "", err
 	}
 
 	job.Payload = bytes.NewBuffer(bs)
 	job.Image = img
 
-	userResult, taskError, err := job.Do()
-	if err != nil {
-		return nil, err
-	}
-
-	var res result
-	e := json.Unmarshal([]byte(userResult), &res.UserResult)
-	if e != nil {
-		log.Info(e)
-		return nil, err
-	}
-
-	res.TaskError = taskError
-
-	return &res, nil
+	return job.Do()
 }
