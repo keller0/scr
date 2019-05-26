@@ -15,8 +15,8 @@ import (
 
 var (
 	MaxOutInBytes    int64 = 2 * 1024 * 1024
-	ErrTooMuchOutPut       = errors.New("Too much out put")
-	ErrWorkerTimeOut       = errors.New("Time out")
+	ErrTooMuchOutPut       = errors.New("too much out put")
+	ErrWorkerTimeOut       = errors.New("time out")
 	memLimit               = env.Get("CONTAINER_MEM_LIMIT", "50")
 	diskLimit              = env.Get("CONTAINER_DISK_LIMIT", "5")
 )

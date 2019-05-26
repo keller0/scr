@@ -82,6 +82,8 @@ push_to_ali () {
         fi
 
     done
+    docker tag "yximages/yxi-api" "registry.cn-shanghai.aliyuncs.com/yxi/yxi-api" &
+    docker push "registry.cn-shanghai.aliyuncs.com/yxi/yxi-api"
 }
 
 push_to_docker_hub () {
@@ -98,6 +100,7 @@ push_to_docker_hub () {
         fi
 
     done
+    docker push "yximages/yxi-api"
 }
 
 pull_from_docker_hub () {
@@ -114,6 +117,7 @@ pull_from_docker_hub () {
         fi
 
     done
+    docker pull "yximages/yxi-api"
 }
 
 pull_from_ali () {
@@ -132,6 +136,9 @@ pull_from_ali () {
         fi
 
     done
+
+    docker pull "registry.cn-shanghai.aliyuncs.com/yxi/yxi-api"
+    docker tag  "registry.cn-shanghai.aliyuncs.com/yxi/yxi-api" "yximages/yxi-api"
 }
 
 print_usage() {
