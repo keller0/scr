@@ -89,7 +89,7 @@ func startWorkers(ws chan string, image string, q chan int) {
 }
 
 func removeContainer(cid string) {
-	log.Info(cid, "removing ", cid)
+	log.Info("container ", cid, " removing...")
 
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
@@ -99,7 +99,7 @@ func removeContainer(cid string) {
 	if err != nil {
 		log.Error(err)
 	}
-	log.Info("removed container:", cid)
+	log.Info("container ", cid, " removed")
 
 }
 

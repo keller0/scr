@@ -2,7 +2,6 @@ package docker
 
 import (
 	"context"
-	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +21,7 @@ func TestDocker(t *testing.T) {
 	}
 
 	for _, container := range containers {
-		fmt.Printf("%s %s\n", container.ID[:10], container.Image)
+		t.Log(container.ID[:10], container.Image)
 	}
 	assert.Equal(t, 200, 200)
 }
@@ -38,14 +37,13 @@ func TestCreate(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("created container:", id)
-
+	t.Log("created container:", id)
 	defer func() {
 		err = cli.ContainerRemove(ctx, id, types.ContainerRemoveOptions{})
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("removed container:", id)
+		t.Log("container", id, "removed")
 	}()
 
 	status, err := cli.ContainerStats(ctx, id, false)
@@ -53,15 +51,15 @@ func TestCreate(t *testing.T) {
 		panic(err)
 	}
 
-	fmt.Printf("%v\n", status)
+	t.Log(status)
 	assert.Equal(t, 200, 200)
 }
 
 func TestStartManagers(t *testing.T) {
 	StartManagers()
 	time.Sleep(13 * time.Second)
-	fmt.Println(len(GccWorker))
-	fmt.Println(len(GoWorker))
+	t.Log(len(GccWorker))
+	t.Log(len(GoWorker))
 
 	assert.Equal(t, true, len(GccWorker) < 13)
 
