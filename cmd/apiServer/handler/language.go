@@ -63,14 +63,16 @@ var VersionMap = map[string][]string{
 		"3.7",
 		"2.7",
 	},
-	"php": {"7.4"},
+	"php": {
+		"7.4",
+	},
 	"java": {
 		"14",
 	},
 
 	"perl":  {"5.28"},
 	"perl6": {"latest"},
-	"ruby":  {"2.8"},
+	"ruby":  {"2.7"},
 	"rust":  {"latest"},
 }
 
@@ -81,7 +83,7 @@ var imageMap = map[string]string{
 
 	"cpp-gcc10": "gcc:10",
 
-	"php-7.2.5":  "php:7.2.5",
+	"php-7.4":    "php:7.4",
 	"python-3.7": "python:3.7",
 	"python-2.7": "python:2.7",
 
@@ -92,7 +94,7 @@ var imageMap = map[string]string{
 	"haskell-ghc-8.6": "haskell:8.6",
 	"perl-5.28":       "perl:5.28",
 	"perl6-latest":    "perl6",
-	"ruby-2.8":        "ruby:2.8",
+	"ruby-2.7":        "ruby:2.7",
 	"rust-latest":     "rust",
 }
 
