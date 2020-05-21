@@ -1,7 +1,6 @@
-package client // import "github.com/docker/docker/client"
+package client
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -11,6 +10,7 @@ import (
 	"github.com/docker/docker/api/types/swarm"
 	digest "github.com/opencontainers/go-digest"
 	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 )
 
 // ServiceCreate creates a new Service.

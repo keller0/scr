@@ -3,15 +3,15 @@ set -e
 
 images=(
     "bash:4.4" \
-    "gcc:8.3" "gcc:7.4" "gcc:6.5" "gcc:5.5" \
-    "golang:1.11" "golang:1.12" \
-    "haskell:8.6"  \
-    "openjdk:8" "openjdk:11" "openjdk:12" "openjdk:13" \
+    "gcc:10" \
+    "golang:1.14" \
+    "haskell:8.10"  \
+    "openjdk:14" \
     "perl:5.28" \
     "rakudo-star" \
-    "php:7.2.5" \
-    "python:2.7" "python:3.7" \
-    "ruby:2.6" \
+    "php:7.4" \
+    "python:3.8" \
+    "ruby:2.7" \
     "rust"
     )
 

@@ -17,6 +17,7 @@ import (
 
 var (
 	yxiPort    = env.Get("YXI_BACK_PORT", ":8090")
+	yxiHost    = env.Get("YXI_BACK_HOST", "localhost")
 	ginLogPath = env.Get("GIN_LOG_PATH", "/var/log/yxi/api.log")
 )
 
@@ -40,7 +41,7 @@ func main() {
 	}
 	docker.StartManagers()
 
-	srv := &http.Server{Addr: yxiPort, Handler: r}
+	srv := &http.Server{Addr: yxiHost + yxiPort, Handler: r}
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

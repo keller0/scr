@@ -2,10 +2,11 @@ package jsoniter
 
 import (
 	"fmt"
-	"github.com/modern-go/reflect2"
 	"io"
 	"strings"
 	"unsafe"
+
+	"github.com/modern-go/reflect2"
 )
 
 func decoderOfStruct(ctx *ctx, typ reflect2.Type) ValDecoder {
@@ -31,11 +32,15 @@ func decoderOfStruct(ctx *ctx, typ reflect2.Type) ValDecoder {
 	for k, binding := range bindings {
 		fields[k] = binding.Decoder.(*structFieldDecoder)
 	}
-	for k, binding := range bindings {
-		if _, found := fields[strings.ToLower(k)]; !found {
-			fields[strings.ToLower(k)] = binding.Decoder.(*structFieldDecoder)
+
+	if !ctx.caseSensitive() {
+		for k, binding := range bindings {
+			if _, found := fields[strings.ToLower(k)]; !found {
+				fields[strings.ToLower(k)] = binding.Decoder.(*structFieldDecoder)
+			}
 		}
 	}
+
 	return createStructDecoder(ctx, typ, fields)
 }
 
@@ -46,12 +51,13 @@ func createStructDecoder(ctx *ctx, typ reflect2.Type, fields map[string]*structF
 	knownHash := map[int64]struct{}{
 		0: {},
 	}
+
 	switch len(fields) {
 	case 0:
 		return &skipObjectDecoder{typ}
 	case 1:
 		for fieldName, fieldDecoder := range fields {
-			fieldHash := calcHash(fieldName)
+			fieldHash := calcHash(fieldName, ctx.caseSensitive())
 			_, known := knownHash[fieldHash]
 			if known {
 				return &generalStructDecoder{typ, fields, false}
@@ -65,7 +71,7 @@ func createStructDecoder(ctx *ctx, typ reflect2.Type, fields map[string]*structF
 		var fieldDecoder1 *structFieldDecoder
 		var fieldDecoder2 *structFieldDecoder
 		for fieldName, fieldDecoder := range fields {
-			fieldHash := calcHash(fieldName)
+			fieldHash := calcHash(fieldName, ctx.caseSensitive())
 			_, known := knownHash[fieldHash]
 			if known {
 				return &generalStructDecoder{typ, fields, false}
@@ -88,7 +94,7 @@ func createStructDecoder(ctx *ctx, typ reflect2.Type, fields map[string]*structF
 		var fieldDecoder2 *structFieldDecoder
 		var fieldDecoder3 *structFieldDecoder
 		for fieldName, fieldDecoder := range fields {
-			fieldHash := calcHash(fieldName)
+			fieldHash := calcHash(fieldName, ctx.caseSensitive())
 			_, known := knownHash[fieldHash]
 			if known {
 				return &generalStructDecoder{typ, fields, false}
@@ -119,7 +125,7 @@ func createStructDecoder(ctx *ctx, typ reflect2.Type, fields map[string]*structF
 		var fieldDecoder3 *structFieldDecoder
 		var fieldDecoder4 *structFieldDecoder
 		for fieldName, fieldDecoder := range fields {
-			fieldHash := calcHash(fieldName)
+			fieldHash := calcHash(fieldName, ctx.caseSensitive())
 			_, known := knownHash[fieldHash]
 			if known {
 				return &generalStructDecoder{typ, fields, false}
@@ -156,7 +162,7 @@ func createStructDecoder(ctx *ctx, typ reflect2.Type, fields map[string]*structF
 		var fieldDecoder4 *structFieldDecoder
 		var fieldDecoder5 *structFieldDecoder
 		for fieldName, fieldDecoder := range fields {
-			fieldHash := calcHash(fieldName)
+			fieldHash := calcHash(fieldName, ctx.caseSensitive())
 			_, known := knownHash[fieldHash]
 			if known {
 				return &generalStructDecoder{typ, fields, false}
@@ -199,7 +205,7 @@ func createStructDecoder(ctx *ctx, typ reflect2.Type, fields map[string]*structF
 		var fieldDecoder5 *structFieldDecoder
 		var fieldDecoder6 *structFieldDecoder
 		for fieldName, fieldDecoder := range fields {
-			fieldHash := calcHash(fieldName)
+			fieldHash := calcHash(fieldName, ctx.caseSensitive())
 			_, known := knownHash[fieldHash]
 			if known {
 				return &generalStructDecoder{typ, fields, false}
@@ -248,7 +254,7 @@ func createStructDecoder(ctx *ctx, typ reflect2.Type, fields map[string]*structF
 		var fieldDecoder6 *structFieldDecoder
 		var fieldDecoder7 *structFieldDecoder
 		for fieldName, fieldDecoder := range fields {
-			fieldHash := calcHash(fieldName)
+			fieldHash := calcHash(fieldName, ctx.caseSensitive())
 			_, known := knownHash[fieldHash]
 			if known {
 				return &generalStructDecoder{typ, fields, false}
@@ -303,7 +309,7 @@ func createStructDecoder(ctx *ctx, typ reflect2.Type, fields map[string]*structF
 		var fieldDecoder7 *structFieldDecoder
 		var fieldDecoder8 *structFieldDecoder
 		for fieldName, fieldDecoder := range fields {
-			fieldHash := calcHash(fieldName)
+			fieldHash := calcHash(fieldName, ctx.caseSensitive())
 			_, known := knownHash[fieldHash]
 			if known {
 				return &generalStructDecoder{typ, fields, false}
@@ -364,7 +370,7 @@ func createStructDecoder(ctx *ctx, typ reflect2.Type, fields map[string]*structF
 		var fieldDecoder8 *structFieldDecoder
 		var fieldDecoder9 *structFieldDecoder
 		for fieldName, fieldDecoder := range fields {
-			fieldHash := calcHash(fieldName)
+			fieldHash := calcHash(fieldName, ctx.caseSensitive())
 			_, known := knownHash[fieldHash]
 			if known {
 				return &generalStructDecoder{typ, fields, false}
@@ -431,7 +437,7 @@ func createStructDecoder(ctx *ctx, typ reflect2.Type, fields map[string]*structF
 		var fieldDecoder9 *structFieldDecoder
 		var fieldDecoder10 *structFieldDecoder
 		for fieldName, fieldDecoder := range fields {
-			fieldHash := calcHash(fieldName)
+			fieldHash := calcHash(fieldName, ctx.caseSensitive())
 			_, known := knownHash[fieldHash]
 			if known {
 				return &generalStructDecoder{typ, fields, false}
@@ -494,6 +500,9 @@ func (decoder *generalStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) 
 	if !iter.readObjectStart() {
 		return
 	}
+	if !iter.incrementDepth() {
+		return
+	}
 	var c byte
 	for c = ','; c == ','; c = iter.nextToken() {
 		decoder.decodeOneField(ptr, iter)
@@ -504,6 +513,7 @@ func (decoder *generalStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) 
 	if c != '}' {
 		iter.ReportError("struct Decode", `expect }, but found `+string([]byte{c}))
 	}
+	iter.decrementDepth()
 }
 
 func (decoder *generalStructDecoder) decodeOneField(ptr unsafe.Pointer, iter *Iterator) {
@@ -513,19 +523,19 @@ func (decoder *generalStructDecoder) decodeOneField(ptr unsafe.Pointer, iter *It
 		fieldBytes := iter.ReadStringAsSlice()
 		field = *(*string)(unsafe.Pointer(&fieldBytes))
 		fieldDecoder = decoder.fields[field]
-		if fieldDecoder == nil {
+		if fieldDecoder == nil && !iter.cfg.caseSensitive {
 			fieldDecoder = decoder.fields[strings.ToLower(field)]
 		}
 	} else {
 		field = iter.ReadString()
 		fieldDecoder = decoder.fields[field]
-		if fieldDecoder == nil {
+		if fieldDecoder == nil && !iter.cfg.caseSensitive {
 			fieldDecoder = decoder.fields[strings.ToLower(field)]
 		}
 	}
 	if fieldDecoder == nil {
-		msg := "found unknown field: " + field
 		if decoder.disallowUnknownFields {
+			msg := "found unknown field: " + field
 			iter.ReportError("ReadObject", msg)
 		}
 		c := iter.nextToken()
@@ -565,6 +575,9 @@ func (decoder *oneFieldStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator)
 	if !iter.readObjectStart() {
 		return
 	}
+	if !iter.incrementDepth() {
+		return
+	}
 	for {
 		if iter.readFieldHash() == decoder.fieldHash {
 			decoder.fieldDecoder.Decode(ptr, iter)
@@ -578,6 +591,7 @@ func (decoder *oneFieldStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator)
 	if iter.Error != nil && iter.Error != io.EOF {
 		iter.Error = fmt.Errorf("%v.%s", decoder.typ, iter.Error.Error())
 	}
+	iter.decrementDepth()
 }
 
 type twoFieldsStructDecoder struct {
@@ -590,6 +604,9 @@ type twoFieldsStructDecoder struct {
 
 func (decoder *twoFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	if !iter.readObjectStart() {
+		return
+	}
+	if !iter.incrementDepth() {
 		return
 	}
 	for {
@@ -608,6 +625,7 @@ func (decoder *twoFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator
 	if iter.Error != nil && iter.Error != io.EOF {
 		iter.Error = fmt.Errorf("%v.%s", decoder.typ, iter.Error.Error())
 	}
+	iter.decrementDepth()
 }
 
 type threeFieldsStructDecoder struct {
@@ -622,6 +640,9 @@ type threeFieldsStructDecoder struct {
 
 func (decoder *threeFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	if !iter.readObjectStart() {
+		return
+	}
+	if !iter.incrementDepth() {
 		return
 	}
 	for {
@@ -642,6 +663,7 @@ func (decoder *threeFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterat
 	if iter.Error != nil && iter.Error != io.EOF {
 		iter.Error = fmt.Errorf("%v.%s", decoder.typ, iter.Error.Error())
 	}
+	iter.decrementDepth()
 }
 
 type fourFieldsStructDecoder struct {
@@ -658,6 +680,9 @@ type fourFieldsStructDecoder struct {
 
 func (decoder *fourFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	if !iter.readObjectStart() {
+		return
+	}
+	if !iter.incrementDepth() {
 		return
 	}
 	for {
@@ -680,6 +705,7 @@ func (decoder *fourFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterato
 	if iter.Error != nil && iter.Error != io.EOF {
 		iter.Error = fmt.Errorf("%v.%s", decoder.typ, iter.Error.Error())
 	}
+	iter.decrementDepth()
 }
 
 type fiveFieldsStructDecoder struct {
@@ -698,6 +724,9 @@ type fiveFieldsStructDecoder struct {
 
 func (decoder *fiveFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	if !iter.readObjectStart() {
+		return
+	}
+	if !iter.incrementDepth() {
 		return
 	}
 	for {
@@ -722,6 +751,7 @@ func (decoder *fiveFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterato
 	if iter.Error != nil && iter.Error != io.EOF {
 		iter.Error = fmt.Errorf("%v.%s", decoder.typ, iter.Error.Error())
 	}
+	iter.decrementDepth()
 }
 
 type sixFieldsStructDecoder struct {
@@ -742,6 +772,9 @@ type sixFieldsStructDecoder struct {
 
 func (decoder *sixFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	if !iter.readObjectStart() {
+		return
+	}
+	if !iter.incrementDepth() {
 		return
 	}
 	for {
@@ -768,6 +801,7 @@ func (decoder *sixFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator
 	if iter.Error != nil && iter.Error != io.EOF {
 		iter.Error = fmt.Errorf("%v.%s", decoder.typ, iter.Error.Error())
 	}
+	iter.decrementDepth()
 }
 
 type sevenFieldsStructDecoder struct {
@@ -790,6 +824,9 @@ type sevenFieldsStructDecoder struct {
 
 func (decoder *sevenFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	if !iter.readObjectStart() {
+		return
+	}
+	if !iter.incrementDepth() {
 		return
 	}
 	for {
@@ -818,6 +855,7 @@ func (decoder *sevenFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterat
 	if iter.Error != nil && iter.Error != io.EOF {
 		iter.Error = fmt.Errorf("%v.%s", decoder.typ, iter.Error.Error())
 	}
+	iter.decrementDepth()
 }
 
 type eightFieldsStructDecoder struct {
@@ -842,6 +880,9 @@ type eightFieldsStructDecoder struct {
 
 func (decoder *eightFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	if !iter.readObjectStart() {
+		return
+	}
+	if !iter.incrementDepth() {
 		return
 	}
 	for {
@@ -872,6 +913,7 @@ func (decoder *eightFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterat
 	if iter.Error != nil && iter.Error != io.EOF {
 		iter.Error = fmt.Errorf("%v.%s", decoder.typ, iter.Error.Error())
 	}
+	iter.decrementDepth()
 }
 
 type nineFieldsStructDecoder struct {
@@ -898,6 +940,9 @@ type nineFieldsStructDecoder struct {
 
 func (decoder *nineFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	if !iter.readObjectStart() {
+		return
+	}
+	if !iter.incrementDepth() {
 		return
 	}
 	for {
@@ -930,6 +975,7 @@ func (decoder *nineFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterato
 	if iter.Error != nil && iter.Error != io.EOF {
 		iter.Error = fmt.Errorf("%v.%s", decoder.typ, iter.Error.Error())
 	}
+	iter.decrementDepth()
 }
 
 type tenFieldsStructDecoder struct {
@@ -958,6 +1004,9 @@ type tenFieldsStructDecoder struct {
 
 func (decoder *tenFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	if !iter.readObjectStart() {
+		return
+	}
+	if !iter.incrementDepth() {
 		return
 	}
 	for {
@@ -992,6 +1041,7 @@ func (decoder *tenFieldsStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator
 	if iter.Error != nil && iter.Error != io.EOF {
 		iter.Error = fmt.Errorf("%v.%s", decoder.typ, iter.Error.Error())
 	}
+	iter.decrementDepth()
 }
 
 type structFieldDecoder struct {

@@ -50,18 +50,12 @@ func VersionsOfOne(c *gin.Context) {
 var VersionMap = map[string][]string{
 	"bash": {"4.4"},
 	"c": {
-		"gcc8.3",
-		"gcc7.4",
-		"gcc6.5",
-		"gcc5.5",
+		"gcc10",
 	},
 	"cpp": {
-		"gcc8.3",
-		"gcc7.4",
-		"gcc6.5",
-		"gcc5.5",
+		"gcc10",
 	},
-	"go": {"1.12", "1.11"},
+	"go": {"1.14"},
 	"haskell": {
 		"ghc-8.6",
 	},
@@ -69,49 +63,36 @@ var VersionMap = map[string][]string{
 		"3.7",
 		"2.7",
 	},
-	"php": {"7.2.5"},
+	"php": {"7.4"},
 	"java": {
-		"13",
-		"12",
-		"11",
-		"8",
+		"14",
 	},
 
 	"perl":  {"5.28"},
 	"perl6": {"latest"},
-	"ruby":  {"2.6"},
+	"ruby":  {"2.8"},
 	"rust":  {"latest"},
 }
 
 var imageMap = map[string]string{
 	"bash-4.4": "gcc:8.3", // for now
 
-	"c-gcc8.3": "gcc:8.3",
-	"c-gcc7.4": "gcc:7.4",
-	"c-gcc6.5": "gcc:6.5",
-	"c-gcc5.5": "gcc:5.5",
+	"c-gcc10": "gcc:10",
 
-	"cpp-gcc8.3": "gcc:8.3",
-	"cpp-gcc7.4": "gcc:7.4",
-	"cpp-gcc6.5": "gcc:6.5",
-	"cpp-gcc5.5": "gcc:5.5",
+	"cpp-gcc10": "gcc:10",
 
 	"php-7.2.5":  "php:7.2.5",
 	"python-3.7": "python:3.7",
 	"python-2.7": "python:2.7",
 
-	"java-13": "openjdk:13",
-	"java-12": "openjdk:12",
-	"java-11": "openjdk:11",
-	"java-8":  "openjdk:8",
+	"java-14": "openjdk:14",
 
-	"go-1.11": "golang:1.11",
-	"go-1.12": "golang:1.12",
+	"go-1.14": "golang:1.14",
 
 	"haskell-ghc-8.6": "haskell:8.6",
 	"perl-5.28":       "perl:5.28",
 	"perl6-latest":    "perl6",
-	"ruby-2.6":        "ruby:2.6",
+	"ruby-2.8":        "ruby:2.8",
 	"rust-latest":     "rust",
 }
 

@@ -1,6 +1,6 @@
 // +build go1.7,!go1.8
 
-package client // import "github.com/docker/docker/client"
+package client
 
 import "crypto/tls"
 

@@ -10,7 +10,7 @@ import (
 )
 
 func TestDocker(t *testing.T) {
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
@@ -28,12 +28,12 @@ func TestDocker(t *testing.T) {
 
 func TestCreate(t *testing.T) {
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
 
-	id, err := CreateContainer("yximages/gcc:8.3")
+	id, err := CreateContainer("yximages/gcc:10")
 	if err != nil {
 		panic(err)
 	}

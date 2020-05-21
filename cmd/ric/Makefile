@@ -13,7 +13,7 @@ build:fmt
 
 dbuild:
 	docker run -it --rm -v `pwd`:/go/src/github.com/keller0/scr/cmd/ric \
-	 -w /go/src/github.com/keller0/scr/cmd/ric golang:1.12  go build -ldflags '-w -s' -o run
+	 -w /go/src/github.com/keller0/scr/cmd/ric golang:1.14  go build -ldflags '-w -s' -o run
 .PHONY: gotest
 gotest:
 	go test

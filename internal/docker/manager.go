@@ -19,6 +19,7 @@ var (
 	ErrWorkerTimeOut       = errors.New("time out")
 	memLimit               = env.Get("CONTAINER_MEM_LIMIT", "50")
 	diskLimit              = env.Get("CONTAINER_DISK_LIMIT", "5")
+	pidLimit               = env.Get("CONTAINER_DISK_LIMIT", "50")
 )
 
 var (
@@ -33,7 +34,7 @@ type Job struct {
 }
 
 func init() {
-	log.Info("initing")
+	log.Info("manager init")
 	GccWorker = make(chan string, 2)
 	GoWorker = make(chan string, 2)
 	QuitSignal = make(chan int)
@@ -48,7 +49,7 @@ func (jb *Job) Do() (string, string, error) {
 	}
 	log.Info("got container: ", containerID)
 	work.containerID = containerID
-	work.cli, err = client.NewClientWithOpts(client.FromEnv)
+	work.cli, err = client.NewEnvClient()
 	if err != nil {
 		return "", "", err
 	}
@@ -91,7 +92,7 @@ func startWorkers(ws chan string, image string, q chan int) {
 func removeContainer(cid string) {
 	log.Info("container ", cid, " removing...")
 
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := client.NewEnvClient()
 	if err != nil {
 		log.Error(err)
 	}
@@ -122,9 +123,9 @@ func JobStop() {
 func getContainerByName(image string) (string, error) {
 	log.Info("try get a container of:", image)
 	switch image {
-	case "yximages/gcc:8.3":
+	case "yximages/gcc:10":
 		return <-GccWorker, nil
-	case "yximages/golang:1.12":
+	case "yximages/golang:1.14":
 		return <-GoWorker, nil
 	default:
 		return CreateContainer(image)
@@ -134,7 +135,7 @@ func getContainerByName(image string) (string, error) {
 func CreateContainer(image string) (string, error) {
 
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := client.NewEnvClient()
 	if err != nil {
 		return "", err
 	}
@@ -149,19 +150,23 @@ func CreateContainer(image string) (string, error) {
 		OpenStdin:    true,
 		StdinOnce:    true,
 	}
+	var diskLimit64 int64
 	ml, _ := strconv.Atoi(memLimit)
 	dl, _ := strconv.Atoi(diskLimit)
+	pl, _ := strconv.Atoi(pidLimit)
+	diskLimit64 = int64(dl)
 	hostConfig := &container.HostConfig{
 		Resources: container.Resources{
 			CPUPeriod: 100000,
 			CPUQuota:  50000,
 			Memory:    int64(ml) * 1024 * 1024,
-			PidsLimit: 50,
+			PidsLimit: int64(pl),
+			// TODO: put this resources to config
 			// advanced kernel-level features
 			// CPURealtimePeriod : 1000000,
 			// CPURealtimeRuntime: 950000,
 
-			DiskQuota: int64(dl) * 1024 * 1024,
+			DiskQuota: diskLimit64 * 1024 * 1024,
 		},
 		Privileged: false,
 		LogConfig: container.LogConfig{
