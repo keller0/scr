@@ -66,26 +66,6 @@ build_local () {
     rm ./Dockerfile
 }
 
-push_to_ali () {
-    for i in "${images[@]}"
-    do
-        if [ $i = "bash:4.4" ]
-        then
-            continue
-        elif [ $i = "rakudo-star" ]
-        then
-            docker tag "yximages/$i" "registry.cn-shanghai.aliyuncs.com/yxi/perl6" &
-            docker push "registry.cn-shanghai.aliyuncs.com/yxi/perl6"
-        else
-            docker tag "yximages/$i" "registry.cn-shanghai.aliyuncs.com/yxi/$i" &
-            docker push "registry.cn-shanghai.aliyuncs.com/yxi/$i"
-        fi
-
-    done
-    docker tag "yximages/yxi-api" "registry.cn-shanghai.aliyuncs.com/yxi/yxi-api" &
-    docker push "registry.cn-shanghai.aliyuncs.com/yxi/yxi-api"
-}
-
 push_to_docker_hub () {
     for i in "${images[@]}"
     do
@@ -120,40 +100,17 @@ pull_from_docker_hub () {
     docker pull "yximages/yxi-api"
 }
 
-pull_from_ali () {
-    for i in "${images[@]}"
-    do
-        if [ $i = "bash:4.4" ]
-        then
-            continue
-        elif [ $i = "rakudo-star" ]
-        then
-            docker pull "registry.cn-shanghai.aliyuncs.com/yxi/perl6"
-            docker tag "registry.cn-shanghai.aliyuncs.com/yxi/perl6" "yximages/perl6"
-        else
-            docker pull "registry.cn-shanghai.aliyuncs.com/yxi/$i"
-            docker tag "registry.cn-shanghai.aliyuncs.com/yxi/$i" "yximages/$i"
-        fi
-
-    done
-
-    docker pull "registry.cn-shanghai.aliyuncs.com/yxi/yxi-api"
-    docker tag  "registry.cn-shanghai.aliyuncs.com/yxi/yxi-api" "yximages/yxi-api"
-}
-
 print_usage() {
   echo "    -b build, -a push to aliyun, -d push to docker hub\n
     -p pull images from docker hub, -pa pull images from aliyun"
 }
 
 
-while getopts 'abddplh' flag; do
+while getopts 'bddph' flag; do
   case "${flag}" in
-    a) push_to_ali ;;
     b) build_local ;;
     d) push_to_docker_hub ;;
     p) pull_from_docker_hub ;;
-    l) pull_from_ali ;;
     h) print_usage
        exit 1 ;;
   esac

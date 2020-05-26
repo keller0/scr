@@ -19,7 +19,7 @@ type result struct {
 type uResult struct {
 	Stdout    string `json:"stdout"`
 	Stderr    string `json:"stderr"`
-	ExitError string `json:"exiterror"`
+	ExitError string `json:"exitError"`
 }
 
 // PayLoad as stdin pass to ric container's stdin
@@ -45,16 +45,16 @@ type oneFile struct {
 func RunCode(c *gin.Context) {
 	language := c.Params.ByName("language")
 	version := c.Params.ByName("version")
-	// check language an version
+	// check language and version
 	if !LanIsSupported(language) {
-		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Language not support"]})
+		c.JSON(http.StatusBadRequest, LanguageNotSupported)
 		return
 	}
 	if version == "" {
 		version = VersionMap[language][0]
 	} else {
 		if !LVIsSupported(language, version) {
-			c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Language not support"]})
+			c.JSON(http.StatusBadRequest, LanguageNotSupported)
 			return
 		}
 	}
@@ -62,7 +62,7 @@ func RunCode(c *gin.Context) {
 	var pl PayLoad
 	if err := c.ShouldBindJSON(&pl); err != nil {
 		log.Error(err)
-		c.JSON(http.StatusBadRequest, gin.H{"errNumber": responseErr["Payload not valid"]})
+		c.JSON(http.StatusBadRequest, PayloadNotValid)
 		return
 	}
 
@@ -73,21 +73,25 @@ func RunCode(c *gin.Context) {
 	if err != nil {
 		// api error
 		if err == docker.ErrWorkerTimeOut {
-			c.JSON(http.StatusRequestTimeout, gin.H{"errNumber": responseErr["Time out"]})
+			c.JSON(http.StatusRequestTimeout, TimeOutErr)
 		} else if err == docker.ErrTooMuchOutPut {
-			c.JSON(http.StatusRequestTimeout, gin.H{"errNumber": responseErr["Too much output"]})
+			c.JSON(http.StatusRequestTimeout, TooMuchOutPutErr)
 		} else {
 			c.JSON(http.StatusInternalServerError,
 				gin.H{
-					"errNumber": responseErr["Run code error"],
-					"msg":       err.Error(),
+					"code": RunCodeErr.Code,
+					"msg":  err.Error(),
 				})
 		}
 		return
 	} else {
 		if len(ricResp) > 0 {
 			log.Error(ricResp)
-			c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["Run code error"], "msg": ricResp})
+			c.JSON(http.StatusInternalServerError,
+				gin.H{
+					"code": RunCodeErr.Code,
+					"msg":  ricResp,
+				})
 		} else {
 			var res result
 			res.TaskError = ricResp
@@ -95,7 +99,10 @@ func RunCode(c *gin.Context) {
 			if e != nil {
 				// decode user result error
 				log.Error(e)
-				c.JSON(http.StatusInternalServerError, gin.H{"errNumber": responseErr["Run code error"], "msg": e.Error()})
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": RunCodeErr.Code,
+					"msg":  ricResp,
+				})
 			} else {
 				c.JSON(http.StatusOK, res)
 			}

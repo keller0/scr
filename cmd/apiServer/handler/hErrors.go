@@ -1,13 +1,24 @@
 package handler
 
-var responseErr = map[string]string{
+var (
+	LanguageNotSupported = newError(4002, "Language not supported")
+	PayloadNotValid      = newError(4003, "Payload not valid")
+	TooMuchOutPutErr     = newError(4005, "Too much output")
+	TimeOutErr           = newError(4006, "Time out")
+	RunCodeErr           = newError(5001, "Run code error")
+)
 
-	"Bad Requset":           "4000", // 请求格式错误
-	"Password is too short": "4003", // 密码太短了
-	"Language not support":  "4005", // 语言不支持
-	"Payload not valid":     "4006", // 代码格式错误
-	"Too much output":       "4007", // 代码输出太多
-	"Time out":              "4080", // 代码超时
+var codeMap = make(map[int]int)
 
-	"Run code error": "5005", // 运行代码错误
+type errorForFront struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+}
+
+func newError(code int, msg string) errorForFront {
+	if _, got := codeMap[code]; got {
+		panic("repeat code")
+	}
+	codeMap[code] = 1
+	return errorForFront{code, msg}
 }

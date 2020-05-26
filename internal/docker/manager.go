@@ -81,7 +81,7 @@ func startWorkers(ws chan string, image string, q chan int) {
 			log.Debug("starting a ", image)
 			cId, err := CreateContainer(image)
 			if err != nil {
-				log.Error("create contianer failed")
+				log.Error("create container failed")
 			}
 			ws <- cId
 		}
@@ -117,7 +117,7 @@ func JobStop() {
 	for len(GoWorker) > 0 {
 		removeContainer(<-GoWorker)
 	}
-	log.Info("all job stoped")
+	log.Info("all job stopped")
 }
 
 func getContainerByName(image string) (string, error) {
@@ -176,9 +176,6 @@ func CreateContainer(image string) (string, error) {
 	var tmpId string
 	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, "")
 	if err != nil {
-		if resp.ID != "" {
-			tmpId = resp.ID
-		}
 		return "", err
 	}
 	tmpId = resp.ID

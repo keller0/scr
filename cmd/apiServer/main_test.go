@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"github.com/keller0/scr/internal/docker"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,28 +16,33 @@ func TestRunCpp(t *testing.T) {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.POST("/:language", handler.RunCode)
-	w := httptest.NewRecorder()
 
+	docker.StartManagers()
+	defer docker.JobStop()
+
+	w := httptest.NewRecorder()
 	buf := bytes.NewBufferString(cppHelloWorld)
 	req, _ := http.NewRequest("POST", "/cpp", buf)
 
 	router.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, `{"userResult":{"stdout":"Hello, World! cpp","stderr":"","exiterror":""},"taskError":""}`, w.Body.String())
+	assert.Equal(t, `{"userResult":{"stdout":"Hello, World! cpp","stderr":"","exitError":""},"taskError":""}`, w.Body.String())
 }
 
 func TestRunGo(t *testing.T) {
 	router := gin.New()
 	router.POST("/:language", handler.RunCode)
 
-	w := httptest.NewRecorder()
+	docker.StartManagers()
+	defer docker.JobStop()
 
+	w := httptest.NewRecorder()
 	buf := bytes.NewBufferString(goHelloWorld)
 	req, _ := http.NewRequest("POST", "/go", buf)
 
 	router.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, `{"userResult":{"stdout":"Hello, World! go\n","stderr":"","exiterror":""},"taskError":""}`, w.Body.String())
+	assert.Equal(t, `{"userResult":{"stdout":"Hello, World! go\n","stderr":"","exitError":""},"taskError":""}`, w.Body.String())
 }
 
 const cppHelloWorld = `

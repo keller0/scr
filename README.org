@@ -14,12 +14,13 @@
       result to container's stdout(include stdout stderr and exit
       status), if ric got error it will put error to container's
       stderr and exit with non-zero value.
-   3. Finally SCR get container's stdout and stderr and exitcode, send
-      different response to users depend on exitcode.
+   3. Finally SCR get error or container's stdout and stderr, then send
+      response to client.
 
-** build it(you need docker and make)
-    run make will build images and start the api container, or you can pull
-containers from [[https://hub.docker.com/][Docker Hub]] or aliyun, you can read the Makefile to finger it out.
+** build it
+    - build them in docker or use local go environment.
+    - run `make` to build images and start the api container, or you can pull
+      containers from [[https://hub.docker.com/][Docker Hub]], you can read the Makefile to finger it out.
 
 ** restAPI
 *** API URLs
@@ -38,10 +39,10 @@ containers from [[https://hub.docker.com/][Docker Hub]] or aliyun, you can read 
 |              200 | OK                        | {"userResult":{"stdout":"","stderr":"","exiterror":""},"taskError":""} |
 |              400 | language is not supported | "java++ is not support"                                                |
 |                  | version  is not supported | "java openjdk-100 is not support"                                      |
-|                  | request data not vaild    | "json: cannot unmarshal..."                                            |
+|                  | request data not valid    | "json: cannot unmarshal..."                                            |
 |              500 | Internal Server Error     | "xxxx"                                                                 |
 
-*** request exampls
+*** request examples
 **** get version info of C
 #+BEGIN_SRC SHELL
 curl -X GET   http://localhost:8080/v1/c
@@ -85,7 +86,7 @@ curl -X POST   http://localhost:8090/v1/c   -H 'Content-Type: application/json' 
     "userResult": {
         "stdout": "Hello, World!\n",
         "stderr": "",
-        "exiterror": ""
+        "exitError": ""
     },
     "taskError": ""
 }

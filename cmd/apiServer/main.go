@@ -8,6 +8,7 @@ import (
 	"github.com/keller0/scr/internal/docker"
 	"github.com/keller0/scr/internal/env"
 	log "github.com/sirupsen/logrus"
+	"io"
 	"net/http"
 	"os"
 	"os/signal"
@@ -23,22 +24,18 @@ var (
 
 func main() {
 	log.Info("starting...")
-	r := gin.New()
-	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
-	config.AddAllowHeaders("Authorization")
-	r.Use(cors.New(config))
-	r.Use(gin.Recovery())
+	configLog()
+
+	r := configEngine()
 	v1 := r.Group("/v1")
 	{
-
 		v1.GET("/", handler.AllVersion)
 		v1.GET("/:language", handler.VersionsOfOne)
 
 		v1.POST("/:language", handler.RunCode)
 		v1.POST("/:language/:version", handler.RunCode)
-
 	}
+
 	docker.StartManagers()
 
 	srv := &http.Server{Addr: yxiHost + yxiPort, Handler: r}
@@ -49,15 +46,19 @@ func main() {
 		}
 	}()
 
+	log.Info("listening at ", yxiHost+yxiPort)
+
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutdown Server ...")
+	log.Println("Shutdown Server...")
+
 	docker.JobStop()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown:", err)
+		log.Fatal("Server Shutdown with error:", err)
 	}
 	// catching ctx.Done(). timeout of 5 seconds.
 	select {
@@ -66,4 +67,25 @@ func main() {
 	}
 	log.Println("Server exiting")
 	os.Exit(0)
+}
+
+func configLog() {
+
+	logFile, err := os.OpenFile(ginLogPath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, os.ModeAppend)
+	if err != nil {
+		log.Fatal("open log file failed:", err)
+	}
+	mw := io.MultiWriter(os.Stdout, logFile)
+	log.SetOutput(mw)
+
+}
+
+func configEngine() *gin.Engine {
+	r := gin.New()
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AddAllowHeaders("Authorization")
+	r.Use(cors.New(config))
+	r.Use(gin.Recovery())
+	return r
 }
