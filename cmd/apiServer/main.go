@@ -19,7 +19,7 @@ import (
 var (
 	yxiPort    = env.Get("YXI_BACK_PORT", ":8090")
 	yxiHost    = env.Get("YXI_BACK_HOST", "localhost")
-	ginLogPath = env.Get("GIN_LOG_PATH", "/var/log/yxi/api.log")
+	ginLogPath = env.Get("GIN_LOG_PATH", "api.log")
 )
 
 func main() {
@@ -71,7 +71,7 @@ func main() {
 
 func configLog() {
 
-	logFile, err := os.OpenFile(ginLogPath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, os.ModeAppend)
+	logFile, err := os.OpenFile(ginLogPath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0640)
 	if err != nil {
 		log.Fatal("open log file failed:", err)
 	}

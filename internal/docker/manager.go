@@ -64,8 +64,8 @@ func (jb *Job) Do() (string, string, error) {
 func StartManagers() {
 
 	log.Info("starting manager")
-	go startWorkers(GccWorker, "yximages/gcc:8.3", QuitSignal)
-	go startWorkers(GoWorker, "yximages/golang:1.12", QuitSignal)
+	go startWorkers(GccWorker, "yximages/gcc:10", QuitSignal)
+	go startWorkers(GoWorker, "yximages/golang:1.14", QuitSignal)
 
 }
 
