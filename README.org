@@ -52,12 +52,8 @@ curl -X GET   http://localhost:8080/v1/c
         "name": "c",
         "versions": [
             {
-                "version": "gcc8.3",
-                "url": "/v1/c/gcc8.3"
-            },
-            {
-                "version": "gcc7.4",
-                "url": "/v1/c/gcc7.4"
+                "version": "gcc10",
+                "url": "/v1/c/gcc10"
             }
         ]
     }

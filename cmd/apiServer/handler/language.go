@@ -77,7 +77,7 @@ var VersionMap = map[string][]string{
 }
 
 var imageMap = map[string]string{
-	"bash-4.4": "gcc:8.3", // for now
+	"bash-4.4": "gcc:10", // for now
 
 	"c-gcc10": "gcc:10",
 
