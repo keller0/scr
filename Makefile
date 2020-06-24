@@ -28,6 +28,9 @@ api: ## build api image
 drun: api ## build api image and run it
 	docker run -it --rm -p 8090:8090 -v "/var/run/docker.sock:/var/run/docker.sock" yximages/yxi-api
 
+dbuild: ## build api binary in container
+	docker run -it --rm -v `pwd`:/go/src/ok -w /go/src/ok/ golang:1.14 go build -mod=vendor -ldflags '-w -s' -o main cmd/apiServer/main.go
+
 runners: ## build runner images
 	cd scripts && ./images.sh -b
 
