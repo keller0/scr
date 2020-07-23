@@ -87,3 +87,13 @@ curl -X POST   http://localhost:8090/v1/c   -H 'Content-Type: application/json' 
     "taskError": ""
 }
 #+END_SRC
+
+****  Support
+
+This project has been supported by [[https://www.jetbrains.com/][JetBrains]] with their free licenses.
+
+[[https://www.jetbrains.com/][docs/imgs/jetbrains.svg]]
+
+
+
+
