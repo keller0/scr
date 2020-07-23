@@ -64,3 +64,16 @@ func TestStartManagers(t *testing.T) {
 	assert.Equal(t, true, len(GccWorker) < 13)
 
 }
+func TestListImages(t *testing.T) {
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+	images, err := cli.ImageList(context.Background(), types.ImageListOptions{})
+	if err != nil {
+		panic(err)
+	}
+	for _, i := range images {
+		t.Log(i.RepoTags)
+	}
+}

@@ -1,32 +1,57 @@
 package handler
 
 import (
-	"net/http"
-
+	"context"
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/client"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
-
-type tLanguage struct {
-	Language string      `json:"name"`
-	Versions *[]tVersion `json:"versions"`
-}
 
 type tVersion struct {
 	Version string `json:"version"`
 	URL     string `json:"url"`
 }
 
-// AllVersion return all supported languages and their versions
-func AllVersion(c *gin.Context) {
-	var all []tLanguage
-	for l, vs := range VersionMap {
+type runner struct {
+	Language string     `json:"name"`
+	Versions []tVersion `json:"versions"`
+}
+
+var expectRunners []runner
+var availableRunners []runner
+
+func init() {
+
+	for name, vs := range VersionMap {
+
 		var versions []tVersion
 		for _, v := range vs {
-			versions = append(versions, tVersion{v, "/api/v1/" + l + "/" + v})
+			versions = append(versions, tVersion{v, lv2Url(name, v)})
 		}
-		all = append(all, tLanguage{l, &versions})
+		expectRunners = append(expectRunners, runner{name, versions})
 	}
-	c.JSON(http.StatusOK, all)
+	// check available
+	allLocalImages := getAllDockerImages()
+	for _, r := range expectRunners {
+		tmpRunner := &runner{Language: r.Language}
+
+		for _, v := range r.Versions {
+			tmpImg := V2Images(r.Language, v.Version)
+			if containsString(allLocalImages, tmpImg) {
+				tmpRunner.Versions = append(tmpRunner.Versions, v)
+			}
+		}
+		if len(tmpRunner.Versions) > 0 {
+			availableRunners = append(availableRunners, *tmpRunner)
+		}
+	}
+}
+
+// AllRunners return all supported languages and their versions
+func AllRunners(c *gin.Context) {
+
+	c.JSON(http.StatusOK, availableRunners)
 }
 
 // VersionsOfOne return all version of one language
@@ -36,13 +61,15 @@ func VersionsOfOne(c *gin.Context) {
 	if !LanIsSupported(language) {
 		c.String(http.StatusNotFound, "%s is not supported", language)
 	} else {
-		var all []tLanguage
+
 		var versions []tVersion
-		for _, v := range VersionMap[language] {
-			versions = append(versions, tVersion{v, "/api/v1/" + language + "/" + v})
+		for _, r := range availableRunners {
+			if r.Language == language {
+				versions = r.Versions
+			}
 		}
-		all = append(all, tLanguage{language, &versions})
-		c.JSON(http.StatusOK, all)
+
+		c.JSON(http.StatusOK, versions)
 	}
 }
 
@@ -105,10 +132,19 @@ func V2Images(language, version string) string {
 
 }
 
+func lv2Url(language, version string) string {
+	return "/v1/" + language + "/" + version
+}
+
 // LanIsSupported check if the language is supported
 func LanIsSupported(language string) bool {
-	_, got := VersionMap[language]
-	return got
+	var supported bool
+	for _, r := range availableRunners {
+		if r.Language == language {
+			supported = true
+		}
+	}
+	return supported
 }
 
 // LVIsSupported check if the version of a language is supported
@@ -116,9 +152,51 @@ func LVIsSupported(lan, version string) bool {
 	if !LanIsSupported(lan) {
 		return false
 	}
-	vs := VersionMap[lan]
-	for _, v := range vs {
-		if v == version {
+	var versions []tVersion
+	for _, r := range availableRunners {
+		if r.Language == lan {
+			versions = r.Versions
+			break
+		}
+	}
+
+	for _, v := range versions {
+		if v.Version == version {
+			return true
+		}
+	}
+	return false
+}
+
+func runnerDefaultVersion(language string) string {
+	for _, r := range availableRunners {
+		if r.Language == language {
+			return r.Versions[0].Version
+		}
+	}
+	return ""
+}
+
+func getAllDockerImages() []string {
+	var imgS []string
+
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+	images, err := cli.ImageList(context.Background(), types.ImageListOptions{})
+	if err != nil {
+		panic(err)
+	}
+	for _, i := range images {
+		imgS = append(imgS, i.RepoTags...)
+	}
+	return imgS
+}
+
+func containsString(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
 			return true
 		}
 	}

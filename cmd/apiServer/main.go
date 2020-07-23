@@ -29,8 +29,8 @@ func main() {
 	r := configEngine()
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/", handler.AllVersion)
-		v1.GET("/:language", handler.VersionsOfOne)
+		v1.GET("/runners", handler.AllRunners)
+		v1.GET("/runners/:language", handler.VersionsOfOne)
 
 		v1.POST("/:language", handler.RunCode)
 		v1.POST("/:language/:version", handler.RunCode)

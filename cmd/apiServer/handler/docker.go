@@ -43,22 +43,24 @@ type oneFile struct {
 
 // RunCode depended on language type and version
 func RunCode(c *gin.Context) {
-	language := c.Params.ByName("language")
-	version := c.Params.ByName("version")
+	language := strings.ToLower(c.Params.ByName("language"))
+	version := strings.ToLower(c.Params.ByName("version"))
+
 	// check language and version
 	if !LanIsSupported(language) {
 		c.JSON(http.StatusBadRequest, LanguageNotSupported)
 		return
 	}
 	if version == "" {
-		version = VersionMap[language][0]
-	} else {
-		if !LVIsSupported(language, version) {
-			c.JSON(http.StatusBadRequest, LanguageNotSupported)
-			return
-		}
+		version = runnerDefaultVersion(language)
 	}
-	img := V2Images(strings.ToLower(language), version)
+
+	if !LVIsSupported(language, version) {
+		c.JSON(http.StatusBadRequest, LanguageNotSupported)
+		return
+	}
+
+	img := V2Images(language, version)
 	var pl PayLoad
 	if err := c.ShouldBindJSON(&pl); err != nil {
 		log.Error(err)

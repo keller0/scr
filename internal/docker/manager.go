@@ -62,7 +62,7 @@ func (jb *Job) Do() (string, string, error) {
 }
 
 func StartManagers() {
-
+	// TODO: depend on availableRunners
 	log.Info("starting manager")
 	go startWorkers(GccWorker, "yximages/gcc:10", QuitSignal)
 	go startWorkers(GoWorker, "yximages/golang:1.14", QuitSignal)
