@@ -10,7 +10,7 @@ install: true
 
 script:
   - sudo apt-get install git
-  - make dev
+  - make build
 
 clean:
   - make clean
