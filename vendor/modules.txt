@@ -41,7 +41,7 @@ github.com/docker/go-units
 github.com/gin-contrib/cors
 # github.com/gin-contrib/sse v0.1.0
 github.com/gin-contrib/sse
-# github.com/gin-gonic/gin v1.6.3
+# github.com/gin-gonic/gin v1.7.0
 ## explicit
 github.com/gin-gonic/gin
 github.com/gin-gonic/gin/binding
@@ -53,7 +53,7 @@ github.com/go-playground/locales
 github.com/go-playground/locales/currency
 # github.com/go-playground/universal-translator v0.17.0
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.2.0
+# github.com/go-playground/validator/v10 v10.4.1
 github.com/go-playground/validator/v10
 # github.com/gogo/protobuf v1.3.1
 ## explicit
@@ -92,6 +92,8 @@ github.com/sirupsen/logrus
 github.com/stretchr/testify/assert
 # github.com/ugorji/go/codec v1.1.7
 github.com/ugorji/go/codec
+# golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+golang.org/x/crypto/sha3
 # golang.org/x/net v0.0.0-20200519113804-d87ec0cfa476
 ## explicit
 golang.org/x/net/context
@@ -99,6 +101,7 @@ golang.org/x/net/context/ctxhttp
 golang.org/x/net/internal/socks
 golang.org/x/net/proxy
 # golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd
+golang.org/x/sys/cpu
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 # gopkg.in/yaml.v2 v2.2.8
