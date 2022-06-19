@@ -2,18 +2,19 @@ package main
 
 import (
 	"context"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/keller0/scr/cmd/apiServer/handler"
-	"github.com/keller0/scr/internal/docker"
-	"github.com/keller0/scr/internal/env"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/keller0/scr/cmd/apiServer/handler"
+	"github.com/keller0/scr/internal/docker"
+	"github.com/keller0/scr/internal/env"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -48,7 +49,7 @@ func main() {
 
 	log.Info("listening at ", yxiHost+yxiPort)
 
-	quit := make(chan os.Signal)
+	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutdown Server...")
@@ -61,10 +62,9 @@ func main() {
 		log.Fatal("Server Shutdown with error:", err)
 	}
 	// catching ctx.Done(). timeout of 5 seconds.
-	select {
-	case <-ctx.Done():
-		log.Println("timeout of 5 seconds.")
-	}
+	<-ctx.Done()
+	log.Println("timeout of 5 seconds.")
+
 	log.Println("Server exiting")
 	os.Exit(0)
 }
