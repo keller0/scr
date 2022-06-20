@@ -11,9 +11,6 @@ fmt:
 build:fmt
 	GOOS=linux GOARCH=amd64 go build -ldflags '-w -s' -o run
 
-dbuild:
-	docker run -it --rm -v `pwd`:/go/src/github.com/keller0/scr/cmd/ric \
-	 -w /go/src/github.com/keller0/scr/cmd/ric golang:1.14  go build -ldflags '-w -s' -o run
 .PHONY: gotest
 gotest:
 	go test

@@ -65,7 +65,7 @@ func StartManagers() {
 	// TODO: depend on availableRunners
 	log.Info("starting manager")
 	go startWorkers(GccWorker, "yximages/gcc:10", QuitSignal)
-	go startWorkers(GoWorker, "yximages/golang:1.14", QuitSignal)
+	go startWorkers(GoWorker, "yximages/golang:1.18", QuitSignal)
 
 }
 
@@ -125,7 +125,7 @@ func getContainerByName(image string) (string, error) {
 	switch image {
 	case "yximages/gcc:10":
 		return <-GccWorker, nil
-	case "yximages/golang:1.14":
+	case "yximages/golang:1.18":
 		return <-GoWorker, nil
 	default:
 		return CreateContainer(image)

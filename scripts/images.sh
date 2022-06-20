@@ -4,7 +4,7 @@ set -e
 images=(
     "bash:4.4" \
     "gcc:10" \
-    "golang:1.14" \
+    "golang:1.18" \
     "haskell:8.10"  \
     "openjdk:14" \
     "perl:5.28" \
@@ -49,11 +49,6 @@ EOF
 
 #build images
 build_local () {
-    # build ric
-    cd ../cmd/ric && make dbuild
-    cd -
-    mv ../cmd/ric/run ./run
-    echo "---------build ric succeed---------"
     # build ric imagws
     for i in "${images[@]}"
     do
@@ -101,16 +96,18 @@ pull_from_docker_hub () {
 }
 
 print_usage() {
-  echo "    -b build, -a push to aliyun, -d push to docker hub\n
-    -p pull images from docker hub, -pa pull images from aliyun"
+#  echo "    -b build, -a push to aliyun, -d push to docker hub\n
+#    -p pull images from docker hub, -pa pull images from aliyun"
+
+  echo "    -b build"
 }
 
 
 while getopts 'bddph' flag; do
   case "${flag}" in
     b) build_local ;;
-    d) push_to_docker_hub ;;
-    p) pull_from_docker_hub ;;
+#    d) push_to_docker_hub ;;
+#    p) pull_from_docker_hub ;;
     h) print_usage
        exit 1 ;;
   esac

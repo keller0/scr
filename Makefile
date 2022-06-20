@@ -32,16 +32,20 @@ drun: api ## build api image and run it
 	docker run -it --rm -p 8090:8090 -v "/var/run/docker.sock:/var/run/docker.sock" yximages/yxi-api
 
 dbuild: ## build api binary in container
-	docker run -it --rm -v `pwd`:/go/src/ok -w /go/src/ok/ golang:1.14 go build -mod=vendor -ldflags '-w -s' -o main cmd/apiServer/main.go
+	docker run -it --rm -v `pwd`:/go/src/ok -w /go/src/ok/ golang:1.18 go build -mod=vendor -ldflags '-w -s' -o main cmd/apiServer/main.go
 
-runners: ## build runner images
+dbuildric: ## build runner binary in container
+	docker run -it --rm -v `pwd`:/go/src/ok -w /go/src/ok/ golang:1.18 go build -mod=vendor -ldflags '-w -s' -o run cmd/ric/*.go
+
+runners: dbuildric ## build runner images
+	mv ./run scripts/run
 	cd scripts && ./images.sh -b
 
-push: ## push runner images to docker hub
-	cd scripts && ./images.sh -d
-
-pull: ## pull runner images from docker hub
-	cd scripts && ./images.sh -p
+#push: ## push runner images to docker hub
+#	cd scripts && ./images.sh -d
+#
+#pull: ## pull runner images from docker hub
+#	cd scripts && ./images.sh -p
 
 clean: ## clean local build
 	rm ./main

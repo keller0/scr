@@ -82,7 +82,7 @@ var VersionMap = map[string][]string{
 	"cpp": {
 		"gcc10",
 	},
-	"go": {"1.14"},
+	"go": {"1.18"},
 	"haskell": {
 		"ghc-8.6",
 	},
@@ -116,13 +116,13 @@ var imageMap = map[string]string{
 
 	"java-14": "openjdk:14",
 
-	"go-1.14": "golang:1.14",
+	"go-1.18": "golang:1.18",
 
 	"haskell-ghc-8.6": "haskell:8.6",
 	"perl-5.28":       "perl:5.28",
 	"perl6-latest":    "perl6",
 	"ruby-2.7":        "ruby:2.7",
-	"rust-latest":     "rust",
+	"rust-latest":     "rust:latest",
 }
 
 // V2Images return image name for one version of language
