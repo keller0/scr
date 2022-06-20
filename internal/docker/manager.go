@@ -150,23 +150,25 @@ func CreateContainer(image string) (string, error) {
 		OpenStdin:    true,
 		StdinOnce:    true,
 	}
-	var diskLimit64 int64
+	//var diskLimit64 int64
 	ml, _ := strconv.Atoi(memLimit)
-	dl, _ := strconv.Atoi(diskLimit)
+	//dl, _ := strconv.Atoi(diskLimit)
 	pl, _ := strconv.Atoi(pidLimit)
-	diskLimit64 = int64(dl)
+	pl64 := int64(pl)
+	//diskLimit64 = int64(dl)
 	hostConfig := &container.HostConfig{
 		Resources: container.Resources{
 			CPUPeriod: 100000,
 			CPUQuota:  50000,
 			Memory:    int64(ml) * 1024 * 1024,
-			PidsLimit: int64(pl),
+			PidsLimit: &pl64,
 			// TODO: put this resources to config
 			// advanced kernel-level features
 			// CPURealtimePeriod : 1000000,
 			// CPURealtimeRuntime: 950000,
+			MemorySwap: 0,
 
-			DiskQuota: diskLimit64 * 1024 * 1024,
+			//DiskQuota: diskLimit64 * 1024 * 1024,
 		},
 		Privileged: false,
 		LogConfig: container.LogConfig{
@@ -174,7 +176,7 @@ func CreateContainer(image string) (string, error) {
 		},
 	}
 	var tmpId string
-	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, "")
+	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, nil, "")
 	if err != nil {
 		return "", err
 	}
